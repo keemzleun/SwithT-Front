@@ -94,7 +94,7 @@ export default {
     }
 };
 </script>
-<style>
+<style scoped>
 .v-container {
     color: #333;
 }

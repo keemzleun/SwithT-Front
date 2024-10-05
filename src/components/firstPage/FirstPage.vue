@@ -2,33 +2,49 @@
     <v-container>
         <section class="banner">
             <div class="temporary-banner">
-
+                임시 배너
             </div>
         </section>
         <section class="menu">
             <div class="menu-list">
-                <span class="menu-icon">🧘‍♀️</span>
-                <span class="menu-title">자기계발</span>
+                <div class="menu-icon">🧘‍♀️</div>
+                <div class="menu-title">자기계발</div>
             </div>
             <div class="menu-list">
                 <!-- <img src="@/assets/admission.png" alt="입시" class="menu-icon"> -->
-                <span class="menu-icon">🧑‍🏫</span>
-                <span class="menu-title">입시</span>
+                <div class="menu-icon">🧑‍🏫</div>
+                <div class="menu-title">입시</div>
             </div>
             <div class="menu-list">
-                <span class="menu-icon">🏄</span>
-                <span class="menu-title">취미</span>
+                <div class="menu-icon">🏄</div>
+                <div class="menu-title">취미</div>
             </div>
             <div class="menu-list">
-                <span class="menu-icon">👨‍💼</span>
-                <span class="menu-title">취업/직무</span>
+                <div class="menu-icon">👨‍💼</div>
+                <div class="menu-title">취업/직무</div>
             </div>
         </section>
             
         <hr/>
 
         <section class="recommendation">
-            <div class="title">✨재능 기부</div>
+            <div class="title">✨ 재능 기부</div>
+            <div class="lecture-list">
+                <div
+                    class="component"
+                    v-for="lecture in latestLectures"
+                    :key="lecture.id"
+                    @click="goToLecture(lecture.id)"
+                >
+                    <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lectureImage" />
+                    <div class="lectureTitle">
+                        <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
+                        <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
+                        {{ lecture.title }}</div>
+                </div>  
+            </div>
+
+            <div class="title">👀 요즘 뜨는 강의</div>
             <div class="lecture-list">
                 <div
                     class="component"
@@ -79,6 +95,9 @@ export default {
 };
 </script>
 <style>
+.v-container {
+    color: #333;
+}
 .banner {
     background-color: rgb(220, 219, 219);
     
@@ -87,15 +106,27 @@ export default {
     height: 250px;
     width: auto;
 }
+.menu {
+    margin: 20px 0;
+}
 .menu-list {
-    width: 60px;
-    height: 100px;
+    width: 80px;
+    height: 110px;
+    margin: 0 10px;
     display: inline-block;
 }
-.menu-list .menu-icon{
+.menu-list:hover {
+    background-color: #EEE;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.menu-icon{
     font-size: 60px;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
+}
+.menu-title {
+    font-weight: 700;
 }
 
 .recommendation {
@@ -112,13 +143,14 @@ export default {
 .lecture-list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
-}
+    justify-content: center;
+    gap: 10px
 
+}
 .component {
     cursor: pointer;
-    margin: 10px;
-    width: 180px;
+    margin: 20px;
+    width: 200px;
     text-align: center;
     overflow: hidden;
     transition: transform 0.1s;
@@ -149,7 +181,6 @@ export default {
 .lecture-tag {
     background-color: #007bff;
 }
-
 .lesson-tag {
     background-color: #28a745;
 }

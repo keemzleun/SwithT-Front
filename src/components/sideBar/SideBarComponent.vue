@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="login" @click="logout">로그아웃</div>
-  </div>
+</div>
 
 </template>
 
@@ -65,6 +65,7 @@ export default {
   background-color: #f8f9fa;
   padding: 20px;
   position: fixed;
+  z-index: 1;
   right: 0;
 }
 

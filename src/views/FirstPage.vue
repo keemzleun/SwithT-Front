@@ -32,15 +32,18 @@
             <div class="lecture-list">
                 <div
                     class="component"
-                    v-for="lecture in latestLectures"
+                    v-for="lecture in freeLectures"
                     :key="lecture.id"
                     @click="goToLecture(lecture.id)"
                 >
-                    <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lectureImage" />
-                    <div class="lectureTitle">
+                    <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lecture-image" />
+                    <div class="lecture-info">
                         <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
                         <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
-                        {{ lecture.title }}</div>
+                        <span class="lecture-category">{{ getCategoryText(lecture.category) }}</span>
+                        <div class="lecture-title">{{ lecture.title }}</div>
+                        <div class="lecture-tutor">{{ lecture.memberName }} 튜터</div>
+                    </div>
                 </div>  
             </div>
 
@@ -52,11 +55,14 @@
                     :key="lecture.id"
                     @click="goToLecture(lecture.id)"
                 >
-                    <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lectureImage" />
-                    <div class="lectureTitle">
+                    <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lecture-image" />
+                    <div class="lecture-info">
                         <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
                         <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
-                        {{ lecture.title }}</div>
+                        <span class="lecture-category">{{ getCategoryText(lecture.category) }}</span>
+                        <div class="lecture-title">{{ lecture.title }}</div>
+                        <div class="lecture-tutor">{{ lecture.memberName }} 튜터</div>
+                    </div>
                 </div>  
             </div>   
         </section>
@@ -69,7 +75,8 @@ import axios from "axios";
 export default {
     data() {
         return {
-            latestLectures: []
+            latestLectures: [],
+            freeLectures: []
         };
     },
     methods: {
@@ -82,15 +89,39 @@ export default {
                 console.error("Failed to fetch latest lectures:", error);
             }
         },
+        async fetchFreeLectures() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lectures/free`);
+                this.freeLectures = response.data.result;
+                console.log(response.data.result);
+            } catch (error) {
+                console.error("Failed to fetch free lectures:", error);
+            }
+        },
         goToLecture(lectureId) {
             this.$router.push({ name: 'LectureDetail', params: { id: lectureId } });
         },
         getlectureImage(lecture) {
             return lecture.image;
+        },
+        getCategoryText(category) {
+        switch (category) {
+            case 'CAREER':
+                return '취업/직무';
+            case 'HOBBY':
+                return '취미';
+            case 'ADMISSION':
+                return '입시';
+            case 'DEVELOPMENT':
+                return '자기계발';
+            default:
+                return category;
         }
+    }
     },
     created() {
         this.fetchLatestLectures(); // 컴포넌트가 생성될 때 최신 강의 목록을 가져옴
+        this.fetchFreeLectures();
     }
 };
 </script>
@@ -150,7 +181,7 @@ export default {
 .component {
     cursor: pointer;
     margin: 20px;
-    width: 200px;
+    width: 250px;
     text-align: center;
     overflow: hidden;
     transition: transform 0.1s;
@@ -160,21 +191,20 @@ export default {
     transform: scale(1.05);
 }
 
-.lectureImage {
-    width: 100%;
-    height: auto;
+.lecture-image {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
 }
-
-.lectureTitle {
-    padding: 10px;
-    font-size: 18px;
-    font-weight: 600;
+.lecture-info {
+    text-align: left;
+    padding: 7px;
 }
-.lectureTitle .tag {
-    padding: 5px 10px;
+.tag {
+    padding: 3px 8px;
     border-radius: 10px;
     color: white;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
     margin-right: 5px;
 }
@@ -182,6 +212,17 @@ export default {
     background-color: #007bff;
 }
 .lesson-tag {
-    background-color: #28a745;
+   background-color: #28a745;
+}
+.lecture-category {
+    font-size: 15px;
+}
+.lecture-title {
+    font-size: 18px;
+    font-weight: 700;
+    padding: 8px 3px 0;
+}
+.lecture-tutor {
+    padding: 0 3px 0;
 }
 </style>

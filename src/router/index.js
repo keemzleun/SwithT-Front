@@ -15,7 +15,7 @@ const routes = [
         name: 'TEST',
         component: TestView
     },
-    ...lectureHomeRouter
+    ...lectureHomeRouter,
     {
         path: "/home",
         name: "Home",

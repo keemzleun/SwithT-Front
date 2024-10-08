@@ -6,6 +6,7 @@
   <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <v-app>
     <HeaderComponent />
+    <SidebarComponent/>
     <v-main>
       <v-container fluid class="custom-container">
         <routerView />
@@ -18,12 +19,14 @@
 <script>
 import FooterComponent from '@/components/footer/FooterComponent.vue'
 import HeaderComponent from '@/components/header/HeaderComponent.vue'
+import SidebarComponent from '@/components/sideBar/SideBarComponent.vue'
 
 export default {
   name: 'App',
   components: {
     FooterComponent,
-    HeaderComponent
+    HeaderComponent,
+    SidebarComponent
   }
 }
 </script>

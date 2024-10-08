@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import TestView from '@/components/TestView.vue'
 import { lectureHomeRouter } from './lectureHomeRouter';
+import { lectureRouter } from './lectureRouter';
+import LoginPage from '@/components/LoginPage.vue';
 import FirstPage from '@/views/FirstPage.vue';
 
 const routes = [
@@ -11,10 +13,16 @@ const routes = [
     },
     ...lectureHomeRouter
     {
-        path: "/first",
-        name: "Home",
-        component: FirstPage,
-      },
+        path: '/login',
+        name: 'LOGIN',
+        component: LoginPage
+    },
+    {
+      path: "/first",
+      name: "Home",
+      component: FirstPage,
+    },
+    ...lectureRouter
 ]
 const router = createRouter({
     history: createWebHistory(),

@@ -7,6 +7,7 @@ import FirstPage from '@/views/FirstPage.vue';
 import TuteeAppliedList from '@/pendingLectures/TuteeAppliedList.vue';
 import TutorAppliedList from '@/pendingLectures/TutorAppliedList.vue';
 import AdminAppliedList from '@/pendingLectures/AdminAppliedList.vue';
+import { memberRouter } from './memberRouter';
 
 
 const routes = [
@@ -46,7 +47,8 @@ const routes = [
       name: "Home",
       component: FirstPage,
     },
-    ...lectureRouter
+    ...lectureRouter,
+    ...memberRouter
 ]
 const router = createRouter({
     history: createWebHistory(),

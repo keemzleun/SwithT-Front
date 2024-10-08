@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import TestView from '@/components/TestView.vue'
+import { lectureHomeRouter } from './lectureHomeRouter';
 import { lectureRouter } from './lectureRouter';
 import LoginPage from '@/components/LoginPage.vue';
 import FirstPage from '@/views/FirstPage.vue';
@@ -10,6 +11,7 @@ const routes = [
         name: 'TEST',
         component: TestView
     },
+    ...lectureHomeRouter
     {
         path: '/login',
         name: 'LOGIN',

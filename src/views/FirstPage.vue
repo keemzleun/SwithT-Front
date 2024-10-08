@@ -11,7 +11,7 @@
                 <div class="menu-title">자기계발</div>
             </div>
             <div class="menu-list">
-                <!-- <img src="@/assets/admission.png" alt="입시" class="menu-icon"> -->
+
                 <div class="menu-icon">🧑‍🏫</div>
                 <div class="menu-title">입시</div>
             </div>
@@ -71,6 +71,7 @@
 </template>
 <script>
 import axios from "axios";
+
 
 export default {
     data() {

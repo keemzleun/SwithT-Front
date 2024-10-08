@@ -3,8 +3,9 @@ import App from './App.vue'
 import router from './router/index.js'
 import vuetify from './plugins/vuetify.js';
 import axios from 'axios'
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import '@mdi/font/css/materialdesignicons.css'
-
 import { useKakao } from 'vue3-kakao-maps/@utils';
 
 const app = createApp(App);

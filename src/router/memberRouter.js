@@ -1,4 +1,4 @@
-import MemberCreateView from "@/views/member/MemberCreateView.vue";
+import MemberMainView from "@/views/member/MemberMainView.vue";
 import MemberLoginView from "@/views/member/MemberLoginView.vue";
 import TutorEmailRegisterView from "@/views/member/TutorEmailRegisterView.vue";
 import MemberSocialRegisterView from "@/views/member/MemberSocialRegisterView.vue";
@@ -7,9 +7,9 @@ import TuteeEmailRegisterView from "@/views/member/TuteeEmailRegisterView.vue";
 
 export const memberRouter = [
     {
-        path: '/member/create',
-        name: 'MemberCreateView',
-        component: MemberCreateView
+        path: '/member/main',
+        name: 'MemberMainView',
+        component: MemberMainView
     },
     {
         path: '/member/login',

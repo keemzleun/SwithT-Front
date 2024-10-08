@@ -5,7 +5,10 @@
         outlined
         style="width: 800px; height: 500px;"
       >
-        <v-tabs v-model="activeTab" align-with-title>
+        <v-tabs 
+        v-model="activeTab" 
+        align-tabs="center"
+        align-with-title>
           <v-tab value="tutor">튜터 로그인</v-tab>
           <v-tab value="tutee">튜티 로그인</v-tab>
         </v-tabs>
@@ -14,7 +17,7 @@
           <v-tabs-window-item value="tutor">
             <br>
             <br>
-            <v-btn :to="{ path: '/member/MemberEmailLoginView' }" block style="height: 50px; width: 100%;" outlined >
+            <v-btn :to="{ path: '/member/email/login' }" block style="height: 50px; width: 100%;" outlined >
                 이메일로 로그인
             </v-btn>
             <v-btn 
@@ -44,8 +47,8 @@
           <v-tabs-window-item value="tutee">
             <br>
             <br>
-            <v-btn block style="height: 50px; width: 100%;" outlined>
-                이메일로 계속하기
+            <v-btn :to="{ path: '/member/email/login' }" block style="height: 50px; width: 100%;" outlined>
+                이메일로 로그인
             </v-btn>
             <v-btn 
               block 

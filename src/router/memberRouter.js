@@ -27,7 +27,7 @@ export const memberRouter = [
         component: MemberSocialRegisterView
     },
     {
-        path: '/member/MemberEmailLoginView',
+        path: '/member/email/login',
         name: 'MemberEmailLoginView',
         component: MemberEmailLoginView
     },

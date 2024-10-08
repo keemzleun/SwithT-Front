@@ -22,12 +22,13 @@
                             <div style="margin-bottom: 10px;"><strong>분야:</strong> 대학/입시</div>
                             <div style="margin-bottom: 10px;"><strong>시작 일자:</strong> 2024.09.19</div>
                             <div style="margin-bottom: 10px;"><strong>강의 일정:</strong> 월 오전 9시, 화 오전 9시</div>
-                            <div style="margin-bottom: 10px;"><strong>모집 인원:</strong> 최대 9명</div>
+                            <div style="margin-bottom: 10px;"><strong>튜터:</strong> 김민성</div>
                         </v-col>
 
                         <v-col cols="6" class="text-left">
                             <div><strong>장소:</strong> 서울특별시 동작구 신대방동 플레이데이터 4층</div>
-                            <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" :draggable="true" width="90%" height="100%">
+                            <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" :draggable="true" width="90%"
+                                height="100%">
                                 <KakaoMapMarker :lat="coordinate.lat" :lng="coordinate.lng"></KakaoMapMarker>
                             </KakaoMap>
                             <!-- Kakao Map API -->
@@ -39,7 +40,7 @@
         </v-card>
 
         <!-- Tabs -->
-        <v-tabs v-model="tab">
+        <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="assignment">과제</v-tab>
             <v-tab value="notice">게시판</v-tab>
             <v-tab value="tuteeList">튜티 리스트</v-tab>
@@ -51,7 +52,7 @@
                 <v-card flat>
                     <v-card-text>
                         <v-row justify="end" class="mr-4">
-                            <v-btn color="#90CDFF"><strong>생성</strong></v-btn>
+                            <v-btn color="#90CDFF" @click="assignmentCreateModal = true"><strong>생성</strong></v-btn>
                         </v-row>
 
                         <!-- 과제 목록 -->
@@ -67,7 +68,8 @@
                                         </v-col>
 
                                         <v-col cols="auto">
-                                            <v-btn color="#90CDFF" text><strong>수정</strong></v-btn>
+                                            <v-btn color="#90CDFF"
+                                                @click="assignmentUpdateModal = true"><strong>수정</strong></v-btn>
                                         </v-col>
                                     </v-row>
                                 </v-card>
@@ -76,59 +78,211 @@
                     </v-card-text>
                 </v-card>
             </v-tabs-window-item>
+            <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
                 <v-card flat>
                     <v-card-text>
                         <v-row justify="end" class="mr-4">
-                            <v-btn color="#90CDFF"><strong>생성</strong></v-btn>
+                            <v-btn color="#90CDFF" @click="noticeCreateModal = true"><strong>생성</strong></v-btn>
                         </v-row>
-                        <!-- 게시글 리스트 -->
-                        <v-data-table :headers="headers" :items="items" class="elevation-1">
+                        <v-data-table :headers="headers" :items="items" class="elevation-1"
+                            @click:row="noticeViewModal = true">
                             <template v-slot:[getitemcontrols()]="{ item }">
-                                <v-icon
-                                  class="me-2"
-                                  size="small"
-                                  @click="editItem(item)"
-                                >
-                                  mdi-pencil
+
+                                <v-icon class="me-2" size="small" @click.stop="editItem(item)">
+                                    mdi-pencil
                                 </v-icon>
-                                <v-icon
-                                  size="small"
-                                  @click="deleteItem(item)"
-                                >
-                                  mdi-delete
+                                <v-icon size="small" @click.stop="deleteItem(item)">
+                                    mdi-delete
                                 </v-icon>
-                              </template>
+                            </template>
                         </v-data-table>
                     </v-card-text>
                 </v-card>
-                
+
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
             <v-tabs-window-item value="tuteeList">
                 <v-card flat>
                     <v-card-text>
                         <!-- 튜티 리스트 -->
-                        <v-list>
-                            <v-list-item v-for="tutee in tutees" :key="tutee.id" class="tutee-list-item"
-                                style="justify-content: flex-start;">
 
-                                <v-list-item-avatar>
-                                    <!-- 아바타 이미지 -->
-                                    <v-avatar>
-                                        <v-img :src="tutee.avatar" :alt="tutee.name" />
-                                    </v-avatar>
-                                </v-list-item-avatar>
 
-                                <v-list-item-content>
-                                    <v-list-item-title>{{ tutee.name }}</v-list-item-title>
-                                </v-list-item-content>
+                        <v-list width="40%" class="mx-auto">
+                            <v-list-item v-for="tutee in tutees" :key="tutee.id"
+                                class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
+                                style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; background-color: #f5f5f5; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;">
+                                <v-row>
+                                    <v-col>
+                                        <v-list-item-avatar>
+                                            <!-- 아바타 이미지 -->
+                                            <v-avatar size="50">
+                                                <v-img :src="tutee.avatar" :alt="tutee.name" />
+                                            </v-avatar>
+                                        </v-list-item-avatar>
+                                    </v-col>
+                                    <v-col class="d-flex justify-center" style="align-items: center;">
+                                        <v-list-item-content>
+                                            <v-list-item-title class="tutee-name"
+                                                style="font-weight: 600; text-align: center;">{{
+                                                    tutee.name }}</v-list-item-title>
+                                        </v-list-item-content>
+                                    </v-col>
+                                </v-row>
                             </v-list-item>
                         </v-list>
+
                     </v-card-text>
                 </v-card>
             </v-tabs-window-item>
         </v-tabs-window>
+
+        <!-- 과제 모달 -->
+        <v-dialog v-model="assignmentCreateModal" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                    과제 생성
+                </v-card-title>
+                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+
+                <v-card-text class="pa-4 pt-0">
+                    <!-- 제목  -->
+                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
+                    <div><Datepicker v-model="date" /></div>
+                    <input class="mb-2 ml-2 mr-2" type="datetime-local" outlined>
+                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
+                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-2 mr-2"></v-textarea>
+                </v-card-text>
+                <v-card-actions class="pa-4">
+                    <v-row justify="center">
+                        <v-btn variant="outlined" @click="assignmentCreateModal = false" class="mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="submitForm">등록하기</v-btn>
+                    </v-row>
+                </v-card-actions>
+                <v-divider class="mt-2 mb-10"></v-divider>
+
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="assignmentUpdateModal" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                    과제 수정
+                </v-card-title>
+                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+
+                <v-card-text class="pa-4 pt-0">
+                    <!-- 제목  -->
+                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
+                    <input class="mb-2 ml-2 mr-2" type="datetime-local" outlined>
+                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
+                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-2 mr-2"></v-textarea>
+                </v-card-text>
+                <v-card-actions class="pa-4">
+                    <v-row justify="center">
+                        <v-btn variant="outlined" @click="assignmentUpdateModal = false" class="mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="assignmentUpdateModal = false" class="mr-3">삭제하기</v-btn>
+                        <v-btn variant="outlined" @click="submitForm">등록하기</v-btn>
+                    </v-row>
+                </v-card-actions>
+                <v-divider class="mt-2 mb-10"></v-divider>
+
+            </v-card>
+        </v-dialog>
+
+
+        <!-- 공지사항 모달-->
+        <v-dialog v-model="noticeCreateModal" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                    게시판 작성
+                </v-card-title>
+                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+
+                <v-card-text class="pa-4 pt-0">
+
+                    <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
+                        hide-details></v-switch>
+                    <!-- 제목  -->
+                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
+                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-2 mr-2"></v-textarea>
+                </v-card-text>
+                <v-card-actions class="pa-4">
+                    <v-row justify="center">
+                        <v-btn variant="outlined" @click="noticeCreateModal = false" class="mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="submitForm">등록하기</v-btn>
+                    </v-row>
+                </v-card-actions>
+                <v-divider class="mt-2 mb-10"></v-divider>
+
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="noticeUpdateModal" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                    게시판 수정
+                </v-card-title>
+                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+
+                <v-card-text class="pa-4 pt-0">
+
+                    <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
+                        hide-details></v-switch>
+                    <!-- 제목  -->
+                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
+                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-2 mr-2"></v-textarea>
+                </v-card-text>
+                <v-card-actions class="pa-4">
+                    <v-row justify="center">
+                        <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">삭제하기</v-btn>
+                        <v-btn variant="outlined" @click="submitForm">수정하기</v-btn>
+                    </v-row>
+                </v-card-actions>
+                <v-divider class="mt-2 mb-10"></v-divider>
+
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="noticeViewModal" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                    게시판 조회
+                </v-card-title>
+                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+
+                <v-card-text class="pa-4 pt-0">
+
+                    <!-- 제목  -->
+                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <v-text-field v-model="title" type="text" rounded="xs" disabled
+                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
+                    <v-textarea v-model="content" label="내용" disabled rows="5" class="mb-2 ml-2 mr-2"></v-textarea>
+                </v-card-text>
+                <v-card-actions class="pa-4">
+                    <v-row justify="center">
+                        <v-btn variant="outlined" @click="noticeViewModal = false" class="mr-3">확인</v-btn>
+                    </v-row>
+                </v-card-actions>
+                <v-divider class="mt-2 mb-10"></v-divider>
+
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 <script setup>
@@ -144,6 +298,12 @@ export default {
     data() {
         return {
             tab: 0,
+            assignmentCreateModal: false,
+            assignmentUpdateModal: false,
+            noticeCreateModal: false,
+            noticeUpdateModal: false,
+            noticeViewModal: false,
+            isNotice: false,
             breadItems: [
                 {
                     title: '강의',
@@ -176,7 +336,7 @@ export default {
                 { text: '분류', value: 'category' },
                 { text: '제목', value: 'title' },
                 { text: '작성 일자', value: 'date' },
-                { text: '수정/삭제', value:'actions', sortable: false }
+                { text: '수정/삭제', value: 'actions', sortable: false }
             ],
             items: [
                 {
@@ -294,10 +454,18 @@ export default {
             ],
         };
     },
-    methods:{
-        getitemcontrols(){
+
+    methods: {
+        getitemcontrols() {
             return `item.actions`;
         },
+        editItem(item) {
+            this.noticeUpdateModal = true;
+            console.log(item)
+        },
+        deleteItem(item) {
+            console.log(item)
+        }
     }
     // mounted() {
     //     // Kakao Map API 호출
@@ -322,6 +490,7 @@ export default {
     width: 100%;
     height: 150px;
 }
+
 
 .text-left {
     text-align: left;

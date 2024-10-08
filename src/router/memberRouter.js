@@ -1,9 +1,9 @@
 import MemberCreateView from "@/views/member/MemberCreateView.vue";
 import MemberLoginView from "@/views/member/MemberLoginView.vue";
-import MemberEmailRegisterView from "@/views/member/MemberEmailRegisterView.vue";
+import TutorEmailRegisterView from "@/views/member/TutorEmailRegisterView.vue";
 import MemberSocialRegisterView from "@/views/member/MemberSocialRegisterView.vue";
 import MemberEmailLoginView from "@/views/member/MemberEmailLoginView.vue";
-
+import TuteeEmailRegisterView from "@/views/member/TuteeEmailRegisterView.vue";
 
 export const memberRouter = [
     {
@@ -17,9 +17,9 @@ export const memberRouter = [
         component: MemberLoginView
     },
     {
-        path: '/member/MemberEmailRegisterView',
-        name: 'MemberEmailRegisterView',
-        component: MemberEmailRegisterView
+        path: '/member/TutorEmailRegisterView',
+        name: 'TutorEmailRegisterView',
+        component: TutorEmailRegisterView
     },
     {
         path: '/member/MemberSocialRegisterView',
@@ -30,5 +30,10 @@ export const memberRouter = [
         path: '/member/MemberEmailLoginView',
         name: 'MemberEmailLoginView',
         component: MemberEmailLoginView
+    },
+    {
+        path: '/member/TuteeEmailRegisterView',
+        name: 'TuteeEmailRegisterView',
+        component: TuteeEmailRegisterView
     },
 ]

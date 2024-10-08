@@ -3,15 +3,12 @@
       <v-card 
         class="pa-16" 
         outlined
-        style="width: 800px; height: 500px;"
+        style="width: 800px; height: 500px; background-color: #FFF490;"
       >
-        <v-tabs 
-        v-model="activeTab" 
-        align-tabs="center"
-        align-with-title>
-          <v-tab value="tutor">튜터 로그인</v-tab>
-          <v-tab value="tutee">튜티 로그인</v-tab>
-        </v-tabs>
+      <v-tabs v-model="activeTab" background-color="#fff9db" grow centered>
+        <v-tab style="font-weight: bold; color: black;">TUTOR 로그인</v-tab>
+        <v-tab style="font-weight: bold; color: black;">TUTEE 로그인</v-tab>
+      </v-tabs>
   
         <v-tabs-window v-model="activeTab"> 
           <v-tabs-window-item value="tutor">
@@ -38,11 +35,12 @@
             </v-btn>
             <v-divider class="my-4"></v-divider>
             <v-card-subtitle class="text-center">
-                <router-link :to="{ path: '/member/TutorEmailRegisterView' }">
-                    <h3>튜터 회원가입</h3>
-                  </router-link>
+              <router-link :to="{ path: '/member/TutorEmailRegisterView' }">
+                <h3>TUTOR 회원가입</h3>
+              </router-link>
             </v-card-subtitle>
-          </v-tabs-window-item>
+          </v-tabs-window-item> 
+          <!-- v-tabs-window-item 1개 -->
   
           <v-tabs-window-item value="tutee">
             <br>
@@ -70,10 +68,11 @@
             <v-divider class="my-4"></v-divider>
             <v-card-subtitle class="text-center">
               <router-link :to="{ path: '/member/TuteeEmailRegisterView' }">
-                <h3>튜티 회원가입</h3>
+                <h3>TUTEE 회원가입</h3>
               </router-link>
             </v-card-subtitle>
           </v-tabs-window-item>
+
         </v-tabs-window>
       </v-card>
     </v-container>

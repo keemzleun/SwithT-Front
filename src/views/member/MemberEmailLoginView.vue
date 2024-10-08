@@ -1,64 +1,67 @@
 <template>
   <v-container class="d-flex justify-center align-center" style="height: 65vh">
-    <v-card class="pa-16" outlined style="width: 800px; height: 500px">
-      
-        <v-tabs 
-        v-model="activeTab" 
-        align-tabs="center"
-        align-with-title>
-        <v-tab value="tutee">튜터 로그인</v-tab>
-        <v-tab value="tutor">튜티 로그인</v-tab>
+    <v-card 
+    class="pa-8" 
+    outlined style="background-color: #FFF490; width: 800px; height: 400px; border-radius: 25px">
+      <!-- 탭 메뉴 -->
+      <v-tabs v-model="activeTab" background-color="#FFF490" grow centered>
+        <v-tab style="font-weight: bold; color: black;">TUTOR 로그인</v-tab>
+        <v-tab style="font-weight: bold; color: black;">TUTEE 로그인</v-tab>
       </v-tabs>
 
       <v-tabs-window v-model="activeTab">
-        <v-tabs-window-item value="tutee">
-            <div>
-                <br>
-                <br>
-                <v-form>
-                    <v-text-field
-                      label="이메일"
-                      v-model="tutorEmail"
-                      type="email"
-                      required
-                    ></v-text-field>
-                    <v-text-field
-                      label="비밀번호"
-                      v-model="tutorPassword"
-                      type="password"
-                      required
-                    ></v-text-field>
-                    <v-btn color="skyblue" type="submit" class="ma-3">
-                      튜터 로그인
-                    </v-btn>
-                  </v-form>
-            </div>
+        <v-tabs-window-item value="tutor" >
+        <!-- 튜터 로그인 -->
+        <v-form @submit.prevent="loginTutor" class="pa-4">
+          <v-text-field
+            label="아이디"
+            v-model="tutorEmail"
+            solo
+            required
+            hide-details
+          ></v-text-field>
+          <v-text-field
+            label="비밀번호"
+            v-model="tutorPassword"
+            type="password"
+            solo
+            required
+            hide-details
+          ></v-text-field>
+          <v-btn color="#70b8ff" block large class="ma-3" type="submit">
+            로그인
+          </v-btn>
+        </v-form>
+        <div class="text-center" style="margin-top: 20px;">
+          <a href="/member/TutorEmailRegisterView">TUTOR 회원가입</a>
+        </div>
         </v-tabs-window-item>
-      </v-tabs-window>
-
-      <v-tabs-window v-model="activeTab">
-        <v-tabs-window-item value="tutor">
-            <div>
-                <br>
-                <br>
-                <v-form>
-                    <v-text-field
-                      label="이메일"
-                      v-model="tuteeEmail"
-                      type="email"
-                      required
-                    ></v-text-field>
-                    <v-text-field
-                      label="비밀번호"
-                      v-model="tuteePassword"
-                      type="password"
-                      required
-                    ></v-text-field>
-                    <v-btn color="skyblue" type="submit" class="ma-3">
-                      튜터 로그인
-                    </v-btn>
-                </v-form>
-            </div>
+      
+        <v-tabs-window-item>
+                    <!-- 튜티 로그인 -->
+          <v-form @submit.prevent="loginTutee" class="pa-4">
+            <v-text-field
+              label="아이디"
+              v-model="tuteeEmail"
+              solo
+              required
+              hide-details
+            ></v-text-field>
+            <v-text-field
+              label="비밀번호"
+              v-model="tuteePassword"
+              type="password"
+              solo
+              required
+              hide-details
+            ></v-text-field>
+            <v-btn color="#70b8ff" block large class="ma-3" type="submit">
+              로그인
+            </v-btn>
+          </v-form>
+          <div class="text-center" style="margin-top: 20px;">
+            <a href="/member/TuteeEmailRegisterView">TUTEE 회원가입</a>
+          </div>
         </v-tabs-window-item>
       </v-tabs-window>
     </v-card>
@@ -69,15 +72,34 @@
 export default {
   data() {
     return {
-      activeTab: 0,
+      activeTab: 0, // 기본 탭을 튜터 로그인으로 설정
+      tutorEmail: "",
+      tutorPassword: "",
+      tuteeEmail: "",
+      tuteePassword: ""
     };
   },
-  methods: {},
+  methods: {
+    loginTutor() {
+      console.log("튜터 로그인", this.tutorEmail, this.tutorPassword);
+    },
+    loginTutee() {
+      console.log("튜티 로그인", this.tuteeEmail, this.tuteePassword);
+    }
+  }
 };
 </script>
 
 <style scoped>
 .v-btn {
+  font-weight: bold;
+  border-radius: 20px;
+}
+.v-text-field input {
+  border-radius: 10px;
+}
+a {
+  color: black;
   font-weight: bold;
 }
 </style>

@@ -127,17 +127,17 @@ export default {
             this.alertDialogSSE = false
         },
         async checkLoginStatus() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token')
             if (token) {
-                this.isLogin = true;
+                this.isLogin = true
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`)
+                this.member = response.data.result
+                const memberInfo = {
+                    name: this.member.name,
+                    profileImage: this.member.profileImage
+                }
+                localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
             }
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`)
-            this.member = response.data.result
-            const memberInfo = {
-                name: this.member.name,
-                profileImage: this.member.profileImage
-            }
-            localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
         },
         login() {
             this.$router.push("/login")

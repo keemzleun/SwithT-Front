@@ -12,17 +12,18 @@
       <v-tabs-window v-model="activeTab">
         <v-tabs-window-item value="tutor" >
         <!-- 튜터 로그인 -->
-        <v-form @submit.prevent="loginTutor" class="pa-4">
+        <v-form @submit.prevent="doLogin" class="pa-4">
           <v-text-field
-            label="아이디"
-            v-model="tutorEmail"
+            label="이메일"
+            v-model="email"
+            type="email"
             solo
             required
             hide-details
           ></v-text-field>
           <v-text-field
             label="비밀번호"
-            v-model="tutorPassword"
+            v-model="password"
             type="password"
             solo
             required
@@ -38,18 +39,19 @@
         </v-tabs-window-item>
       
         <v-tabs-window-item>
-                    <!-- 튜티 로그인 -->
-          <v-form @submit.prevent="loginTutee" class="pa-4">
+          <!-- 튜티 로그인 -->
+          <v-form @submit.prevent="doLogin" class="pa-4">
             <v-text-field
               label="아이디"
-              v-model="tuteeEmail"
+              v-model="email"
+              type="email"
               solo
               required
               hide-details
             ></v-text-field>
             <v-text-field
               label="비밀번호"
-              v-model="tuteePassword"
+              v-model="password"
               type="password"
               solo
               required
@@ -69,23 +71,50 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { jwtDecode } from 'jwt-decode'
+
 export default {
   data() {
     return {
+      
       activeTab: 0, // 기본 탭을 튜터 로그인으로 설정
-      tutorEmail: "",
-      tutorPassword: "",
-      tuteeEmail: "",
-      tuteePassword: ""
+      email: "",
+      password: ""
+      
     };
   },
   methods: {
-    loginTutor() {
-      console.log("튜터 로그인", this.tutorEmail, this.tutorPassword);
-    },
-    loginTutee() {
-      console.log("튜티 로그인", this.tuteeEmail, this.tuteePassword);
-    }
+    async doLogin() {
+            try {
+
+
+                const loginData = {
+                    email: this.email,
+                    password: this.password,
+                }
+
+
+                const response = await axios.post(`http://localhost:8080/member-service/doLogin`, loginData);
+                
+                console.log("로그인 성공");
+                
+                const token = response.data.result.token;
+                const refreshToken = response.data.result.refreshToken;
+                const role = jwtDecode(token).role;
+
+                localStorage.setItem('token', token)
+                localStorage.setItem('refreshToken', refreshToken)
+                localStorage.setItem('role', role)
+
+                window.location.href = "/"
+
+            } catch (e) {
+                const error_message = e.response.data.error_message
+                console.error(error_message);
+                alert(error_message); // 추후 수정 할 것.
+            }
+        },
   }
 };
 </script>

@@ -17,6 +17,7 @@
             <v-btn :to="{ path: '/member/email/login' }" block style="height: 50px; width: 100%;" outlined >
                 이메일로 로그인
             </v-btn>
+            <br>
             <v-btn 
               block 
               style="height: 50px; width: 100%; background-color: #FEE500; color: black;" 
@@ -25,6 +26,7 @@
             >
               <v-icon left>mdi-chat</v-icon>카카오 계정으로 로그인
             </v-btn>
+            <br>
             <v-btn 
               block 
               style="height: 50px; width: 100%; background-color: white; color: #4285F4;" 
@@ -48,6 +50,7 @@
             <v-btn :to="{ path: '/member/email/login' }" block style="height: 50px; width: 100%;" outlined>
                 이메일로 로그인
             </v-btn>
+            <br>
             <v-btn 
               block 
               style="height: 50px; width: 100%; background-color: #FEE500; color: black;" 
@@ -56,6 +59,7 @@
             >
               <v-icon left>mdi-chat</v-icon>카카오 계정으로 계속하기
             </v-btn>
+            <br>
             <v-btn 
               block 
               style="height: 50px; width: 100%; background-color: white; color: #4285F4;" 

@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <h1>튜터 회원 가입</h1>
-
+        <br>
         <v-card>
             <v-card-text>
                 <v-form>
@@ -40,8 +40,14 @@
                                 required hide-details
                                 
                             >
-                            <v-btn style="margin-left: auto;" >인증 코드 전송</v-btn> 
-<!-- 버튼 위치 우측으로 옮기고 상태변경 처리하기. -->
+
+                            <template v-slot:append>
+                                  <v-btn 
+                                  @click="requestVerificationCode"
+                                  style="background-color: #42A5F5; color: white;"
+                                  ><h3>인증 코드 전송</h3></v-btn>
+                            </template>
+
                             </v-text-field>
                         </v-col>
                     </v-row>
@@ -67,7 +73,7 @@
                                 label="생년월일"
                                 v-model="birthday"
                                 required hide-details
-                                type="password"
+                                type="date"
                             >
 
                             </v-text-field>
@@ -146,42 +152,67 @@
                     <v-row>
                         <v-col><h2>프로필 이미지</h2></v-col>
                         <v-col>
-                            <v-file-input 
-                            label="프로필 이미지" 
-                            accept="image/*" @change="fileUpdate" 
-                            hide-details>
-                            </v-file-input>
+                            <v-text-field>
+                                <v-file-input 
+                                label="프로필 이미지" 
+                                accept="image/*" @change="fileUpdate" 
+                                hide-details>
+                                </v-file-input>
+                            </v-text-field>
                         </v-col>
                     </v-row>
-
                 </v-form>
             </v-card-text>
         </v-card>
-
     </v-container>
 </template>
 <script>
-// import axios from 'axios'
-// export default{
+import axios from 'axios'
+export default{
+    data(){
+        return{
 
-//     data(){
+            name:"",
+            email:"",
+            password:"",
+            birthday:"",
+            phoneNumber:"",
+            introduce:"",
+            education:"",
+            avgScore:"",
+            gender:"",
+            role:"TUTOR",
 
-//         return{
-//             name:"",
-//             email:"",
-//             password:"",
-//             birthday:"",
-//             phoneNumber:"",
-//             introduce:"",
-//             education:"",
-//             avgScore:"",
-//             gender:"",
-//             role:"TUTOR",
-
-//         }
+        }
     
-//     },
-// }
+    },
+    methods:{
+        async requestVerificationCode() {
+            try {
+                this.showOtpInput = true;
+                console.log(this.email)
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/email/requestCode?email=${this.email}`);
+                alert(response.data.status_message);
+            
+            } catch (error) {
+                console.error(error);
+                alert('이메일 인증 코드 전송에 실패했습니다.');
+            }
+        
+        },
+        async verifyCode() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/email/requestCode?email=${this.email}&code=${this.otp}`);
+                alert(response.data.status_message);
+                this.showOtpInput = false;
+                this.showRequestBtn = false;
+            } catch (error) {
+                console.error(error);
+                alert('인증 코드가 올바르지 않습니다.');
+            }
+        }
+    }
+}
 
 
 

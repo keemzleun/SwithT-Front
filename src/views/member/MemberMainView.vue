@@ -37,7 +37,7 @@
             </v-btn>
             <v-divider class="my-4"></v-divider>
             <v-card-subtitle class="text-center">
-              <router-link :to="{ path: '/member/TutorEmailRegisterView' }">
+              <router-link :to="{ path: '/member/email/register' }">
                 <h3>TUTOR 회원가입</h3>
               </router-link>
             </v-card-subtitle>

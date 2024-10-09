@@ -34,7 +34,7 @@
           </v-btn>
         </v-form>
         <div class="text-center" style="margin-top: 20px;">
-          <a href="/member/TutorEmailRegisterView">TUTOR 회원가입</a>
+          <a href="/member/email/register">TUTOR 회원가입</a>
         </div>
         </v-tabs-window-item>
       

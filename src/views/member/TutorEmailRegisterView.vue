@@ -38,6 +38,7 @@
                             <v-text-field
                                 label="인증코드"
                                 required hide-details
+                                v-model="otp"
                                 
                             >
 
@@ -45,7 +46,17 @@
                                   <v-btn 
                                   @click="requestVerificationCode"
                                   style="background-color: #42A5F5; color: white;"
-                                  ><h3>인증 코드 전송</h3></v-btn>
+                                  v-if="!codeSent"
+                                  ><h3>인증 코드 전송</h3>
+                                  </v-btn>
+                                  
+                                  <v-btn 
+                                  v-else 
+                                  @click="verifyCode"
+                                  style="background-color: #66BB6A; color: white;"
+                                  >
+                                  <h3>코드 검증</h3>
+                                 </v-btn>
                             </template>
 
                             </v-text-field>
@@ -172,6 +183,7 @@ export default{
     data(){
         return{
 
+            // 회원가입 form data
             name:"",
             email:"",
             password:"",
@@ -182,6 +194,10 @@ export default{
             avgScore:"",
             gender:"",
             role:"TUTOR",
+            otp:"",
+
+            // 인증 코드 data
+            codeSent: false, // 인증 코드가 전송되었는지 여부를 관리하는 상태
 
         }
     
@@ -190,6 +206,7 @@ export default{
         async requestVerificationCode() {
             try {
                 this.showOtpInput = true;
+                this.codeSent = true;
                 console.log(this.email)
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/email/requestCode?email=${this.email}`);
                 alert(response.data.status_message);

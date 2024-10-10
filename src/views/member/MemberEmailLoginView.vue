@@ -34,7 +34,7 @@
           </v-btn>
         </v-form>
         <div class="text-center" style="margin-top: 20px;">
-          <a href="/member/email/register">TUTOR 회원가입</a>
+          <a href="/member/email/register/tutor">TUTOR 회원가입</a>
         </div>
         </v-tabs-window-item>
       
@@ -62,7 +62,7 @@
             </v-btn>
           </v-form>
           <div class="text-center" style="margin-top: 20px;">
-            <a href="/member/TuteeEmailRegisterView">TUTEE 회원가입</a>
+            <a href="/member/email/register/tutee">TUTEE 회원가입</a>
           </div>
         </v-tabs-window-item>
       </v-tabs-window>
@@ -95,7 +95,7 @@ export default {
                 }
 
 
-                const response = await axios.post(`http://localhost:8080/member-service/doLogin`, loginData);
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doLogin`, loginData);
                 
                 console.log("로그인 성공");
                 

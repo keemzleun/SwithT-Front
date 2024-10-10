@@ -17,12 +17,12 @@ export const memberRouter = [
         component: MemberLoginView
     },
     {
-        path: '/member/email/register',
+        path: '/member/email/register/tutor',
         name: 'TutorEmailRegisterView',
         component: TutorEmailRegisterView
     },
     {
-        path: '/member/MemberSocialRegisterView',
+        path: '/member/social/register',
         name: 'MemberSocialRegisterView',
         component: MemberSocialRegisterView
     },
@@ -32,7 +32,7 @@ export const memberRouter = [
         component: MemberEmailLoginView
     },
     {
-        path: '/member/TuteeEmailRegisterView',
+        path: '/member/email/register/tutee',
         name: 'TuteeEmailRegisterView',
         component: TuteeEmailRegisterView
     },

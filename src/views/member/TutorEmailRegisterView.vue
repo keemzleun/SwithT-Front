@@ -1,6 +1,6 @@
 <template>
     <v-container>
-      <h1>튜터 회원 가입</h1>
+      <h1>TUTOR 회원 가입</h1>
       <br />
       <v-card>
         <v-card-text>
@@ -58,8 +58,8 @@
               <v-col>
                 <v-select
                   label="성별"
-                  v-model="gender"
-                  :items="['MAN','WOMAN']"
+                  v-model="displayGender"
+                  :items="['남성','여성']"
                   item-text="text"
                   item-value="value"
                   required
@@ -78,7 +78,10 @@
             <v-row>
               <v-col><h2>주소</h2></v-col>
               <v-col>
-                <v-text-field label="주소" v-model="address" required hide-details />
+                <v-text-field 
+                label="주소" 
+                v-model="address" 
+                required hide-details />
               </v-col>
             </v-row>
             <!-- 학력 -->
@@ -134,11 +137,8 @@
         address: "",
         education: "",
         gender: "",
-        // genderOptions: [
-          // { text: "남성", value: "MAN" },
-          // { text: "여성", value: "WOMAN" },
-        // ],
-        role: "TUTOR",
+        displayGender: '',
+        role: "TUTOR", // 튜터 회원가입 페이지 이므로 TUTOR로 명시할 것.
         otp: "",
         profileImage: null, // 프로필 이미지 초기화
         
@@ -150,6 +150,9 @@
     methods: {
       async memberCreate() {
         try {
+
+          this.gender = this.displayGender === '남성' ? 'MAN' : 'WOMAN'; 
+
           let registerData = new FormData();
           const data = {
             name: this.name,
@@ -160,6 +163,7 @@
             introduce: this.introduce,
             education: this.education,
             gender: this.gender,
+            address: this.address,
             role: this.role
           };
   
@@ -167,7 +171,7 @@
           registerData.append("file", this.profileImage); // 이미지 파일 추가
           
           await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/create`, registerData);
-          
+          alert("회원 가입 성공");
           this.$router.push("/member/email/login");
         } catch (e) {
           const error_message = e.response?.data?.error_message || "회원가입 중 오류가 발생했습니다.";

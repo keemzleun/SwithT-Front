@@ -102,10 +102,14 @@ export default {
                 const token = response.data.result.token;
                 const refreshToken = response.data.result.refreshToken;
                 const role = jwtDecode(token).role;
+                const id = response.data.result.id;
 
                 localStorage.setItem('token', token)
                 localStorage.setItem('refreshToken', refreshToken)
                 localStorage.setItem('role', role)
+                localStorage.setItem('id', id) // memberid 추가 
+            
+              
 
                 window.location.href = "/"
 

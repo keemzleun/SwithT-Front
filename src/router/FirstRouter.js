@@ -5,7 +5,7 @@ import TutorAppliedList from '@/pendingLectures/TutorAppliedList.vue';
 import AdminAppliedList from '@/pendingLectures/AdminAppliedList.vue';
 import ApplyLecturePage from '@/views/ApplyLecturePage.vue';
 
-const routes = [
+export const FirstRouter = [
     {
         path: "/home",
         name: "Home",

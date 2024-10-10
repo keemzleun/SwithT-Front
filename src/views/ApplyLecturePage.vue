@@ -254,9 +254,11 @@
                         <v-row class="justify-end" style="padding: 0 10px">
                             <div @click="submitLectureGroup" class="submit-group">추가하기</div>
                         </v-row>
-                       
                     </div>
                 </v-col>
+            </v-row>
+            <v-row class="justify-center" style="padding: 0 10px">
+                <div @click="createLecture" class="create-lecture">개설 신청하기</div>
             </v-row>
         </div>
     </v-container>
@@ -265,6 +267,8 @@
   </template>
   
   <script>
+import axios from 'axios';
+
   export default {
     data() {
       return {
@@ -272,14 +276,14 @@
         teachingMethod: '', // Make sure this is defined
         field: '',
         teachingMethods: [
-            { value: 'lecture', label: '강의' },
-            { value: 'tutoring', label: '과외' },
+            { value: 'LECTURE', label: '강의' },
+            { value: 'LESSON', label: '과외' },
         ],
         fieldOptions: [
-            { value: 'entranceExam', label: '입시' },
-            { value: 'employment', label: '취업 & 직무' },
-            { value: 'hobby', label: '취미' },
-            { value: 'development', label: '자기계발' }
+            { value: 'ADMISSION', label: '입시' },
+            { value: 'CAREER', label: '취업 & 직무' },
+            { value: 'HOBBY', label: '취미' },
+            { value: 'DEVELOPMENT', label: '자기계발' }
         ],
         thumbnail: null,
         showForm: false,
@@ -401,9 +405,89 @@
         },
         formatCurrency(value) {
             return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+        },
+
+        // 한글 요일을 영어 요일로 변환하는 함수
+    convertDayToEnglish(day) {
+        const dayMapping = {
+            '월': 'MONDAY',
+            '화': 'TUESDAY',
+            '수': 'WEDNESDAY',
+            '목': 'THURSDAY',
+            '금': 'FRIDAY',
+            '토': 'SATURDAY',
+            '일': 'SUNDAY'
+        };
+        return dayMapping[day];
     },
 
+    // 날짜와 시간을 LocalDateTime 형식으로 변환하는 함수
+    convertToLocalDateTime(day, startTime, date) {
+        // date는 'YYYY-MM-DD' 형식으로 받아온다고 가정
+        const dateObj = new Date(date); // 주어진 날짜를 기준으로 Date 객체 생성
+
+        // startTime을 시간:분 형식으로 분리
+        const [hour, minute] = startTime.split(':');
+        dateObj.setHours(hour, minute, 0); // 시간을 설정
+
+        // LocalDateTime 형식으로 변환 (YYYY-MM-DDTHH:mm:ss)
+        const localDateTime = dateObj.toISOString().replace('Z', ''); // UTC 포맷을 제거하여 ISO 형식 유지
+        return localDateTime;
+    },
+
+    async createLecture() {
+        // 강의 생성 요청 객체 정의
+        const lectureCreateReqDto = {
+            lectureReqDto: {
+                title: this.title,
+                content: this.contents,
+                status: "STANDBY",  // 기본값 설정
+                category: this.field,
+                lectureType: this.teachingMethod
+            },
+            lectureGroupReqDtos: this.lectureGroups.map(group => ({
+                price: group.fee.replace(/,/g, ''), // 쉼표 제거 후 숫자로 변환
+                limitPeople: group.capacity,
+                groupTimeReqDtos: group.timeSlots.map(slot => ({
+                    // 요일을 영어로 변환
+                    lectureDay: this.convertDayToEnglish(slot.day),
+                    // 시작 시간과 종료 시간을 LocalDateTime 형식으로 변환
+                    startTime: this.convertToLocalDateTime(slot.day, slot.startTime, slot.date),
+                    endTime: this.convertToLocalDateTime(slot.day, slot.endTime, slot.date)
+                }))
+            }))
+        };
+
+        // FormData를 사용하여 데이터와 파일을 함께 전송
+        const formData = new FormData();
+        formData.append('data', new Blob([JSON.stringify(lectureCreateReqDto)], { type: 'application/json' }));
+
+        if (this.thumbnail) {
+            formData.append('imgFile', this.thumbnail); // 이미지 파일 추가
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${process.env.VUE_APP_API_BASE_URL}/lecture-service/create`,
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // 토큰 설정
+                        'Content-Type': 'multipart/form-data' // FormData 전송 형식 설정
+                    }
+                }
+            );
+
+            if (response.status === 200) {
+                alert('강의가 성공적으로 생성되었습니다!');
+            }
+        } catch (e) {
+            console.error('강의 생성 중 오류 발생:', e);
+            alert('강의 생성에 실패했습니다. 다시 시도해주세요.');
+        }
+    }
+    },
     watch: {
         'currentLecture.fee'(newValue) {
             if (typeof newValue === 'number' || typeof newValue === 'string') {
@@ -505,19 +589,6 @@
     font-weight: bold;
     color: #0d6efd;
   }
-  .add-lecture {
-    background-color: #0d6efd;
-    color: #f5f5f5;
-    font-size: 18px;
-    height: 40px;
-    width: 300px;
-    border-radius: 10px;
-    line-height: 40px;
-    margin-top: 20px;
-  }
-  .add-lecture:hover{
-    cursor: pointer;
-  }
   .submit-group {
     background-color: #0d6efd;
     color: #f5f5f5;
@@ -526,8 +597,23 @@
     line-height: 40px;
     border-radius: 10px;
     right: 0;
+    font-weight: bold;
   }
   .submit-group:hover {
+    cursor: pointer;
+  }
+  .create-lecture {
+    background-color: #78CB67;
+    color: #f5f5f5;
+    font-size: 16px;
+    font-weight: bold;
+    height: 50px;
+    width: 300px;
+    border-radius: 10px;
+    line-height: 50px;
+    margin-top: 40px;
+  }
+  .create-lecture:hover{
     cursor: pointer;
   }
 </style>

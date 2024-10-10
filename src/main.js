@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router/index.js'
 import vuetify from './plugins/vuetify.js';
 import axios from 'axios'
-
+import '@mdi/font/css/materialdesignicons.css'
 
 const app = createApp(App);
 

@@ -1,7 +1,8 @@
 import MemberMainView from "@/views/member/MemberMainView.vue";
-import MemberLoginView from "@/views/member/MemberLoginView.vue";
+import MemberSocialExplainView from "@/views/member/MemberSocialExplainView.vue";
 import TutorEmailRegisterView from "@/views/member/TutorEmailRegisterView.vue";
-import MemberSocialRegisterView from "@/views/member/MemberSocialRegisterView.vue";
+import MemberTutorSocialRegisterView from "@/views/member/MemberTutorSocialRegisterView.vue";
+import MemberTuteeSocialRegisterView from "@/views/member/MemberTuteeSocialRegisterView.vue";
 import MemberEmailLoginView from "@/views/member/MemberEmailLoginView.vue";
 import TuteeEmailRegisterView from "@/views/member/TuteeEmailRegisterView.vue";
 
@@ -12,9 +13,9 @@ export const memberRouter = [
         component: MemberMainView
     },
     {
-        path: '/member/login',
-        name: 'MemberLoginView',
-        component: MemberLoginView
+        path: '/member/explain',
+        name: 'MemberSocialExplainView',
+        component: MemberSocialExplainView
     },
     {
         path: '/member/email/register/tutor',
@@ -22,9 +23,14 @@ export const memberRouter = [
         component: TutorEmailRegisterView
     },
     {
-        path: '/member/social/register',
-        name: 'MemberSocialRegisterView',
-        component: MemberSocialRegisterView
+        path: '/member/social/register/tutor',
+        name: 'MemberTutorSocialRegisterView',
+        component: MemberTutorSocialRegisterView
+    },
+    {
+        path: '/member/social/register/tutee',
+        name: 'MemberTuteeSocialRegisterView',
+        component: MemberTuteeSocialRegisterView
     },
     {
         path: '/member/email/login',

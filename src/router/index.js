@@ -7,6 +7,7 @@ import FirstPage from '@/views/FirstPage.vue';
 import TuteeAppliedList from '@/pendingLectures/TuteeAppliedList.vue';
 import TutorAppliedList from '@/pendingLectures/TutorAppliedList.vue';
 import AdminAppliedList from '@/pendingLectures/AdminAppliedList.vue';
+import { memberRouter } from './memberRouter';
 import { thirdRouter } from './thirdRouter';
 import { lectureHomeRouter } from './lectureHomeRouter';
 import LoginPage from '@/components/LoginPage.vue';
@@ -42,14 +43,20 @@ const routes = [
         component: AdminAppliedList,
     },
     {
-
         path: '/login',
         name: 'LOGIN',
         component: LoginPage
     },
+    {
+      path: "/first",
+      name: "Home",
+      component: FirstPage,
+    },
+    ...lectureRouter,
+    ...memberRouter,
     ...lectureHomeRouter,
     ...FirstRouter
-
+  
 ]
 const router = createRouter({
     history: createWebHistory(),

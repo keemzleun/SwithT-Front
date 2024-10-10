@@ -10,6 +10,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 import '@vuepic/vue-datepicker/dist/main.css'
 
+import '@mdi/font/css/materialdesignicons.css'
+import { useKakao } from 'vue3-kakao-maps/@utils';
 
 const app = createApp(App);
 
@@ -42,7 +44,7 @@ axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
+useKakao('03a055c21377bee26ab1559dedf4af6f',['clusterer', 'services', 'drawing']);
 app.use(router);
 app.use(vuetify);
 app.use(BootstrapVue3);

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container class="container">
+    <v-container class="calendar-container">
       <FullCalendar ref="fullCalendar" :options="calendarOptions" />
       <HandleScheduleModal
         v-if="isModalVisible"
@@ -13,6 +13,7 @@
     </v-container>
   </div>
 </template>
+
 <script>
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -72,7 +73,6 @@ export default {
       scheduleDateTime.setHours(scheduleDateTime.getHours() + offsetHours);
       return scheduleDateTime.toISOString().substring(0, 16); // "YYYY-MM-DDTHH:MM" 형식으로 반환
     },
-
     // 공휴일 데이터 가져오기
     async fetchHolidays(year, month) {
       try {
@@ -262,10 +262,18 @@ export default {
 };
 </script>
 
-<style>
-.mdi {
-  font-family: 'Material Design Icons';
-  font-size: 14px; /* 아이콘 크기 줄임 */
+<style scoped>
+/* FullCalendar 스타일 */
+.calendar-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px;
+  margin-right: 140px; /* 사이드바로 인해 오른쪽에 여백 추가 */
+}
+
+/* 이벤트 스타일 */
+.fc-event {
+  font-size: 12px;
 }
 
 /* 공휴일 이벤트 스타일 */
@@ -275,37 +283,6 @@ export default {
   color: #B71C1C !important;
 }
 
-/* 개인 스케줄 막대 스타일 */
-.my-schedule-bar {
-  width: 80px; /* 막대 너비 줄임 */
-  height: 8px; /* 막대 높이 줄임 */
-  background-color: #FFF490;
-  border-radius: 5px;
-}
-
-.assignment-schedule-bar {
-  width: 80px; /* 막대 너비 줄임 */
-  height: 8px; /* 막대 높이 줄임 */
-  background-color: #FF8F00;
-  border-radius: 5px;
-}
-
-.lecture-schedule-bar {
-  width: 80px; /* 막대 너비 줄임 */
-  height: 8px; /* 막대 높이 줄임 */
-  background-color: #82B1FF;
-  border-radius: 5px;
-}
-.container{
-  max-width: 800px;
-}
-
-/* 캘린더 컨테이너 크기 조정 */
-.calendar-container {
-  max-width: 800px; /* 캘린더 전체 크기를 줄임 */
-  margin: 0 auto;
-}
-
 /* 모달 오버레이 */
 .modal-overlay {
   position: fixed;
@@ -313,38 +290,38 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* 오버레이 투명도를 조정 */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-/* 모달 콘텐츠 크기 조정 */
+/* 모달 콘텐츠 */
 .modal-content {
   background-color: #fff;
-  padding: 15px; /* 내부 여백 줄임 */
+  padding: 15px;
   border-radius: 8px;
-  max-width: 450px; /* 모달 전체 너비 줄임 */
+  max-width: 450px;
   width: 100%;
 }
 
-/* 모달 타이틀 크기 조정 */
+/* 모달 타이틀 */
 .modal-title {
   display: flex;
   align-items: center;
-  font-size: 18px; /* 타이틀 폰트 크기 줄임 */
-  margin-bottom: 15px; /* 하단 여백 줄임 */
+  font-size: 18px;
+  margin-bottom: 15px;
 }
 
 .modal-title .mdi-calendar {
-  font-size: 22px; /* 아이콘 크기 줄임 */
+  font-size: 22px;
   margin-right: 6px;
 }
 
 label {
   display: block;
-  margin-bottom: 6px; /* 라벨과 입력 필드 사이 여백 줄임 */
+  margin-bottom: 6px;
 }
 
 input[type="text"],
@@ -352,41 +329,24 @@ input[type="date"],
 input[type="time"],
 textarea {
   width: calc(100% - 8px);
-  padding: 8px; /* 입력 필드 안쪽 여백 줄임 */
-  margin-bottom: 15px; /* 입력 필드 사이 여백 줄임 */
+  padding: 8px;
+  margin-bottom: 15px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
 
 textarea {
-  height: 80px; /* 텍스트 영역 높이 줄임 */
+  height: 80px;
 }
 
-.alert-setting {
-  margin-bottom: 15px; /* 알림 설정 영역 여백 줄임 */
-}
-
-.alert-time {
-  margin-top: 10px;
-}
-
-.alert-time h4 {
-  margin-bottom: 8px;
-}
-
-.alert-time label {
-  display: inline-block;
-  margin-right: 10px; /* 라디오 버튼 사이 여백 줄임 */
-}
-
-/* 모달 버튼 크기 조정 */
+/* 모달 버튼 스타일 */
 .modal-buttons {
   display: flex;
   justify-content: space-between;
 }
 
 .modal-buttons button {
-  padding: 8px 12px; /* 버튼 크기 줄임 */
+  padding: 8px 12px;
   border: none;
   border-radius: 4px;
   background-color: #f0f0f0;

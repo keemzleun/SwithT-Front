@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import TestView from '@/components/TestView.vue'
-
-import { lectureRouter } from './lectureRouter';
+import { secondRouter } from './SecondRouter';
 import LoginPage from '@/components/LoginPage.vue';
 import ScheduleView from '@/views/scheduler/MonthlyScheduleView.vue';
 import { memberRouter } from './memberRouter';
@@ -14,6 +13,7 @@ const routes = [
         name: 'TEST',
         component: TestView
     },
+    ...secondRouter,
     ...thirdRouter,
     {
         path: '/login',
@@ -25,7 +25,6 @@ const routes = [
         name: 'Calendar',
         component: ScheduleView
     },
-    ...lectureRouter,
     ...memberRouter,
     ...FirstRouter
   

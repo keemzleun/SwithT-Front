@@ -111,7 +111,7 @@ export default {
             
               
 
-                window.location.href = "/"
+                window.location.href = "/home"
 
             } catch (e) {
                 const error_message = e.response.data.error_message

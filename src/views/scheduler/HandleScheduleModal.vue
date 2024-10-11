@@ -65,14 +65,18 @@ export default {
     return {
       title: this.selectedSchedule ? this.selectedSchedule.title : '',
       schedulerDate: this.selectedSchedule ? this.selectedSchedule.schedulerDate : this.selectedDate,
-      schedulerTime: this.selectedSchedule ? this.selectedSchedule.schedulerTime : '',
+      schedulerTime: this.selectedSchedule ? this.formatTime(this.selectedSchedule.schedulerTime) : '',
       content: this.selectedSchedule ? this.selectedSchedule.content : '',
-      alertYn: this.selectedSchedule ? this.selectedSchedule.alertYn : false,
+      alertYn: this.selectedSchedule ? this.selectedSchedule.alertYn : 'N',
       alertTime: this.selectedSchedule ? this.selectedSchedule.alertTime : '',
       customAlertTime: ''
     };
   },
   methods: {
+    formatTime(timeString) {
+      // 스케줄 시간을 "HH:MM" 형식으로 변환
+      return timeString.substring(0, 5);
+    },
     createOrUpdateSchedule() {
       const scheduleData = {
         title: this.title,
@@ -95,98 +99,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 600px;
-  width: 100%;
-}
-
-.modal-title {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.modal-title .mdi-calendar {
-  font-size: 28px;
-  margin-right: 8px;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
-}
-
-input[type="text"],
-input[type="date"],
-input[type="time"],
-textarea {
-  width: calc(100% - 10px);
-  padding: 10px;
-  margin-bottom: 20px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-textarea {
-  height: 100px;
-}
-
-.alert-setting {
-  margin-bottom: 20px;
-}
-
-.alert-time {
-  margin-top: 10px;
-}
-
-.alert-time h4 {
-  margin-bottom: 10px;
-}
-
-.alert-time label {
-  display: inline-block;
-  margin-right: 15px;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.modal-buttons button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-  cursor: pointer;
-}
-
-.modal-buttons button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-}
-
-.modal-buttons button[type="button"]:nth-child(1) {
-  background-color: #dc3545;
-  color: white;
-}
-</style>

@@ -127,7 +127,7 @@ export default {
             this.alertDialogSSE = false
         },
         async checkLoginStatus() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token')
             if (token) {
             
             this.isLogin = true;

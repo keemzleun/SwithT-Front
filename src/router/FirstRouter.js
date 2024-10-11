@@ -30,5 +30,6 @@ export const FirstRouter = [
         path: "/apply-lecture",
         name: "ApplyLecture",
         component: ApplyLecturePage,
-    },
+    }
+
 ]

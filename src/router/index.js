@@ -1,8 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import TestView from '@/components/TestView.vue'
+
 import { lectureRouter } from './lectureRouter';
 import LoginPage from '@/components/LoginPage.vue';
 import ScheduleView from '@/views/scheduler/MonthlyScheduleView.vue';
+import { memberRouter } from './memberRouter';
+import { thirdRouter } from './thirdRouter';
+import { FirstRouter } from './FirstRouter';
 
 const routes = [
     {
@@ -10,6 +14,7 @@ const routes = [
         name: 'TEST',
         component: TestView
     },
+    ...thirdRouter,
     {
         path: '/login',
         name: 'LOGIN',
@@ -20,7 +25,10 @@ const routes = [
         name: 'Calendar',
         component: ScheduleView
     },
-    ...lectureRouter
+    ...lectureRouter,
+    ...memberRouter,
+    ...FirstRouter
+  
 ]
 
 const router = createRouter({
@@ -28,4 +36,4 @@ const router = createRouter({
     routes
 });
 
-export default router;
+export default router

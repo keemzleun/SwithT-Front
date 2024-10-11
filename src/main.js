@@ -6,9 +6,9 @@ import axios from 'axios';
 import '@mdi/font/css/materialdesignicons.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import BootstrapVue3 from 'bootstrap-vue-3'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
+// import BootstrapVue3 from 'bootstrap-vue-3'
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 import '@vuepic/vue-datepicker/dist/main.css'
 
 import '@mdi/font/css/materialdesignicons.css'
@@ -48,5 +48,5 @@ axios.interceptors.response.use(
 useKakao('03a055c21377bee26ab1559dedf4af6f',['clusterer', 'services', 'drawing']);
 app.use(router);
 app.use(vuetify);
-app.use(BootstrapVue3);
+// app.use(BootstrapVue3);
 app.mount('#app');

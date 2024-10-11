@@ -8,6 +8,8 @@
         :selectedSchedule="selectedEvent"
         @close="isModalVisible = false"
         @scheduleSaved="handleScheduleSaved"
+        @alertSettingsSaved="handleAlertSettingsSaved"
+        @alertCanceled="handleAlertCanceled"
         @scheduleDeleted="handleScheduleDeleted"
       />
     </v-container>
@@ -26,7 +28,7 @@ import HandleScheduleModal from './HandleScheduleModal.vue'; // 일정 처리 �
 export default {
   components: {
     FullCalendar,
-    HandleScheduleModal,  
+    HandleScheduleModal,
   },
   data() {
     return {
@@ -68,11 +70,6 @@ export default {
       await this.fetchHolidays(year, month); // 공휴일 데이터 가져오기
       await this.fetchSchedules(year, month); // 사용자 일정 데이터 가져오기
     },
-    calculateAlertTime(schedulerDate, schedulerTime, offsetHours) {
-      const scheduleDateTime = new Date(`${schedulerDate}T${schedulerTime}`);
-      scheduleDateTime.setHours(scheduleDateTime.getHours() + offsetHours);
-      return scheduleDateTime.toISOString().substring(0, 16); // "YYYY-MM-DDTHH:MM" 형식으로 반환
-    },
     // 공휴일 데이터 가져오기
     async fetchHolidays(year, month) {
       try {
@@ -110,7 +107,7 @@ export default {
           if (!schedule.schedulerDate || !schedule.schedulerTime) {
             console.error("Invalid schedule data:", schedule);
             return null;
-          } 
+          }
 
           const start = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
           const end = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
@@ -146,11 +143,11 @@ export default {
       const eventElement = info.el;
       const groupId = info.event.extendedProps.groupId;
       if (groupId === 1) {
-        eventElement.style.backgroundColor = '#82B1FF';
+        eventElement.style.backgroundColor = '#82B1FF'; // 수업 그룹
       } else if (groupId === 2) {
-        eventElement.style.backgroundColor = '#FF8F00';
+        eventElement.style.backgroundColor = '#FF8F00'; // 과제 그룹
       } else {
-        eventElement.style.backgroundColor = '#FFF490';
+        eventElement.style.backgroundColor = '#FFF490'; // 기타 그룹
       }
 
       if (info.event.classNames.includes('alert-event')) {
@@ -174,8 +171,14 @@ export default {
       this.isModalVisible = true;
     },
 
-    // 이벤트 클릭 시 수정 모달 표시
+   // 이벤트 클릭 시 수정 모달 표시 
     handleEventClick(info) {
+      // 이벤트가 'holiday-event' 클래스인 경우 action 없음
+      if (info.event.classNames.includes('holiday-event')) {
+        return;
+      }
+
+      // 클릭한 이벤트 정보를 모달에 전달
       this.selectedEvent = {
         id: info.event.id,
         title: info.event.title,
@@ -214,31 +217,37 @@ export default {
 
           // 캘린더에 이벤트 추가
           this.$refs.fullCalendar.getApi().addEvent(createdEvent);
-
-          // 알림 설정이 Y인 경우 추가 처리
-          if (savedSchedule.alertYn === 'Y') {
-            // 알림 시간이 1시간 전, 10분 전 또는 직접 입력한 경우에 따른 추가 로직
-            let alertTime;
-            if (savedSchedule.alertTime === '1시간 전') {
-              alertTime = this.calculateAlertTime(savedSchedule.schedulerDate, savedSchedule.schedulerTime, -1);
-            } else if (savedSchedule.alertTime === '10분 전') {
-              alertTime = this.calculateAlertTime(savedSchedule.schedulerDate, savedSchedule.schedulerTime, -0.167);
-            } else if (savedSchedule.alertTime === '직접 입력') {
-              alertTime = `${savedSchedule.schedulerDate}T${savedSchedule.customAlertTime}`;
-            }
-
-            // 서버에 알림 설정을 위한 API 호출 (예시)
-            const alertData = {
-              schedulerId: response.data.id,
-              reserveDay: savedSchedule.schedulerDate,
-              reserveTime: alertTime,
-            };
-            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/set-alert`, alertData);
-          }
         }
         this.isModalVisible = false; // 모달 닫기
       } catch (error) {
         console.error('일정 저장 중 오류가 발생했습니다.', error);
+      }
+    },
+
+    // 알림 설정만 처리
+    async handleAlertSettingsSaved(alertData) {
+      console.log(this.alertData)
+      try {
+        if (alertData.scheduleId) {
+          // 알림 생성 요청
+          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/set-alert`, alertData);
+        }
+        console.log('알림 설정이 저장되었습니다.');
+      } catch (error) {
+        console.error('알림 설정 저장 중 오류가 발생했습니다.', error);
+      }
+    },
+
+    // 알림 취소 처리
+    async handleAlertCanceled(alertData) {
+      try {
+        if (alertData.scheduleId) {
+          // 알림 삭제 요청
+          await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/cancel-alert/${alertData.scheduleId}`);
+        }
+        console.log('알림이 취소되었습니다.');
+      } catch (error) {
+        console.error('알림 취소 중 오류가 발생했습니다.', error);
       }
     },
 
@@ -268,98 +277,39 @@ export default {
   max-width: 1000px;
   margin: 0 auto;
   padding: 10px;
-  margin-right: 140px; /* 사이드바로 인해 오른쪽에 여백 추가 */
 }
 
-/* 이벤트 스타일 */
-.fc-event {
-  font-size: 12px;
+/* FullCalendar 내부 스타일에 영향 주기 위해 deep 사용 */
+::v-deep .fc-event {
+  font-size: 12px !important;
+  color: black !important;
 }
 
-/* 공휴일 이벤트 스타일 */
-.holiday-event {
+::v-deep .holiday-event {
+  background-color: #FFCDD2 !important;
+  border-color: #FFCDD2 !important;
+  color: #B71C1C !important;
+}
+</style>
+
+<style scoped>
+/* FullCalendar 스타일 */
+.calendar-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+/* FullCalendar 내부 스타일에 영향 주기 위해 deep 사용 */
+::v-deep .fc-event {
+  font-size: 12px !important;
+  color: black !important;
+}
+
+::v-deep .holiday-event {
   background-color: #FFCDD2 !important;
   border-color: #FFCDD2 !important;
   color: #B71C1C !important;
 }
 
-/* 모달 오버레이 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* 모달 콘텐츠 */
-.modal-content {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  max-width: 450px;
-  width: 100%;
-}
-
-/* 모달 타이틀 */
-.modal-title {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  margin-bottom: 15px;
-}
-
-.modal-title .mdi-calendar {
-  font-size: 22px;
-  margin-right: 6px;
-}
-
-label {
-  display: block;
-  margin-bottom: 6px;
-}
-
-input[type="text"],
-input[type="date"],
-input[type="time"],
-textarea {
-  width: calc(100% - 8px);
-  padding: 8px;
-  margin-bottom: 15px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-textarea {
-  height: 80px;
-}
-
-/* 모달 버튼 스타일 */
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.modal-buttons button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  background-color: #f0f0f0;
-  cursor: pointer;
-}
-
-.modal-buttons button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-}
-
-.modal-buttons button[type="button"]:nth-child(1) {
-  background-color: #dc3545;
-  color: white;
-}
 </style>

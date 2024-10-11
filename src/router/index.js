@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import TestView from '@/components/TestView.vue'
 import { lectureRouter } from './lectureRouter';
 import LoginPage from '@/components/LoginPage.vue';
-import ScheduleView from '@/views/MonthlyScheduleView.vue'; // ScheduleView 컴포넌트 가져오기
+import ScheduleView from '@/views/scheduler/MonthlyScheduleView.vue';
 
 const routes = [
     {
@@ -18,7 +18,7 @@ const routes = [
     {
         path: '/schedule',
         name: 'Calendar',
-        component: ScheduleView // Calendar 대신 ScheduleView 컴포넌트 사용
+        component: ScheduleView
     },
     ...lectureRouter
 ]

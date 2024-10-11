@@ -110,7 +110,7 @@ export default {
           if (!schedule.schedulerDate || !schedule.schedulerTime) {
             console.error("Invalid schedule data:", schedule);
             return null;
-          }
+          } 
 
           const start = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
           const end = `${schedule.schedulerDate}T${schedule.schedulerTime}`;

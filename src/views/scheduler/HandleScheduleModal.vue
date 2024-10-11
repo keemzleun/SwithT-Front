@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     formatTime(timeString) {
-      // 스케줄 시간을 "HH:MM" 형식으로 변환
+      // 스케줄 시간을 "HH:MM" 형식으로 변환 
       return timeString.substring(0, 5);
     },
     createOrUpdateSchedule() {

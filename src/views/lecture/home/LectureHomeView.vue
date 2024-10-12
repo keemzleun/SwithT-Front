@@ -50,13 +50,53 @@
             </v-tabs-window-item>
             <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
-                <v-card flat>
+                <v-row justify="end" class="mt-4 mb-4 mr-12">
+                    <v-btn color="#90CDFF" @click="assignmentCreateModal = true"><strong>생성</strong></v-btn>
+                </v-row>
+                <v-row>
+                    <v-col>
+
+                        <v-row class="header">
+                            <v-col cols="2">작성자</v-col>
+                            <v-col cols="2">분류</v-col>
+                            <v-col cols="4">제목</v-col>
+                            <v-col cols="2">작성 일자</v-col>
+                            <v-col cols="2">수정/삭제</v-col>
+                        </v-row>
+                    </v-col>
+                </v-row>
+                <v-row>
+
+                    <v-col v-if="notices.length">
+
+                        <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
+                            <v-col cols="2">{{ notice.memberName }}</v-col>
+                            <v-col cols="2">{{ notice.type }}</v-col>
+                            <v-col cols="4">{{ notice.title }}</v-col>
+                            <v-col cols="2">{{ notice.postDate }}</v-col>
+                            <v-col cols="2">
+                                <!-- <template v-slot:[getitemcontrols()]="{ item }"> -->
+
+                                <v-icon class="me-2" size="small" @click.stop="editItem(notice)">
+                                    mdi-pencil
+                                </v-icon>
+                                <v-icon size="small" @click.stop="deleteItem(notice)">
+                                    mdi-delete
+                                </v-icon>
+                                <!-- </template> -->
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                </v-row>
+                <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange()"></v-pagination>
+
+                <!-- <v-card flat>
                     <v-card-text>
                         <v-row justify="end" class="mr-4">
                             <v-btn color="#90CDFF" @click="noticeCreateModal = true"><strong>생성</strong></v-btn>
                         </v-row>
                         <v-data-table :headers="headers" :items="notices" class="elevation-1"
-                            @click:row="noticeViewModal = true">
+                            @click:row="(item) => noticeView(item)">
                             <template v-slot:[getitemcontrols()]="{ item }">
 
                                 <v-icon class="me-2" size="small" @click.stop="editItem(item)">
@@ -68,7 +108,7 @@
                             </template>
                         </v-data-table>
                     </v-card-text>
-                </v-card>
+                </v-card> -->
 
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
@@ -107,6 +147,7 @@
         </v-tabs-window>
 
         <!-- 과제 모달 -->
+
         <v-dialog v-model="assignmentCreateModal" max-width="500px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
@@ -136,6 +177,7 @@
 
             </v-card>
         </v-dialog>
+
         <v-dialog v-model="assignmentViewModal" max-width="500px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
@@ -209,16 +251,16 @@
                         hide-details></v-switch>
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-2 mr-2"></v-text-field>
                     <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
                         class="mb-2 ml-2 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
                         <v-btn variant="outlined" @click="noticeCreateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitForm">등록하기</v-btn>
+                        <v-btn variant="outlined" @click="noticeCreate()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -238,17 +280,16 @@
                         hide-details></v-switch>
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-2 mr-2"></v-text-field>
                     <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
                         class="mb-2 ml-2 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
                         <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">삭제하기</v-btn>
-                        <v-btn variant="outlined" @click="submitForm">수정하기</v-btn>
+                        <v-btn variant="outlined" @click="submitEditNotice()">수정하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -266,10 +307,10 @@
 
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="title" type="text" rounded="xs" disabled
-                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
+
                     <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="content" label="내용" disabled rows="5" class="mb-2 ml-2 mr-2"></v-textarea>
+                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeContent }}</v-row>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -295,6 +336,10 @@ export default {
     },
     data() {
         return {
+            page: 0,
+            size: 5,
+            totalPages: 0,
+            frontendPage: 1,
             coordinate: {
                 lat: 33.450701,
                 lng: 126.570667
@@ -314,12 +359,16 @@ export default {
             },
 
             notice: [],
+            noticeTitle: "",
+            noticeContent: "",
+            noticeId: null,
+
             tab: 0,
             lectureSchedules: "",
             lectureGroupId: 0,
             assignmentCreateModal: false,
             assignmentUpdateModal: false,
-            assignmentViewModal:false,
+            assignmentViewModal: false,
             noticeCreateModal: false,
             noticeUpdateModal: false,
             noticeViewModal: false,
@@ -376,12 +425,55 @@ export default {
 
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
-        const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`)
+        let params = {
+            size: this.size,
+            page: this.page,
+        };
+        const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
         this.notices = noticeResponse?.data?.result?.content;
+        this.totalPages = noticeResponse?.data?.result?.totalPages;
+        console.log(this.notices)
         const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
         this.assignments = assignmentResponse?.data?.result?.content;
     },
     methods: {
+        async handlePageChange() {
+            this.page = this.frontendPage - 1;
+            let params = {
+                size: this.size,
+                page: this.page,
+            };
+            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+            this.notices = noticeResponse?.data?.result?.content;
+            this.totalPages = noticeResponse?.data?.result?.totalPages;
+        },
+        async noticeView(item) {
+            this.noticeViewModal = true;
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
+            console.log(response)
+            this.noticeTitle = response?.data?.result?.title;
+            this.noticeContent = response?.data?.result?.contents;
+        },
+        renewNotice() {
+            this.noticeTitle = "";
+            this.noticeContent = "";
+            this.isNotice = false;
+        },
+        async noticeCreate() {
+            let type = null;
+            if (this.isNotice) type = "NOTICE";
+            else type = "POST"
+            const body = {
+                title: this.noticeTitle,
+                contents: this.noticeContent,
+                type
+            }
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body)
+
+            console.log(response)
+
+        },
+        // 과제 CRUD 메서드
         renewAssignment() {
             this.assignmentCreateModal = false;
             this.assignmentUpdateModal = false;
@@ -464,7 +556,7 @@ export default {
             const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
             this.assignments = assignmentResponse?.data?.result?.content;
         },
-        async deleteAssignments(){
+        async deleteAssignments() {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
             console.log(response);
             window.location.reload()
@@ -505,12 +597,32 @@ export default {
         getitemcontrols() {
             return `item.actions`;
         },
-        editItem(item) {
+        async editItem(item) {
+            this.renewNotice();
+            const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
+            console.log(getResponse)
+            this.noticeTitle = getResponse?.data?.result?.title;
+            this.noticeContent = getResponse?.data?.result?.contents;
             this.noticeUpdateModal = true;
-            console.log(item)
+            this.noticeId = item.id;
         },
-        deleteItem(item) {
-            console.log(item)
+        async submitEditNotice() {
+            let type = null;
+            if (this.isNotice) type = "NOTICE";
+            else type = "POST"
+            const body = {
+                title: this.noticeTitle,
+                contents: this.noticeContent,
+                type
+            }
+            const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${this.noticeId}`, body)
+            console.log(response)
+            this.noticeUpdateModal = false;
+
+        },
+        async deleteItem(item) {
+            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}/delete`)
+            console.log(response)
         },
 
     }
@@ -523,6 +635,10 @@ export default {
     height: 150px;
 }
 
+.header {
+    font-weight: bold;
+    border-bottom: 2px solid #ccc;
+}
 
 .text-left {
     text-align: left;

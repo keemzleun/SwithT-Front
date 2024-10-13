@@ -12,7 +12,7 @@ export const FirstRouter = [
         component: FirstPage,
     },
     {
-        path: "/tutee-applied-list",
+        path: "/tutee-applied-list", 
         name: "TuteeAppliedList",
         component: TuteeAppliedList,
     },

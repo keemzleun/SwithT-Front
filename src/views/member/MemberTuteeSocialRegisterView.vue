@@ -5,7 +5,8 @@
 
     <v-card>
       <v-card-text>
-        <v-form>
+        <!--        <v-form @submit.prevent="memberCreate"> -->
+        <v-form @submit.prevent="addInfo">
           <!-- 이름 -->
           <v-row>
             <v-col><h2>이름</h2></v-col>
@@ -90,25 +91,69 @@
   </v-container>
 </template>
 <script>
-// import axios from 'axios';
+import axios from 'axios';
+import Cookies from "js-cookie";
+
 export default {
   data() {
     return {
 
+      id: "",
       name: "",
       birthday: "",
       phoneNumber: "",
       address: "",
       gender: "",
       displayGender: "",
-      role: "TUTEE", // 튜터 회원가입 페이지 이므로 TUTOR로 명시할 것.
-      profileImage: null, // 프로필 이미지 초기화
+      role: "TUTEE",
+      profileImage: "https://minseong-file.s3.ap-northeast-2.amazonaws.com/member/%ED%95%99%EC%83%9D%EC%9E%84%ED%8B%B0.png", // 디폴트 프로필 이미지
 
     };
   },
+  mounted() {
+    // 쿠키에서 id와 role 값을 가져와서 셋팅
+    this.id = Cookies.get("id");
+    this.role = Cookies.get("role");
+  },
   methods:{
 
-    
+    async addInfo(){
+      
+      try{
+
+        
+        this.gender = this.displayGender === '남성' ? 'MAN' : 'WOMAN';
+        
+        let updateDate = new FormData();
+        
+        const data = {
+          id: this.id,
+          name: this.name,
+          birthday: this.birthday,
+          phoneNumber: this.phoneNumber,
+          gender: this.gender,
+          address: this.address,
+          profileImage: this.profileImage,
+          role: this.role
+        };
+
+        updateDate.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
+        
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/AddInfoUpdate`, updateDate);
+        console.log("추가 정보 입력 성공");
+        
+        this.$router.push("/member/wellcome");
+
+      } catch(e){
+
+        const error_message = e.response?.data?.error_message || "추가정보 입력 중 오류가 발생했습니다.";
+        console.error(error_message);
+        alert(error_message);
+        
+      }
+
+    }
+
 
   }
 };

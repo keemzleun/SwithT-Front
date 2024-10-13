@@ -107,7 +107,7 @@ export default {
                 localStorage.setItem('token', token)
                 localStorage.setItem('refreshToken', refreshToken)
                 localStorage.setItem('role', role)
-                localStorage.setItem('id', id) // memberid 추가 
+                localStorage.setItem('id', id)
             
               
 

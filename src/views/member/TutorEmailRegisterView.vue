@@ -5,6 +5,7 @@
       <v-card>
         <v-card-text>
           <v-form @submit.prevent="memberCreate">
+            
             <!-- 이름 -->
             <v-row>
               <v-col><h2>이름</h2></v-col>

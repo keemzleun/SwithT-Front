@@ -65,6 +65,7 @@
             </v-icon>
             <span style="color: black">구글 계정으로 로그인</span>
           </v-btn>
+
           <v-divider class="my-4"></v-divider>
 
           <v-btn
@@ -143,11 +144,7 @@
             <v-icon left style="margin-right: 10px">mdi-google</v-icon>
             <span style="color: black">구글 계정으로 로그인</span>
           </v-btn>
-
-          <v-divider
-  class="my-4"
-  style="height: 10px; background-color: #000;"
-></v-divider>
+          <v-divider class="my-4"></v-divider>
 
           <v-btn
             :to="{ path: '/member/email/register/tutee' }"

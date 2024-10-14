@@ -2,7 +2,7 @@
   <v-container class="d-flex justify-center align-center" style="height: 65vh">
     <v-card 
     class="pa-8" 
-    outlined style="background-color: #FFF490; width: 800px; height: 400px; border-radius: 25px">
+    outlined style="background-color: ; width: 800px; height: 400px; border-radius: 25px">
       <!-- 탭 메뉴 -->
       <v-tabs v-model="activeTab" background-color="#FFF490" grow centered>
         <v-tab style="font-weight: bold; color: black;">TUTOR 로그인</v-tab>
@@ -29,7 +29,8 @@
             required
             hide-details
           ></v-text-field>
-          <v-btn color="#70b8ff" block large class="ma-3" type="submit">
+          
+          <v-btn color="#70b8ff" class="mx-auto mt-3" large style="width: 700px;" type="submit">
             로그인
           </v-btn>
         </v-form>
@@ -107,7 +108,7 @@ export default {
                 localStorage.setItem('token', token)
                 localStorage.setItem('refreshToken', refreshToken)
                 localStorage.setItem('role', role)
-                localStorage.setItem('id', id) // memberid 추가 
+                localStorage.setItem('id', id)
             
               
 

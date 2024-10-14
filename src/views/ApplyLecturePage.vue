@@ -202,7 +202,7 @@
                             <v-col cols="4">
                                 <input
                                     v-model="currentLecture.capacity"
-                                    :disabled="teachingMethod === 'tutoring'"
+                                    :disabled="teachingMethod === 'LESSON'"
                                     type="number"
                                     placeholder="모집 인원을 입력하세요"
                                     class="form-control input-width"
@@ -267,6 +267,9 @@
   </template>
   
   <script>
+  // import BootstrapVue3 from 'bootstrap-vue-3'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 import axios from 'axios';
 
   export default {
@@ -326,7 +329,7 @@ import axios from 'axios';
             this.currentLecture = {
                 name: '',
                 fee: 0,
-                capacity: this.teachingMethod === 'tutoring' ? 1 : 0,
+                capacity: this.teachingMethod === 'LESSON' ? 1 : 0,
                 timeSlots: [{ day: '', startTime: '', endTime: '' }]
             };
         },

@@ -1,10 +1,8 @@
 <template>
-    <v-container>
-        <section class="banner">
-            <div class="temporary-banner">
-                임시 배너
-            </div>
-        </section>
+    <v-container style="margin-top: 60px">
+        <div class="temporary-banner">
+            임시 배너
+        </div>
         <section class="menu">
             <div class="menu-list">
                 <div class="menu-icon">🧘‍♀️</div>
@@ -66,12 +64,10 @@
                 </div>  
             </div>   
         </section>
-        
-    </v-container>
+    </v-container>   
 </template>
 <script>
 import axios from "axios";
-
 
 export default {
     data() {
@@ -129,6 +125,7 @@ export default {
 <style scoped>
 .v-container {
     color: #333;
+    padding: none;
 }
 .banner {
     background-color: rgb(220, 219, 219);
@@ -137,6 +134,7 @@ export default {
 .temporary-banner{
     height: 250px;
     width: auto;
+    background-color: #999;
 }
 .menu {
     margin: 20px 0;

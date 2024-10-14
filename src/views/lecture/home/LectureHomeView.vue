@@ -13,7 +13,7 @@
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="assignment">과제</v-tab>
             <v-tab value="notice">게시판</v-tab>
-            <v-tab value="tuteeList">튜티 리스트</v-tab>
+            <v-tab value="tuteeList" v-if="isLecture&&istutor">튜티 리스트</v-tab>
         </v-tabs>
 
         <v-tabs-window v-model="tab">
@@ -22,7 +22,8 @@
                 <v-card flat>
                     <v-card-text>
                         <v-row justify="end" class="mr-4">
-                            <v-btn color="#90CDFF" @click="assignmentCreateModal = true"><strong>생성</strong></v-btn>
+                            <v-btn color="#90CDFF" @click="assignmentCreateModal = true"
+                                v-if="this.istutor"><strong>생성</strong></v-btn>
                         </v-row>
 
                         <!-- 과제 목록 -->
@@ -38,13 +39,16 @@
                                         </v-col>
 
                                         <v-col cols="auto">
-                                            <v-btn color="#90CDFF"
-                                                @click="updateAssignmentOpen(assignment.id)"><strong>수정</strong></v-btn>
+                                            <v-btn color="#90CDFF" @click="updateAssignmentOpen(assignment.id)"
+                                                v-if="this.istutor"><strong>수정</strong></v-btn>
                                         </v-col>
                                     </v-row>
                                 </v-card>
                             </v-col>
                         </v-row>
+                        <v-pagination v-model="assignmentPage" :length="assignmentPages"
+                            @click="handleAssignmentPageChange()"></v-pagination>
+
                     </v-card-text>
                 </v-card>
             </v-tabs-window-item>
@@ -77,10 +81,10 @@
                             <v-col cols="2">
                                 <!-- <template v-slot:[getitemcontrols()]="{ item }"> -->
 
-                                <v-icon class="me-2" size="small" @click.stop="editItem(notice)">
+                                <v-icon class="me-2" size="small" @click.stop="editItem(notice)" v-if="notice.author">
                                     mdi-pencil
                                 </v-icon>
-                                <v-icon size="small" @click.stop="deleteItem(notice)">
+                                <v-icon size="small" @click.stop="deleteItem(notice)" v-if="notice.author">
                                     mdi-delete
                                 </v-icon>
                                 <!-- </template> -->
@@ -88,7 +92,8 @@
                         </v-row>
                     </v-col>
                 </v-row>
-                <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange()"></v-pagination>
+                <v-pagination v-model="noticePage" :length="noticePages"
+                    @click="handleNoticePageChange()"></v-pagination>
 
                 <!-- <v-card flat>
                     <v-card-text>
@@ -112,7 +117,7 @@
 
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
-            <v-tabs-window-item value="tuteeList">
+            <v-tabs-window-item value="tuteeList" v-if="this.isLecture&&this.istutor">
                 <v-card flat>
                     <v-card-text>
                         <!-- 튜티 리스트 -->
@@ -336,10 +341,13 @@ export default {
     },
     data() {
         return {
+            istutor: false,
             page: 0,
             size: 5,
-            totalPages: 0,
-            frontendPage: 1,
+            noticePages: 0,
+            noticePage: 1,
+            assignmentPages: 0,
+            assignmentPage: 1,
             coordinate: {
                 lat: 33.450701,
                 lng: 126.570667
@@ -375,24 +383,18 @@ export default {
             isNotice: false,
             breadItems: [
                 {
-                    title: '강의',
+                    title: '',
                     disabled: false,
                     href: 'breadcrumbs_dashboard',
                 },
 
                 {
-                    title: '수학 천재가 되는 길',
+                    title: '',
                     disabled: true,
                     href: 'breadcrumbs_link_2',
                 },
             ],
-            headers: [
-                { text: '작성자', value: 'memberName' },
-                { text: '분류', value: 'type' },
-                { text: '제목', value: 'title' },
-                { text: '작성 일자', value: 'postDate' },
-                { text: '수정/삭제', value: 'actions', sortable: false }
-            ],
+
             assignments: [],
             assignmentTitle: "",
             assignmentDate: null,
@@ -400,6 +402,7 @@ export default {
             assignmentId: null,
             notices: [],
             tutees: [],
+            isLecture: false,
         };
     },
     async created() {
@@ -409,6 +412,9 @@ export default {
         console.log(infoGetResponse);
         const data = infoGetResponse?.data?.result;
         this.infoData.category = this.changeCategory(data.category);
+        this.isLecture = data.lectureType === "LECTURE" ? true : false;
+        console.log("강의야?" + this.isLecture)
+        this.breadItems[0].title = this.isLecture ? "강의" : "과외"
         this.infoData.chatRoomId = data.chatRoomId;
         this.infoData.contents = data.contents;
         this.infoData.image = data.image;
@@ -418,6 +424,7 @@ export default {
         this.infoData.memberName = data.memberName;
         this.infoData.startDate = data.startDate;
         this.infoData.title = data.title;
+        this.breadItems[1].title = this.infoData.title
         this.infoData.lectureGroupTimes = data.lectureGroupTimes;
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
             return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
@@ -431,21 +438,38 @@ export default {
         };
         const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
         this.notices = noticeResponse?.data?.result?.content;
-        this.totalPages = noticeResponse?.data?.result?.totalPages;
+        this.noticePages = noticeResponse?.data?.result?.totalPages;
         console.log(this.notices)
-        const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
+        const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params })
         this.assignments = assignmentResponse?.data?.result?.content;
+        this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
+
+        console.log(this.assignments);
+        const memberInfo = localStorage.getItem('memberInfo');
+        if (memberInfo && JSON.parse(memberInfo).name === this.infoData.memberName) {
+            this.istutor = true;
+        }
     },
     methods: {
-        async handlePageChange() {
-            this.page = this.frontendPage - 1;
+        async handleNoticePageChange() {
+            this.page = this.noticePage - 1;
             let params = {
                 size: this.size,
                 page: this.page,
             };
             const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
             this.notices = noticeResponse?.data?.result?.content;
-            this.totalPages = noticeResponse?.data?.result?.totalPages;
+            this.noticePages = noticeResponse?.data?.result?.totalPages;
+        },
+        async handleAssignmentPageChange() {
+            this.page = this.assignmentPage - 1;
+            let params = {
+                size: this.size,
+                page: this.page,
+            };
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params })
+            this.assignments = response?.data?.result?.content;
+            this.assignmentPages = response?.data?.result?.totalPages;
         },
         async noticeView(item) {
             this.noticeViewModal = true;

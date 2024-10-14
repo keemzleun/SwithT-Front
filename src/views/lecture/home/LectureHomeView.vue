@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-breadcrumbs :items="breadItems">
+        <v-breadcrumbs :items="breadItems" class="mt-5">
             <template v-slot:divider>
                 <v-icon>mdi-menu-right</v-icon>
             </template>
@@ -13,7 +13,7 @@
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="assignment">과제</v-tab>
             <v-tab value="notice">게시판</v-tab>
-            <v-tab value="tuteeList" v-if="isLecture&&istutor">튜티 리스트</v-tab>
+            <v-tab value="tuteeList" v-if="isLecture && istutor">튜티 리스트</v-tab>
         </v-tabs>
 
         <v-tabs-window v-model="tab">
@@ -117,7 +117,7 @@
 
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
-            <v-tabs-window-item value="tuteeList" v-if="this.isLecture&&this.istutor">
+            <v-tabs-window-item value="tuteeList" v-if="this.isLecture && this.istutor">
                 <v-card flat>
                     <v-card-text>
                         <!-- 튜티 리스트 -->
@@ -316,6 +316,26 @@
 
                     <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
                     <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeContent }}</v-row>
+
+                    <!-- 댓글 리스트 -->
+                    <h4 class="mb-2">댓글</h4>
+                    <v-row v-if="comments.length">
+                        <v-col v-for="comment in comments" :key="comment.id">
+                            <v-card class="pa-3 mb-2">
+                                <div>
+                                    <strong>{{ comment.memberName }}</strong>
+                                    <span>{{ comment.contents }}</span>
+                                </div>
+                                <v-btn small @click="editComment(comment)">수정</v-btn>
+                                <v-btn small @click="deleteComment(comment)">삭제</v-btn>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+
+                    <!-- 댓글 입력 폼 -->
+                    <h4 class="mb-2">댓글 작성</h4>
+                    <v-textarea v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
+                    <v-btn @click="submitComment">댓글 등록</v-btn>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -370,6 +390,9 @@ export default {
             noticeTitle: "",
             noticeContent: "",
             noticeId: null,
+            comments: [], // 댓글 리스트
+            newComment: '', // 새 댓글
+            commentId: null, // 수정 중인 댓글 ID
 
             tab: 0,
             lectureSchedules: "",
@@ -477,7 +500,40 @@ export default {
             console.log(response)
             this.noticeTitle = response?.data?.result?.title;
             this.noticeContent = response?.data?.result?.contents;
+            this.noticeId = item.id;
+            // 댓글 목록 가져오기
+            await this.fetchComments(item.id);
         },
+        async fetchComments(noticeId) {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list`)
+            this.comments = response?.data?.result?.content || [];
+            console.log("comment"+JSON.stringify(this.comments))
+        },
+        async submitComment() {
+        const body = {
+            contents: this.newComment,
+        };
+        if(this.commentId) {
+            const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}`, body);
+            console.log(response)
+        }
+        else {
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/create`, body);
+            console.log(response)
+        }    
+        
+        this.newComment = '';
+        await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
+    },
+    async editComment(comment) {
+        this.commentId = comment.id;
+        this.newComment = comment.contents;
+    },
+    async deleteComment(comment){
+        this.commentId = comment.id;
+        const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
+        console.log(response)
+    },
         renewNotice() {
             this.noticeTitle = "";
             this.noticeContent = "";

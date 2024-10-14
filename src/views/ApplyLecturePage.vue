@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <h2>강의 개설</h2>
+        <h2 style="font-weight: bold">강의 개설</h2>
         <hr style="margin: 40px 0">
         <v-form>
             <!-- 수업 방식 -->
@@ -11,14 +11,18 @@
               </v-col>
               <v-col cols="8">
                 <div class="custom-select-box">
-                  <div
-                    v-for="method in teachingMethods"
-                    :key="method.value"
-                    :class="['custom-option', teachingMethod === method.value ? 'selected' : '']"
-                    @click="teachingMethod = method.value"
-                  >
-                    {{ method.label }}
-                  </div>
+                  <transition name="fade">
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                      <div
+                        v-for="method in teachingMethods"
+                        :key="method.value"
+                        :class="['custom-option', teachingMethod === method.value ? 'selected' : '']"
+                        @click="teachingMethod = method.value"
+                      >
+                        {{ method.label }}
+                      </div>
+                    </div>
+                  </transition>
                 </div>
               </v-col>
             </v-row>
@@ -31,14 +35,19 @@
               </v-col>
               <v-col cols="8">
                 <div class="custom-select-box">
-                  <div
-                    v-for="option in fieldOptions"
-                    :key="option.value"
-                    :class="['custom-option', field === option.value ? 'selected' : '']"
-                    @click="field = option.value"
-                  >
-                    {{ option.label }}
-                  </div>
+                  <transition name="fade">
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                      <div
+                        v-for="option in fieldOptions"
+                        :key="option.value"
+                        :class="['custom-option', field === option.value ? 'selected' : '']"
+                        @click="field = option.value"
+                      >
+                        {{ option.label }}
+                      </div>
+                    </div>
+                  </transition>
+                  
                 </div>
               </v-col>
             </v-row>
@@ -132,28 +141,28 @@
                     <!-- 강의 그룹 표시 -->
                     <div class="lecture-group-list">
                         <div v-if="lectureGroups.length === 0" style="text-align: center; color: #888; margin-top: 20px;">
-                            강의 그룹을 생성해주세요
+                            생성한 강의 그룹이 없습니다
                         </div>
                         <div v-else>
                             <div v-for="(lectureGroup, index) in lectureGroups" :key="lectureGroup.name" class="lecture-group">
                                 <v-row>
                                     <v-col cols="3" class="d-flex align-center justify-center">
-                                        <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 번호 표시 -->
+                                        <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 순서 표시 -->
                                     </v-col>
-                                    <v-col>
+                                    <v-col cols="7">
                                         <v-row>
-                                            <v-col cols="3" class="d-flex align-center justify-center">
+                                            <v-col cols="4" class="d-flex align-center justify-center">
                                                 <label style="font-size: 13px; color: #555;">강의료/인원</label>
                                             </v-col>
-                                            <v-col class="d-flex justify-start">
+                                            <v-col class="d-flex align-center justify-start">
                                                 {{ lectureGroup.fee }}원 (인원: {{ lectureGroup.capacity }})
                                             </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col cols="3" class="d-flex align-center justify-center">
+                                            <v-col cols="4" class="d-flex align-center justify-center">
                                                 <label style="font-size: 13px; color: #555;">강의 시간</label>
                                             </v-col>
-                                            <v-col class="d-flex justify-start">
+                                            <v-col class="d-flex align-center justify-start">
                                                 <div>
                                                     <div v-for="(slot, slotIndex) in lectureGroup.timeSlots" :key="slotIndex">
                                                         {{ slot.day }}요일 {{ slot.startTime }} ~ {{ slot.endTime }}
@@ -161,6 +170,11 @@
                                                 </div>
                                             </v-col>
                                         </v-row>
+                                    </v-col>
+                                    <v-col cols="2" class="d-flex align-center justify-center">
+                                      <button @click="removeLectureGroup(index)" class="btn btn-danger btn-sm" style="margin: 0 10px;">
+                                        <span class="mdi mdi-trash-can-outline" style="font-size: 20px"></span>
+                                      </button>
                                     </v-col>
                                 </v-row>
                             </div>
@@ -240,6 +254,9 @@
                                         </select>
                                     </v-row>
                                 </v-col>
+                                <v-col cols="2" class="d-flex align-center justify-center minus-btn">
+                                  <span class="mdi mdi-minus-circle-outline" style="font-size: 25px; color: #666" @click="removeTimeSlot(index)"></span>
+                                </v-col>
                             </v-row>
                         </div>
 
@@ -251,14 +268,14 @@
                                 강의 시간 추가
                             </span>
                         </div>
-                        <v-row class="justify-end" style="padding: 0 10px">
-                            <div @click="submitLectureGroup" class="submit-group">추가하기</div>
+                        <v-row class="justify-end" style="padding: 0 10px;">
+                            <div @click="submitLectureGroup" class="submit-group">그룹 생성</div>
                         </v-row>
                     </div>
                 </v-col>
             </v-row>
             <v-row class="justify-center" style="padding: 0 10px">
-                <div @click="createLecture" class="create-lecture">개설 신청하기</div>
+                <div @click="createLecture" class="create-lecture">개설 신청</div>
             </v-row>
         </div>
     </v-container>
@@ -275,6 +292,7 @@ import axios from 'axios';
   export default {
     data() {
       return {
+        userName: null,
         title: '',
         teachingMethod: '', // Make sure this is defined
         field: '',
@@ -307,6 +325,12 @@ import axios from 'axios';
         ],
         schedule: {}
       };
+    },
+    async created() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.userName = localStorage.getItem('name');
+      }
     },
     methods: {
         onFileChange(event) {
@@ -363,6 +387,13 @@ import axios from 'axios';
             if (this.currentLecture.capacity <= 0) {
                 alert('모집인원은 0명이 될 수 없습니다.');
                 return; // 조건에 맞지 않으면 함수 종료
+            }
+            // 강의 시간이 올바르게 입력되었는지 확인
+            for (const timeSlot of this.currentLecture.timeSlots) {
+                if (!timeSlot.day || !timeSlot.startTime || !timeSlot.endTime) {
+                    alert('강의 시간, 요일, 시작 시간 및 종료 시간을 모두 입력해야 합니다.');
+                    return; // 조건에 맞지 않으면 함수 종료
+                }
             }
 
             const color = this.getRandomColor();
@@ -439,24 +470,30 @@ import axios from 'axios';
     },
 
     async createLecture() {
+      if (this.lectureGroups.length === 0) {
+        alert('강의 그룹을 추가해야 합니다.');
+        return; // 강의 그룹이 없을 경우 함수 종료
+    }
+
         // 강의 생성 요청 객체 정의
         const lectureCreateReqDto = {
             lectureReqDto: {
+                memberName: this.userName,
                 title: this.title,
-                content: this.contents,
+                contents: this.contents,
                 status: "STANDBY",  // 기본값 설정
                 category: this.field,
                 lectureType: this.teachingMethod
             },
             lectureGroupReqDtos: this.lectureGroups.map(group => ({
-                price: group.fee.replace(/,/g, ''), // 쉼표 제거 후 숫자로 변환
+                price: group.fee = group.fee.replace(/,/g, ''),
                 limitPeople: group.capacity,
                 groupTimeReqDtos: group.timeSlots.map(slot => ({
                     // 요일을 영어로 변환
                     lectureDay: this.convertDayToEnglish(slot.day),
                     // 시작 시간과 종료 시간을 LocalDateTime 형식으로 변환
-                    startTime: this.convertToLocalDateTime(slot.day, slot.startTime, slot.date),
-                    endTime: this.convertToLocalDateTime(slot.day, slot.endTime, slot.date)
+                    startTime: slot.startTime,
+                    endTime: slot.endTime
                 }))
             }))
         };
@@ -466,7 +503,7 @@ import axios from 'axios';
         formData.append('data', new Blob([JSON.stringify(lectureCreateReqDto)], { type: 'application/json' }));
 
         if (this.thumbnail) {
-            formData.append('imgFile', this.thumbnail); // 이미지 파일 추가
+            formData.append('file', this.thumbnail); // 이미지 파일 추가
         }
 
         try {
@@ -481,16 +518,25 @@ import axios from 'axios';
                     }
                 }
             );
-
+            console.log(formData);
             if (response.status === 200) {
                 alert('강의가 성공적으로 생성되었습니다!');
             }
         } catch (e) {
             console.error('강의 생성 중 오류 발생:', e);
+            
             alert('강의 생성에 실패했습니다. 다시 시도해주세요.');
         }
-    }
     },
+    removeLectureGroup(index) {
+        this.lectureGroups.splice(index, 1);
+        // 선택된 강의 그룹을 제거합니다.
+    },
+    removeTimeSlot(index) {
+        this.currentLecture.timeSlots.splice(index, 1);
+    },
+    },
+    
     watch: {
         'currentLecture.fee'(newValue) {
             if (typeof newValue === 'number' || typeof newValue === 'string') {
@@ -510,7 +556,10 @@ import axios from 'axios';
   };
   </script>
   
-  <style>
+  <style scoped>
+  .v-container {
+    margin-top: 60px;
+  }
   .section {
     margin: 50px 0;
   }
@@ -568,18 +617,26 @@ import axios from 'axios';
   }
   
   .custom-option {
-    padding: 7px 12px; /* 패딩을 줄여 크기 조정 */
+    /* padding: 7px 12px;
     border: 1px solid #cdcdcd;
-    border-radius: 3px; /* 모서리를 조금 더 각지게 */
+    border-radius: 3px;
     cursor: pointer;
     background-color: #f5f5f5;
-    color: #7d7d7d;
+    color: #7d7d7d; */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .custom-option.selected {
-    border-color: #0d6efd;
+    border-color: #007bff; /* 선택된 경우의 테두리 색상 */
+    background-color: #e7f0ff; /* 선택된 경우의 배경 색상 */
+    transform: scale(1.05); /* 선택된 경우 살짝 확대 */
+    /* border-color: #0d6efd;
     background-color: white;
-    color: #0d6efd;
+    color: #0d6efd; */
 }
   .label-width {
     width: 120px; /* 원하는 너비로 조정 */
@@ -593,7 +650,7 @@ import axios from 'axios';
     color: #0d6efd;
   }
   .submit-group {
-    background-color: #0d6efd;
+    background-color: #78CB67;
     color: #f5f5f5;
     width: 100px;
     height: 40px;
@@ -606,7 +663,7 @@ import axios from 'axios';
     cursor: pointer;
   }
   .create-lecture {
-    background-color: #78CB67;
+    background-color: #0d6efd;
     color: #f5f5f5;
     font-size: 16px;
     font-weight: bold;
@@ -614,9 +671,12 @@ import axios from 'axios';
     width: 300px;
     border-radius: 10px;
     line-height: 50px;
-    margin-top: 40px;
+    margin-top: 120px;
   }
   .create-lecture:hover{
+    cursor: pointer;
+  }
+  .minus-btn:hover {
     cursor: pointer;
   }
 </style>

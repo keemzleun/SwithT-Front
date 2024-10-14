@@ -87,7 +87,7 @@ export default {
             this.count = this.eventList.length // 이벤트 리스트의 길이에 따라 카운트 설정
         }
         // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/hello`)
-        // console.log(response)
+        // console.log(response) 헬스체크 메서드 주석처리.
         
         const token = localStorage.getItem('token')
         if (token) {
@@ -129,23 +129,29 @@ export default {
         async checkLoginStatus() {
             const token = localStorage.getItem('token')
             if (token) {
-                this.isLogin = true
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`)
-                this.member = response.data.result
-                const memberInfo = {
-                    name: this.member.name,
-                    profileImage: this.member.profileImage
-                }
-                localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+            
+            this.isLogin = true;
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`)
+            
+            this.member = response.data.result
+            
+            const memberInfo = {
+                name: this.member.name,
+                profileImage: this.member.profileImage
             }
+            localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+        
+            }
+
         },
         login() {
-            this.$router.push("/login")
+            this.$router.push("/member/main") //김민성 수정
         },
         logout() {
-            localStorage.removeItem('token')
+            localStorage.clear();
             this.isLogin = false
-            this.$router.push("/")
+            window.redirect
+            this.$router.push("/home")
         },
         LecturePageBtn() {
             this.$router.push("/lecture")

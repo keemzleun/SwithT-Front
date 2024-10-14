@@ -20,15 +20,17 @@
     "bootstrap": "^5.3.3",
     "bootstrap-vue-3": "^0.5.1",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.13",
     "event-source-polyfill": "^1.0.31",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "slick-carousel": "^1.8.1",
     "vue": "^3.2.13",
     "vue-router": "^4.4.5",
+    "vue-simple-calendar": "^7.1.0",
     "vue-slick-carousel": "^1.0.6",
     "vue3-kakao-maps": "^2.3.9",
-    "vuetify": "^3.7.2",
+    "vuetify": "^3.7.0-beta.1",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

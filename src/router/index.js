@@ -25,7 +25,6 @@ const routes = [
         name: 'Calendar',
         component: ScheduleView
     },
-    ...lectureRouter,
     ...memberRouter,
     ...FirstRouter
   

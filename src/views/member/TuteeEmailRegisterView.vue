@@ -75,7 +75,7 @@
             </v-col>
           </v-row>
           <!-- 주소 -->
-          <v-row>
+          <v-row> 
             <v-col><h2>주소</h2></v-col>
             <v-col>
               <v-text-field 
@@ -124,7 +124,7 @@ export default {
       address: "",
       gender: "",
       displayGender: '',
-      role: "TUTEE", // 튜터 회원가입 페이지 이므로 TUTOR로 명시할 것.
+      role: "TUTEE",
       otp: "",
       profileImage: null, // 프로필 이미지 초기화
       

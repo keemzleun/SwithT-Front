@@ -15,7 +15,7 @@ export const FirstRouter = [
 
     // 튜티가 신청한 모든 강의 리스트(진행중X, 신청, 거절, 결제 요청)
     {
-        path: "/tutee-applied-list",
+        path: "/tutee-applied-list", 
         name: "TuteeAppliedList",
         component: TuteeAppliedList,
     },
@@ -39,5 +39,6 @@ export const FirstRouter = [
         path: "/apply-lecture",
         name: "ApplyLecture",
         component: ApplyLecturePage,
-    },
+    }
+
 ]

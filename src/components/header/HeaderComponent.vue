@@ -86,8 +86,8 @@ export default {
             this.eventList = JSON.parse(storedEvents) // localStorage에서 불러오기
             this.count = this.eventList.length // 이벤트 리스트의 길이에 따라 카운트 설정
         }
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/hello`)
-        console.log(response)
+        // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/hello`)
+        // console.log(response)
         
         const token = localStorage.getItem('token')
         if (token) {

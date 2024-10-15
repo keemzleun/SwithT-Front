@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
 
 export default {
@@ -64,15 +65,44 @@ export default {
         '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
         '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
       ],
-      schedule: {
-        // 예시 데이터, 실제 데이터로 대체 필요
-        '월': { 1: { name: '강의 A' }, 2: { name: '강의 B' } },
-        '화': { 0: { name: '강의 C' }, 4: { name: '강의 D' } },
-        // 다른 요일 데이터 추가
-      }
+      schedule: {}
     };
   },
+  created() {
+    this.fetchLectureGroupInfo(1); // Replace 1 with the actual lecture group ID you want to fetch
+  },
   methods: {
+    async fetchLectureGroupInfo(id) {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-info/${id}`);
+        const data = response.data; // Adjust based on your API response structure
+
+        this.schedule = this.formatSchedule(data.times);
+        console.log(this.schedule)
+      } catch (error) {
+        console.error('Error fetching lecture group info:', error);
+      }
+    },
+    formatSchedule(times) {
+      const schedule = {};
+      times.forEach(time => {
+        const day = time.lectureDay;
+        const startHour = parseInt(time.startTime.split(':')[0]);
+        const endHour = parseInt(time.endTime.split(':')[0]);
+
+        if (!schedule[day]) {
+          schedule[day] = Array(this.hours.length).fill(null);
+        }
+
+        for (let hour = startHour; hour < endHour; hour++) {
+          schedule[day][hour] = {
+            title: time.title,
+            // You can add more properties here if needed
+          };
+        }
+      });
+      return schedule;
+    },
     getCellColor(day, index) {
       return this.schedule[day] && this.schedule[day][index] ? '#d0e2ff' : '';
     }

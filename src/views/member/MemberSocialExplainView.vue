@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-16">
     <h1>SwithT에 처음 오셨군요, 추가 정보를 입력하러 이동하시겠습니까?</h1>
     <v-btn @click="navigateToRegister">
       계속하기

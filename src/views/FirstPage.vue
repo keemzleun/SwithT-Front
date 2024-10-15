@@ -16,19 +16,19 @@
         </div>
         <section class="menu">
             <div class="menu-list" @click="performCategorySearch('DEVELOPMENT')">
-                <div class="menu-icon">🧘‍♀️</div>
+                <img src="@/assets/target_2656366.png" class="menu-icon">
                 <div class="menu-title">자기계발</div>
             </div>
             <div class="menu-list" @click="performCategorySearch('ADMISSION')">
-                <div class="menu-icon">🧑‍🏫</div>
+                <img src="@/assets/mortarboard_2655764.png" class="menu-icon">
                 <div class="menu-title">입시</div>
             </div>
             <div class="menu-list" @click="performCategorySearch('HOBBY')">
-                <div class="menu-icon">🏄</div>
+                <img src="@/assets/painting_2655642.png" class="menu-icon">
                 <div class="menu-title">취미</div>
             </div>
             <div class="menu-list" @click="performCategorySearch('CAREER')">
-                <div class="menu-icon">👨‍💼</div>
+                <img src="@/assets/manager_2704454.png" class="menu-icon">
                 <div class="menu-title">취업/직무</div>
             </div>
             <div class="menu-list">

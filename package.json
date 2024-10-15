@@ -10,6 +10,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@portone/browser-sdk": "^0.0.10",
+    "@stomp/stompjs": "^7.0.0",
     "@vuepic/vue-datepicker": "^9.0.3",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
@@ -19,6 +20,7 @@
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "slick-carousel": "^1.8.1",
+    "sockjs-client": "^1.6.1",
     "vue": "^3.2.13",
     "vue-router": "^4.4.5",
     "vue-slick-carousel": "^1.0.6",

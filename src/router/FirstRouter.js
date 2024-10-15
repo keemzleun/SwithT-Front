@@ -3,8 +3,8 @@ import FirstPage from '@/views/FirstPage.vue';
 import TuteeAppliedList from '@/pendingLectures/TuteeAppliedList.vue';
 import TutorAppliedList from '@/pendingLectures/TutorAppliedList.vue';
 import AdminAppliedList from '@/pendingLectures/AdminAppliedList.vue';
-import ApplyLecturePage from '@/views/ApplyLecturePage.vue';
-import LectureDetailView from '@/components/LectureDetailInfoComponent.vue';
+import CreateLectureView from '@/views/CreateLectureView.vue';
+import LectureDetailView from '@/views/lecture/detail/LectureDetailView.vue';
 
 export const FirstRouter = [
     // 메인 화면
@@ -37,9 +37,9 @@ export const FirstRouter = [
     
     // 강의/과외 개설 페이지
     {
-        path: "/apply-lecture",
-        name: "ApplyLecture",
-        component: ApplyLecturePage,
+        path: "/create-lecture",
+        name: "CreateLecture",
+        component: CreateLectureView,
     },
 
     // 강의 상세 정보 페이지

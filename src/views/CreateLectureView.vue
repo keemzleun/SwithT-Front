@@ -99,11 +99,48 @@
                 />
               </v-col>
             </v-row>
+
+            <!-- 강의 주소, 시작일, 종료일 -->
+            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
+              <v-col cols="3" class="d-flex align-center justify-center">
+                <label>강의 주소</label>
+              </v-col>
+              <v-col cols="8">
+                <input
+                  v-model="address"
+                  class="form-control"
+                  placeholder="강의 주소를 입력해주세요"
+                  type="text"
+                />
+              </v-col>
+            </v-row>
+            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
+              <v-col cols="3" class="d-flex align-center justify-center">
+                <label>강의 기간</label>
+              </v-col>
+              <v-col cols="1">시작일</v-col>
+              <v-col cols="3">
+                <input
+                  v-model="startDate"
+                  class="form-control"
+                  type="date"
+                />
+              </v-col>
+              <v-col cols="1">종료일</v-col>
+              <v-col cols="3">
+                <input
+                  v-model="endDate"
+                  class="form-control"
+                  type="date"
+                />
+              </v-col>
+            </v-row>
+
           </v-form>
           
           
         <div class="section">
-            <v-row>
+            <v-row style="margin-top: 100px;">
                 <v-col cols="3" class="d-flex justify-center">
                     <label style="margin-top: 40px;">강의 그룹</label>
                 </v-col>
@@ -292,6 +329,9 @@ import axios from 'axios';
   export default {
     data() {
       return {
+        address: null,
+        startDate: null,
+        endDate: null,
         userName: null,
         title: '',
         teachingMethod: '', // Make sure this is defined
@@ -353,7 +393,7 @@ import axios from 'axios';
             this.currentLecture = {
                 name: '',
                 fee: 0,
-                capacity: this.teachingMethod === 'LESSON' ? 1 : 0,
+                capacity: 1,
                 timeSlots: [{ day: '', startTime: '', endTime: '' }]
             };
         },
@@ -473,7 +513,7 @@ import axios from 'axios';
       if (this.lectureGroups.length === 0) {
         alert('강의 그룹을 추가해야 합니다.');
         return; // 강의 그룹이 없을 경우 함수 종료
-    }
+      }
 
         // 강의 생성 요청 객체 정의
         const lectureCreateReqDto = {
@@ -486,8 +526,11 @@ import axios from 'axios';
                 lectureType: this.teachingMethod
             },
             lectureGroupReqDtos: this.lectureGroups.map(group => ({
-                price: group.fee = group.fee.replace(/,/g, ''),
+                price: (group.fee && group.fee.replace(/,/g, '')) || '0',
                 limitPeople: group.capacity,
+                address: this.address,
+                startDate: this.startDate,
+                endDate: this.endDate,
                 groupTimeReqDtos: group.timeSlots.map(slot => ({
                     // 요일을 영어로 변환
                     lectureDay: this.convertDayToEnglish(slot.day),

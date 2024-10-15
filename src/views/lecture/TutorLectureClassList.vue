@@ -1,9 +1,9 @@
 <template>
-    <v-container width="60%">
+    <v-container width="60%"  style="margin-top: 60px;">
         <h1>썸네일 자리</h1>
         <v-row justify="center">
             <v-col cols="auto">
-                <v-tabs v-model="tab" color="black" slider-color="#FFF490">
+                <v-tabs v-model="tab" color="black" slider-color="#6C97FD">
                     <v-tab value="NOT_AVAILABLE_CLASS_LIST"
                         v-if="lectureType === 'LESSON' && lectureStatus === 'ADMIT'">진행중인 수업</v-tab>
                     <v-tab value="AVAILABLE_CLASS_LIST"
@@ -24,7 +24,7 @@
                                     <div>
                                         {{ lesson.title }}
                                     </div>
-                                    <v-btn class="admit-color" small>강의홈</v-btn>
+                                    <v-btn color="#6C97FD" small>강의홈</v-btn>
                                 </v-card-text>
                                 <v-card-text class="d-flex justify-space-between align-center">
                                     <div> {{ lesson.memberName }} </div>
@@ -42,8 +42,8 @@
                                     <div>
                                         {{ lesson.title }}
                                     </div>
-                                    <v-btn color="#FFF490" @click="clickLessonApplyList(lesson.lectureGroupId, lesson.title)"
-                                        small>모집중</v-btn>
+                                    <v-btn color="#82D691" @click="clickLessonApplyList(lesson.lectureGroupId, lesson.title)"
+                                        class="white-text" small>모집중</v-btn>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -58,7 +58,7 @@
                                     <div>
                                         {{ lesson.title }}
                                     </div>
-                                    <v-btn color="#FFF490" small>강의홈</v-btn>
+                                    <v-btn color="#6C97FD" small>강의홈</v-btn>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -163,7 +163,8 @@ export default {
     font-weight: 900;
 }
 
-.admit-color {
-    background-color: #90CDFF;
+
+.white-text {
+    color: white !important;
 }
 </style>

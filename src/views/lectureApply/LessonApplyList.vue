@@ -1,8 +1,8 @@
 <template>
-    <v-container width="60%">
+    <v-container width="60%"  style="margin-top: 60px;">
         <h1>썸네일 자리</h1>
 
-        <h2>{{this.title}}</h2>
+        <h4>{{this.title}}</h4>
         <hr><br>
 
 
@@ -13,8 +13,7 @@
                     <v-card-text class="d-flex justify-space-between align-center">
                         <div>
                             {{ apply.tuteeName }}
-                            <v-btn color="#90CDFF"
-                                class="ml-3 font-weight-class">채팅<v-icon>mdi-message-outline</v-icon></v-btn>
+                            <v-icon @click="clickChatRoom(apply.chatRoomId, apply.memberId)">mdi-message-outline</v-icon>
                         </div>
 
 
@@ -75,7 +74,6 @@ export default {
             yesOrNoModal: false,
             modalTitle: 'kk',
             modalContents: 'kk',
-
 
 
         };
@@ -154,12 +152,28 @@ export default {
                 alert("신청 취소에 실패했습니다.");
             }
 
+        },
+
+        async clickChatRoom(chatRoomId, tuteeId){
+            console.log(chatRoomId, tuteeId);
+            if(chatRoomId === null){
+                //채팅방 생성
+                const registerData = {
+                    lectureGroupId: this.lectureGroupId,
+                    tuteeId: tuteeId
+                }
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`, registerData);
+                console.log(response.data.result);
+                chatRoomId = response.data.result.roomId;
+                
+                
+            }
+            this.$router.push(`/chat-room?chatRoomId=${chatRoomId}`);
         }
 
     }
 }
 </script>
-
 <style scoped>
 .custom-border {
     border: 2px solid #cccccc;

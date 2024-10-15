@@ -1,5 +1,5 @@
 <template>
-    <v-container width="60%">
+    <v-container width="60%" style="margin-top: 60px;">
         <v-row justify="center">
             <v-col cols="auto">
                 <v-tabs v-model="tab" color="black" slider-color="#6C97FD">

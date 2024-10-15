@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container style="margin-top: 60px;">
         <v-row justify="center">
             <v-col cols="4">
                 <v-card>
@@ -32,8 +32,6 @@
 
             <v-col cols="8" v-else>
                 <v-card class="chat-card">
-
-
                     <v-card-title>
                         {{ chatRoomTitle }}
                     </v-card-title>
@@ -41,27 +39,26 @@
                     <v-card-text class="chat-content">
                         <v-row class="chat-messages">
 
-                            <div class="chat-history">
-                                <div v-for="(msg, index) in chatHistory" :key="index" class="chat-message">
-                                    {{ msg }}
+                            <div class="chat-history" ref="chatHistory">
+                                <div v-for="(msg, index) in chatHistory" :key="index" :class="getMessageClass(msg)">
+                                    {{ msg.memberName }}
+                                    <br>
+                                    {{ msg.message }}
                                 </div>
                             </div>
-                        </v-row>
-
-
-
-                        <v-row class="chat-input mt-auto">
-                            <v-col cols="9">
-                                <input v-model="message" type="text" placeholder="Enter your message..."
-                                    class="w-100 custom-input" />
-                            </v-col>
-                            <v-col cols="3">
-                                <v-btn @click="sendMessage" class="w-100">Send Message</v-btn>
-                            </v-col>
                         </v-row>
                     </v-card-text>
 
                 </v-card>
+                <v-row class="chat-input mt-auto">
+                    <v-col cols="9">
+                        <input v-model="message" type="text" placeholder="Enter your message..."
+                            class="w-100 custom-input" @keydown.enter="sendMessage" />
+                    </v-col>
+                    <v-col cols="3">
+                        <v-btn @click="sendMessage" class="w-100">Send Message</v-btn>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
     </v-container>
@@ -114,7 +111,6 @@ export default {
                     onStompError: this.onError
                 });
 
-                // Connect to WebSocket
                 this.stompClient.activate();
             }
 
@@ -142,6 +138,11 @@ export default {
                 };
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/list`, { params });
                 this.chatRoomList = response.data.result.content;
+                
+                if(this.$route.query.chatRoomId != ''){
+                    console.log("test");
+                    this.setChatRoom(this.chatRoomList[0]);
+                }
 
             } catch (e) {
                 console.log(e.response.data.error_message);
@@ -151,9 +152,19 @@ export default {
 
         },
 
+        setChatRoom(chatRoom) {
+            this.chatRoomId = chatRoom.chatRoomId;
+            if (chatRoom.lectureType === 'LESSON') {
+                this.chatRoomTitle = chatRoom.chatRoomTitle + ' - ' + chatRoom.memberName;
+            } else {
+                this.chatRoomTitle = chatRoom.chatRoomTitle;
+            }
+
+            console.log(this.chatRoomTitle);
+        },
+
         changeChatRoom(chatRoom) {
             this.disconnectWebSocket();
-            
 
             this.chatRoomId = chatRoom.chatRoomId;
             if (chatRoom.lectureType === 'LESSON') {
@@ -176,13 +187,13 @@ export default {
                 this.addToChatHistory(message.body);
             });
 
-            this.stompClient.publish({
-                destination: `/pub/room/${this.chatRoomId}/entered`,
-                body: JSON.stringify({ roomId: this.chatRoomId }),
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+            // this.stompClient.publish({
+            //     destination: `/pub/room/${this.chatRoomId}/entered`,
+            //     body: JSON.stringify({ roomId: this.chatRoomId }),
+            //     headers: {
+            //         "Authorization": `Bearer ${localStorage.getItem('token')}`
+            //     }
+            // });
         },
         onError(error) {
             this.connectionStatus = 'Disconnected';
@@ -193,7 +204,8 @@ export default {
                 const chatMessage = {
                     chatRoomId: this.chatRoomId,
                     message: this.message,
-                    memberId: localStorage.getItem('id')
+                    memberId: localStorage.getItem('id'),
+                    memberName: localStorage.getItem('name')
                 };
 
                 this.stompClient.publish({
@@ -208,13 +220,44 @@ export default {
                 // this.addToChatHistory(`You: ${this.message}`);
 
                 // Clear the input box after sending
+                // this.addToChatHistory(JSON.stringify(chatMessage)); // Add the sent message to history immediately
+
                 this.message = '';
             }
         },
-        // Add a message to the chat history
         addToChatHistory(message) {
-            this.chatHistory.push(message);
-        }
+            let parsedMessage;
+
+            try {
+                // 메시지가 문자열 형태로 들어왔을 때 파싱
+                parsedMessage = typeof message === 'string' ? JSON.parse(message) : message;
+            } catch (error) {
+                console.error("메시지 파싱 오류:", message, error);
+                return;
+            }
+
+            // 메시지를 히스토리에 추가
+            this.chatHistory.push({
+                memberName: parsedMessage.memberName,
+                memberId: parsedMessage.memberId,
+                message: parsedMessage.message
+            });
+
+            // 채팅 화면 스크롤을 자동으로 아래로
+            this.$nextTick(() => {
+                const chatHistoryElement = this.$refs.chatHistory;
+                chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
+            });
+        },
+        getMessageClass(msg) {
+            const currentUserId = localStorage.getItem('id');
+
+            if (msg.memberId == currentUserId) {
+                return 'chat-message sent';  
+            } else {
+                return 'chat-message received';  
+            }
+        },
 
 
     }
@@ -231,9 +274,10 @@ export default {
 
 /* Set a fixed height for the chat card */
 .chat-card {
-    height: 540px;
+    height: 540px; /* increased height */
     display: flex;
     flex-direction: column;
+    padding: 10px;
 }
 
 /* Flexbox to make the message area grow and input stay at the bottom */
@@ -248,8 +292,39 @@ export default {
 .chat-messages {
     flex-grow: 1;
     overflow-y: auto;
-    /* Scroll when messages overflow */
+    max-height: 450px;
 }
+
+
+.sent {
+    background-color: #DCF8C6; /* Light green color for sent messages */
+    align-self: flex-end; /* Align to right for sent messages */
+    text-align: right;
+}
+
+.received {
+    background-color: #f1f1f1; /* Light grey color for received messages */
+    align-self: flex-start; /* Align to left for received messages */
+    text-align: left;
+}
+
+
+.chat-history {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 100%;
+    padding: 10px;
+}
+
+.chat-message {
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+}
+
 
 .chat-input {
     align-items: end;

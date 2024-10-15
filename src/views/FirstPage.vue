@@ -3,22 +3,32 @@
         <div class="temporary-banner">
             임시 배너
         </div>
+        <div class="search-container">
+            <v-text-field
+                v-model="searchValue"
+                label="SwithT와 함께 배우고, 나누고, 성장하세요"
+                dense
+                hide-details="true"
+                class="search-bar"
+                @keyup.enter="performSearch"
+            />
+            <v-btn @click="performSearch" class="search-btn">검색</v-btn>
+        </div>
         <section class="menu">
-            <div class="menu-list">
-               
-                <img src="@/assets/target_2656366.png" class="menu-icon">
+            <div class="menu-list" @click="performCategorySearch('DEVELOPMENT')">
+                <div class="menu-icon">🧘‍♀️</div>
                 <div class="menu-title">자기계발</div>
             </div>
-            <div class="menu-list">
-                <img src="@/assets/mortarboard_2655764.png" class="menu-icon">
+            <div class="menu-list" @click="performCategorySearch('ADMISSION')">
+                <div class="menu-icon">🧑‍🏫</div>
                 <div class="menu-title">입시</div>
             </div>
-            <div class="menu-list">
-                <img src="@/assets/painting_2655642.png" class="menu-icon">
+            <div class="menu-list" @click="performCategorySearch('HOBBY')">
+                <div class="menu-icon">🏄</div>
                 <div class="menu-title">취미</div>
             </div>
-            <div class="menu-list">
-                <img src="@/assets/manager_2704454.png" class="menu-icon">
+            <div class="menu-list" @click="performCategorySearch('CAREER')">
+                <div class="menu-icon">👨‍💼</div>
                 <div class="menu-title">취업/직무</div>
             </div>
             <div class="menu-list">
@@ -82,6 +92,7 @@ import axios from "axios";
 export default {
     data() {
         return {
+            searchValue: "",
             latestLectures: [],
             freeLectures: []
         };
@@ -112,19 +123,45 @@ export default {
             return lecture.image;
         },
         getCategoryText(category) {
-        switch (category) {
-            case 'CAREER':
-                return '취업/직무';
-            case 'HOBBY':
-                return '취미';
-            case 'ADMISSION':
-                return '입시';
-            case 'DEVELOPMENT':
-                return '자기계발';
-            default:
-                return category;
-        }
-    }
+            switch (category) {
+                case 'CAREER':
+                    return '취업/직무';
+                case 'HOBBY':
+                    return '취미';
+                case 'ADMISSION':
+                    return '입시';
+                case 'DEVELOPMENT':
+                    return '자기계발';
+                default:
+                    return category;
+            }
+        },
+        performSearch() {
+            const requestData = {
+                searchTitle: this.searchValue,  // 입력된 검색어
+                category: null,  
+                status: "ADMIT", // status는 ADMIT 고정
+                lectureType: null 
+            };
+            // 검색 데이터를 쿼리 파라미터로 넘기면서 페이지 이동
+            this.$router.push({ 
+                name: 'SearchResult', 
+                query: requestData 
+            });
+        },
+        performCategorySearch(category) {
+            const requestData = {
+                searchTitle: "",  // 빈 검색어
+                category: category,  
+                status: "ADMIT", // status는 ADMIT 고정
+                lectureType: ""  // 모든 강의 유형
+            };
+            // 카테고리별 검색 데이터를 쿼리 파라미터로 넘기면서 페이지 이동
+            this.$router.push({ 
+                name: 'SearchResult', 
+                query: requestData 
+            });
+        },
     },
     created() {
         this.fetchLatestLectures(); // 컴포넌트가 생성될 때 최신 강의 목록을 가져옴
@@ -234,5 +271,23 @@ export default {
 }
 .lecture-tutor {
     padding: 0 3px 0;
+}
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    margin-left: 20%;
+    margin-top: 20px;
+}
+.search-bar {
+    width: 700px;
+    height: 50px;
+    font-size: 20px;
+    border-radius: 10px;
+}
+.search-btn {
+    margin-left: 20px; /* 검색창과 버튼 사이 간격 */
+    height: 70px; /* 검색창과 버튼 높이 동일하게 설정 */
 }
 </style>

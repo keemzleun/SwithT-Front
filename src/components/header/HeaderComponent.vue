@@ -139,11 +139,13 @@ export default {
             
             this.member = response.data.result
             
-            const memberInfo = {
-                name: this.member.name,
-                profileImage: this.member.profileImage
-            }
-            localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+            // const memberInfo = {
+            //     name: this.member.name,
+            //     profileImage: this.member.profileImage
+            // }
+            // localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+            localStorage.setItem('profileImage', this.member.profileImage)
+            localStorage.setItem('name', this.member.name)
         
             }
 

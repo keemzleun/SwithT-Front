@@ -6,6 +6,7 @@ import ScheduleView from '@/views/scheduler/MonthlyScheduleView.vue';
 import { memberRouter } from './memberRouter';
 import { thirdRouter } from './thirdRouter';
 import { FirstRouter } from './FirstRouter';
+import { FourthRouter } from './FourthRouter';
 
 const routes = [
     {
@@ -30,7 +31,8 @@ const routes = [
         component: ScheduleView
     },
     ...memberRouter,
-    ...FirstRouter
+    ...FirstRouter,
+    ...FourthRouter
   
 ]
 

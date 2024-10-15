@@ -19,38 +19,36 @@
 
       <div class="form-group row mb-3">
         <label for="verificationCode" class="col-sm-2 col-form-label">인증 코드</label>
-        <div class="col-sm-10">
+        <div class="col-sm-10 d-flex align-items-center">
           <input
             type="text"
             id="verificationCode"
-            class="form-control"
+            class="form-control me-2"
             placeholder="인증 코드를 입력하세요."
             v-model="otp"
             required
           />
-          <div class="mt-2 text-left" style="width: 100px">
-            <button
+          <button
             v-if="!codeSent"
             @click="requestVerificationCode"
             class="btn"
             type="button"
-            style="background-color: #6C97FD; color: white; border: none;"
+            style="background-color: #6C97FD; color: white; border: none; width: 100px;"
           >
             코드 전송
           </button>
           <button
-          v-else-if="!verificationSuccess"
-          @click="verifyCode"
-          class="btn"
-          type="button"
-          style="background-color: #82D691; color: white; border: none;"
-        >
-          코드 인증
-        </button>
-            <button v-else class="btn btn-secondary" disabled>
-              인증 완료
-            </button>
-          </div>
+            v-else-if="!verificationSuccess"
+            @click="verifyCode"
+            class="btn"
+            type="button"
+            style="background-color: #82D691; color: white; border: none; width: 100px;"
+          >
+            코드 인증
+          </button>
+          <button v-else class="btn btn-secondary" disabled style="width: 120px;">
+            인증 완료
+          </button>
         </div>
       </div>
 

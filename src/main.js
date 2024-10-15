@@ -7,9 +7,9 @@ import '@mdi/font/css/materialdesignicons.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '@vuepic/vue-datepicker/dist/main.css'
-
 import '@mdi/font/css/materialdesignicons.css'
 import { useKakao } from 'vue3-kakao-maps/@utils';
+import 'font-awesome/css/font-awesome.css';
 
 const app = createApp(App);
 

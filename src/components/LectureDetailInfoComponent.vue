@@ -1,13 +1,12 @@
 <template>
     <section class="top-info">
         <v-row  class="align-center">
-            <v-col cols="1"></v-col>
-            <v-col cols="5">
+            <v-col cols="7">
                 <div>
                     <span class="lectureType">
                         {{ formattedLectureType }}
                     </span>
-                    <span class="category" style="font-size: 20px;">
+                    <span class="category" style="font-size: 18px;">
                         {{ formattedCategory }}
                     </span>
                 </div>
@@ -18,12 +17,11 @@
                     <span style="font-size: 18px; margin-left: 3px;"> {{ lectureInfo?.avgScore }}점</span>
                 </div>
             </v-col>
-            <v-col cols="4" class="d-flex align-center justify-center">
+            <v-col cols="5" class="d-flex align-center justify-center">
                 <div class="thumbnail">
                     <img :src="lectureInfo?.image" alt="Lecture Thumbnail" />
                 </div>
             </v-col>
-            <v-col cols="2"></v-col>
         </v-row>
     </section>
 </template>
@@ -88,7 +86,7 @@ export default {
 .top-info {
     background-color: #121212;
     color: white;
-    padding: 100px 200px 40px;
+    padding: 100px 20vw 40px;
     text-align: left; 
 }
 .lectureType {
@@ -97,13 +95,12 @@ export default {
     background-color: #6C97FD;
     width: 50px;
     border-radius: 5px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     text-align: center;
-
 }
 .title {
-    font-size: 45px;
+    font-size: 40px;
     font-weight: bold;
 }
 .memberName {
@@ -113,7 +110,7 @@ export default {
     font-size: 1.5rem;
 }
 .thumbnail img {
-    width: 100%;
+    width: 80%;
     border-radius: 8px;
 }
 </style>

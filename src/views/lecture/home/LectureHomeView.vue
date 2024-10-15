@@ -7,16 +7,100 @@
         </v-breadcrumbs>
 
         <!-- Lecture Info Card 컴포넌트 -->
-        <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" />
+        <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
 
         <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
+            <v-tab value="dashboard">대시보드</v-tab>
             <v-tab value="assignment">과제</v-tab>
             <v-tab value="notice">게시판</v-tab>
             <v-tab value="tuteeList" v-if="isLecture && istutor">튜티 리스트</v-tab>
         </v-tabs>
 
         <v-tabs-window v-model="tab">
+            <!-- 대시보드 탭 -->
+            <v-tabs-window-item value="dashboard">
+                <v-container>
+                    <v-row>
+                        <!-- 과제 리스트 -->
+                        <v-col cols="12" md="6">
+                            <v-card class="pa-4 mb-3" outlined>
+                                <v-card-title>과제 리스트</v-card-title>
+                                <v-card-text>
+                                    <v-row class="mb-1">
+                                        <v-col cols="4"><strong>과제 제목</strong></v-col>
+                                        <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
+                                        <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
+                                    </v-row>
+                                    <v-row v-for="assignment in assignments" :key="assignment.id" class="mb-2">
+                                        <v-col cols="4">{{ assignment.title }}</v-col>
+                                        <v-col cols="4">{{ assignment.startDate }}</v-col>
+                                        <v-col cols="4">{{ assignment.endDate }}</v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+
+                        <!-- 공지사항 -->
+                        <v-col cols="12" md="6">
+                            <v-card class="pa-4 mb-3" outlined>
+                                <v-card-title>공지사항</v-card-title>
+                                <v-card-text>
+                                    <v-row class="mb-1">
+                                        <v-col cols="4"><strong>제목</strong></v-col>
+                                        <v-col cols="4"><strong>작성자</strong></v-col>
+                                        <v-col cols="4"><strong>작성 일자</strong></v-col>
+                                    </v-row>
+                                    <v-row v-for="notice in notices" :key="notice.id" class="mb-2">
+                                        <v-col cols="4">{{ notice.title }}</v-col>
+                                        <v-col cols="4">{{ notice.memberName }}</v-col>
+                                        <v-col cols="4">{{ notice.postDate }}</v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+
+                        <!-- 강의 정보 -->
+                        <v-col cols="12" md="6">
+                            <v-card class="pa-4 mb-3" outlined>
+                                <v-card-title>강의 상세 정보</v-card-title>
+                                <v-card-text>
+                                    <div style="margin-bottom: 1px;"><strong>강의 일정:</strong></div>
+                                    <div v-html="lectureSchedules" style="margin-bottom: 5px;"></div>
+                                    <div style="margin-bottom: 1px;">
+                                        <strong>위치:</strong> {{ this.infoData.address }}
+                                        <v-icon @click="showMap()">mdi-map</v-icon>
+                                    </div>
+                                    <!-- <div>
+                                        <div id="map" style="width:100%;height:350px;"></div>
+                                    </div> -->
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                        <!-- 게시글 -->
+                        <v-col cols="12" md="6">
+                            <v-card class="pa-4 mb-3" outlined>
+                                <v-card-title>게시글</v-card-title>
+                                <v-card-text>
+                                    <v-row class="mb-1">
+                                        <v-col cols="4"><strong>제목</strong></v-col>
+                                        <v-col cols="4"><strong>작성자</strong></v-col>
+                                        <v-col cols="4"><strong>작성 일자</strong></v-col>
+                                    </v-row>
+                                    <v-row v-for="notice in notices" :key="notice.id" class="mb-2">
+                                        <v-col cols="4">{{ notice.title }}</v-col>
+                                        <v-col cols="4">{{ notice.memberName }}</v-col>
+                                        <v-col cols="4">{{ notice.postDate }}</v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+
+
+                </v-container>
+            </v-tabs-window-item>
+
             <!-- 과제 탭 -->
             <v-tabs-window-item value="assignment">
                 <v-card flat>
@@ -346,10 +430,33 @@
 
             </v-card>
         </v-dialog>
+        <v-dialog v-model="mapModal" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                    주소 확인
+                </v-card-title>
+                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+
+                <v-card-text class="pa-4 pt-0">
+                    <div>
+                        <div id="map" style="width:100%;height:350px;"></div>
+                    </div>
+                </v-card-text>
+                <v-card-actions class="pa-4">
+                    <v-row justify="center">
+                        <v-btn variant="outlined" @click="mapModal = false" class="mr-3">확인</v-btn>
+                    </v-row>
+                </v-card-actions>
+                <v-divider class="mt-2 mb-10"></v-divider>
+
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
 <script>
+/* global kakao */
+
 import LectureInfoCard from './LectureInfoCard.vue';
 // import LectureTabs from './LectureTabs.vue';
 import axios from 'axios';
@@ -361,6 +468,7 @@ export default {
     },
     data() {
         return {
+            isShowMap: false,
             istutor: false,
             page: 0,
             size: 5,
@@ -368,18 +476,15 @@ export default {
             noticePage: 1,
             assignmentPages: 0,
             assignmentPage: 1,
-            coordinate: {
-                lat: 33.450701,
-                lng: 126.570667
-            },
             infoData: {
                 category: "",
                 chatRoomId: 0,
                 contents: "",
                 image: "",
-                latitude: "",
+                // latitude: "",
                 limitPeople: null,
-                longtitude: "",
+                address: "",
+                // longtitude: "",
                 memberName: "",
                 startDate: "",
                 title: "",
@@ -426,6 +531,9 @@ export default {
             notices: [],
             tutees: [],
             isLecture: false,
+            isKakaoScriptLoaded: false,
+            mapModal:false,
+
         };
     },
     async created() {
@@ -447,6 +555,7 @@ export default {
         this.infoData.memberName = data.memberName;
         this.infoData.startDate = data.startDate;
         this.infoData.title = data.title;
+        this.infoData.address = data.address;
         this.breadItems[1].title = this.infoData.title
         this.infoData.lectureGroupTimes = data.lectureGroupTimes;
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
@@ -472,8 +581,55 @@ export default {
         if (memberInfo && JSON.parse(memberInfo).name === this.infoData.memberName) {
             this.istutor = true;
         }
+        if (this.infoData.address != "") this.isShowMap = true;
+        console.log("map" + this.isShowMap)
+        this.loadKakaoMapScript();
+
     },
     methods: {
+        showMap(){
+            this.execDaumPostcode();
+            this.mapModal=true;
+        },
+        loadKakaoMapScript() {
+            const script = document.createElement('script');
+            script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=03a055c21377bee26ab1559dedf4af6f&libraries=services&autoload=false`;
+            script.onload = () => {
+                window.kakao.maps.load(() => {
+                    this.isKakaoScriptLoaded = true;
+                });
+            };
+            document.head.appendChild(script);
+        },
+        // 주소 검색 api
+        execDaumPostcode() {
+            // 주소 검색한 거 기반으로 위도 경도
+            // 좌표 검색을 위해 Kakao 지도 Geocoder 사용
+            const geocoder = new kakao.maps.services.Geocoder();
+            geocoder.addressSearch(this.infoData.address, (result, status) => {
+                if (status === kakao.maps.services.Status.OK) {
+                    console.log('위도 : ' + result[0].y);
+                    console.log('경도 : ' + result[0].x);
+
+                    // 지도에 마커를 추가하는 로직
+                    this.initMap(result[0].y, result[0].x);
+                }
+            });
+        },
+        initMap(latitude, longitude) {
+            const mapContainer = document.getElementById('map');
+            const mapOption = {
+                center: new kakao.maps.LatLng(latitude, longitude),
+                level: 3
+            };
+            const map = new kakao.maps.Map(mapContainer, mapOption);
+
+            const markerPosition = new kakao.maps.LatLng(latitude, longitude);
+            const marker = new kakao.maps.Marker({
+                position: markerPosition
+            });
+            marker.setMap(map);
+        },
         async handleNoticePageChange() {
             this.page = this.noticePage - 1;
             let params = {
@@ -507,33 +663,33 @@ export default {
         async fetchComments(noticeId) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list`)
             this.comments = response?.data?.result?.content || [];
-            console.log("comment"+JSON.stringify(this.comments))
+            console.log("comment" + JSON.stringify(this.comments))
         },
         async submitComment() {
-        const body = {
-            contents: this.newComment,
-        };
-        if(this.commentId) {
-            const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}`, body);
+            const body = {
+                contents: this.newComment,
+            };
+            if (this.commentId) {
+                const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}`, body);
+                console.log(response)
+            }
+            else {
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/create`, body);
+                console.log(response)
+            }
+
+            this.newComment = '';
+            await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
+        },
+        async editComment(comment) {
+            this.commentId = comment.id;
+            this.newComment = comment.contents;
+        },
+        async deleteComment(comment) {
+            this.commentId = comment.id;
+            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
             console.log(response)
-        }
-        else {
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/create`, body);
-            console.log(response)
-        }    
-        
-        this.newComment = '';
-        await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
-    },
-    async editComment(comment) {
-        this.commentId = comment.id;
-        this.newComment = comment.contents;
-    },
-    async deleteComment(comment){
-        this.commentId = comment.id;
-        const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
-        console.log(response)
-    },
+        },
         renewNotice() {
             this.noticeTitle = "";
             this.noticeContent = "";
@@ -641,6 +797,7 @@ export default {
             console.log(response);
             window.location.reload()
         },
+
         changeDay(day) {
             switch (day) {
                 case 'MONDAY':

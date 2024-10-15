@@ -38,7 +38,7 @@
 
     <!-- 메인 캘린더 -->
     <v-container class="calendar-container">
-      <FullCalendar ref="fullCalendar" :options="calendarOptions" />
+      <FullCalendar ref="fullCalendar" :options="calendarOptions" class="full-calender"/>
       <HandleScheduleModal
         v-if="isModalVisible"
         :selectedDate="selectedDate"
@@ -448,22 +448,24 @@ export default {
   justify-content: flex-start;
 }
 
-.mini-calendar-container {
+::v-deep .mini-calendar-container {
+  margin-top: 25%;
   margin-bottom: 20px;
 }
 
-.mini-calendar-container .fc-header-toolbar {
+::v-deep .mini-calendar-container .fc-header-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.mini-calendar-container .fc-toolbar-title {
-  font-size: 16px;
+::v-deep .mini-calendar-container .fc-toolbar-title {
+  margin-top: 10%;
+  font-size: 20px;
 }
 
-.mini-calendar-container .fc-prev-button,
-.mini-calendar-container .fc-next-button {
+::v-deep .mini-calendar-container .fc-prev-button,
+::v-deep .mini-calendar-container .fc-next-button {
   background: none;
   border: none;
   font-size: 18px;
@@ -471,38 +473,21 @@ export default {
   color: #000;
 }
 
-.mini-calendar-container .fc-prev-button:hover,
-.mini-calendar-container .fc-next-button:hover {
-  color: #007bff;
-}
-
-.mini-calendar-container .fc-col-header-cell-cushion {
+::v-deep .mini-calendar-container .fc-col-header-cell-cushion {
+  color: #000;
   font-size: 12px;
   padding: 5px 0;
 }
 
-.mini-calendar-container .fc-daygrid-day-number {
-  font-size: 12px;
-}
-
-.mini-calendar-container .fc-day-sun .fc-daygrid-day-number {
-  color: red; /* 일요일 날짜는 빨간색 */
-}
-
-.mini-calendar-container .fc-daygrid-event-dot {
-  background-color: #007bff; /* 일정이 있는 날짜에 찍히는 점 색상 */
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-left: 4px;
-}
 
 /* 메인 캘린더 */
-.calendar-container {
+::v-deep .calendar-container {
+  margin-left: 5%;
+  margin-top: 5%;
   max-width: 950px;
   flex-grow: 0;
   padding: 10px;
+  color: #000;
 }
 
 .today-schedule,
@@ -534,25 +519,6 @@ export default {
   color: #B71C1C !important;
 }
 
-/* 날짜 셀의 스타일 */
-.mini-calendar-container .fc-daygrid-day-number {
-  font-weight: bold;
-}
-
-.event-dot {
-  background-color: #007bff;
-  border-radius: 50%;
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-left: 4px;
-  vertical-align: middle;
-}
-
-.mini-calendar-container .fc-day-sun .fc-daygrid-day-number {
-  color: red; /* 공휴일과 일요일 빨간색으로 표기 */
-}
-
 ::v-deep .fc-prev-button, 
 ::v-deep .fc-next-button {
   background: none;
@@ -567,7 +533,15 @@ export default {
 
 ::v-deep .fc-prev-button:hover, 
 ::v-deep .fc-next-button:hover {
-  color: #007bff;
+  color: #000;
+}
+::v-deep .fc-daygrid-day-number{
+  color: #000;
+  text-decoration: none;
 }
 
+::v-deep .fc-col-header-cell-cushion{
+  color: #000;
+  text-decoration: none;
+}
 </style>

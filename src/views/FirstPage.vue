@@ -31,6 +31,14 @@
                 <div class="menu-icon">👨‍💼</div>
                 <div class="menu-title">취업/직무</div>
             </div>
+            <div class="menu-list">
+                <img src="@/assets/meeting-room_2645420.png" class="menu-icon">
+                <div class="menu-title">강의</div>
+            </div>
+            <div class="menu-list">
+                <img src="@/assets/conversation_2821731.png" class="menu-icon">
+                <div class="menu-title">과외</div>
+            </div>
         </section>
             
         <hr/>
@@ -178,7 +186,7 @@ export default {
 }
 .menu-list {
     width: 80px;
-    height: 110px;
+    height: 100px;
     margin: 0 10px;
     display: inline-block;
 }
@@ -189,8 +197,9 @@ export default {
 }
 .menu-icon{
     font-size: 60px;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
+    margin: 5px;
 }
 .menu-title {
     font-weight: 700;

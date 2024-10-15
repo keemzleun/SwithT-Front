@@ -1,15 +1,18 @@
 <template>
-    <v-app-bar app style="background-color: #FFF490;">
-        <v-btn @click="$router.push('/')">SwithT</v-btn>
-        <v-btn @click="LecturePageBtn()">과외</v-btn>
-        <v-btn @click="LessonPageBtn()">강의</v-btn>
+    <v-app-bar :elevation="0" scroll-behavior="hide" style="z-index: 1;">
+        <router-link to="/">
+            <img src="@/assets/logo.png" alt="logo" style="width: 150px; margin-left: 20px;">
+        </router-link>
+        <!-- <v-btn @click="$router.push('/')">SwithT</v-btn> -->
+        <!-- <v-btn @click="LecturePageBtn()">과외</v-btn>
+        <v-btn @click="LessonPageBtn()">강의</v-btn> -->
         <!-- <v-btn @click="getPrice()">gdgdgdgdgd</v-btn> -->
-        <v-btn @click="openAlertListModal()" style="margin-left: 60%;">
+        <!-- <v-btn @click="openAlertListModal()" style="margin-left: 60%;">
             <v-icon>mdi-bell</v-icon>
             <span>{{ count }}</span>
-        </v-btn>
-        <v-btn style="margin-left: auto; " v-if="!isLogin" @click="login()">회원가입/로그인</v-btn>
-        <v-btn style="margin-left: auto; " v-if="isLogin" @click="logout()">로그아웃</v-btn>
+        </v-btn> -->
+        <v-btn style="margin: 0 20px 0 auto; font-size: 16px;" v-if="!isLogin" @click="login()">로그인</v-btn>
+        <!-- <v-btn style="margin-left: auto; " v-if="isLogin" @click="logout()">로그아웃</v-btn> -->
         <v-dialog v-model="alertDialogSSE">
             <v-card-title>New Alert</v-card-title>
             <v-card-text>
@@ -87,6 +90,7 @@ export default {
             this.count = this.eventList.length // 이벤트 리스트의 길이에 따라 카운트 설정
         }
         // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/hello`)
+
         // console.log(response) 헬스체크 메서드 주석처리.
         
         const token = localStorage.getItem('token')
@@ -135,11 +139,13 @@ export default {
             
             this.member = response.data.result
             
-            const memberInfo = {
-                name: this.member.name,
-                profileImage: this.member.profileImage
-            }
-            localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+            // const memberInfo = {
+            //     name: this.member.name,
+            //     profileImage: this.member.profileImage
+            // }
+            // localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+            localStorage.setItem('profileImage', this.member.profileImage)
+            localStorage.setItem('name', this.member.name)
         
             }
 

@@ -5,7 +5,8 @@ import MemberTutorSocialRegisterView from "@/views/member/MemberTutorSocialRegis
 import MemberTuteeSocialRegisterView from "@/views/member/MemberTuteeSocialRegisterView.vue";
 import MemberEmailLoginView from "@/views/member/MemberEmailLoginView.vue";
 import TuteeEmailRegisterView from "@/views/member/TuteeEmailRegisterView.vue";
-
+import MemberWellcome from "@/views/member/MemberWellcome.vue";
+import MemberMyPage from "@/views/member/MemberMyPage.vue";
 export const memberRouter = [
     {
         path: '/member/main',
@@ -41,5 +42,15 @@ export const memberRouter = [
         path: '/member/email/register/tutee',
         name: 'TuteeEmailRegisterView',
         component: TuteeEmailRegisterView
+    },
+    {
+        path: '/member/wellcome',
+        name: 'MemberWellcome',
+        component: MemberWellcome
+    },
+    {
+        path: '/member/mypage',
+        name: 'MemberMyPage',
+        component: MemberMyPage
     },
 ]

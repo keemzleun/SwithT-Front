@@ -29,19 +29,25 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => response,
   async error => {
-    const token = localStorage.getItem("token");
-    if (error.response && error.response.status === 401 && token != null) {
-      try {
-        localStorage.clear();
-        alert("토큰이 만료되었습니다 재로그인 해주세요!!");
-        window.location.href = "/login";
-      } catch (e) {
-        console.log(e.response);
+      if (error.response && error.response.status === 401) {
+          const refreshToken = localStorage.getItem('refreshToken');
+          try {
+              localStorage.removeItem('token');
+              const response = await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/refresh-token`, { refreshToken });
+              localStorage.setItem('token', response.data.result.token);
+              window.location.reload();
+          } catch (e) {
+              console.log(e);
+              localStorage.clear();
+              window.location.href = "/member/main";
+
+          }
+
       }
-    }
-    return Promise.reject(error);
+      return Promise.reject(error)
   }
 );
+
 useKakao('03a055c21377bee26ab1559dedf4af6f',['clusterer', 'services', 'drawing']);
 app.use(router);
 app.use(vuetify);

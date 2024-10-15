@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-4">
         <div class="card">
-          <div class="card-body text-center">
+          <div class="card-body text-center" :style="{ minHeight: '485px' }">
             <img
               :src="
                 memberInfo.profileImage || 'https://via.placeholder.com/150'

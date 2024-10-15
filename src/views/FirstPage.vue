@@ -4,15 +4,15 @@
             임시 배너
         </div>
         <div class="search-container">
-            <v-text-field
+            <input
                 v-model="searchValue"
-                label="SwithT와 함께 배우고, 나누고, 성장하세요"
                 dense
                 hide-details="true"
                 class="search-bar"
+                placeholder="SwithT와 함께 배우고, 나누고, 성장하세요"
                 @keyup.enter="performSearch"
             />
-            <v-btn @click="performSearch" class="search-btn">검색</v-btn>
+            <span @click="performSearch" class="search-btn mdi mdi-magnify"></span>
         </div>
         <section class="menu">
             <div class="menu-list" @click="performCategorySearch('DEVELOPMENT')">
@@ -86,6 +86,7 @@
         </section>
     </v-container>   
 </template>
+
 <script>
 import axios from "axios";
 
@@ -276,18 +277,36 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 800px;
-    margin-left: 20%;
-    margin-top: 20px;
+    margin-top: 50px;
 }
 .search-bar {
-    width: 700px;
+    width: 40vw;
     height: 50px;
-    font-size: 20px;
-    border-radius: 10px;
+    border-radius: 50px;
+    background-color: #d1e4fb;
+    border: 1px solid #a7caef;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
+    padding: 14px 20px;
+    border-radius: 28px;
+    height: auto;
+    transition: all .2s ease;
 }
+.search-bar:focus {
+    outline: unset;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
+    border: 1px solid #dedede;
+    background-color: #fff;
+}
+
 .search-btn {
-    margin-left: 20px; /* 검색창과 버튼 사이 간격 */
-    height: 70px; /* 검색창과 버튼 높이 동일하게 설정 */
+    color: #555;
+    margin-left: 10px;
+    font-size: 30px;
+    transition: all .2s ease;
 }
+.search-btn:hover {
+    cursor: pointer;
+    font-size: 35px;
+}
+
 </style>

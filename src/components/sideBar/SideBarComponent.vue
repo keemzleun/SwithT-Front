@@ -122,7 +122,7 @@ export default {
         this.menuItems = [
           { title: '채팅', icon: 'chat' },
           { title: '내 강의', icon: 'book' },
-          { title: '내 스케줄', icon: 'calendar_today' },
+          { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
           { title: '신청 내역', icon: 'assignment', route: '/tutee-applied-list'},
           { title: '내 정보', icon: 'person' },
         ];
@@ -130,7 +130,7 @@ export default {
         this.menuItems = [
           { title: '채팅', icon: 'chat' },
           { title: '내 강의', icon: 'book' },
-          { title: '내 스케줄', icon: 'calendar_today' },
+          { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
           { title: '신청 내역', icon: 'assignment', route: '/tutor-applied-list'},
           { title: '리뷰 관리', icon: 'rate_review' },
           { title: '정산금 관리', icon: 'monetization_on' },

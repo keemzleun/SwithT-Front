@@ -4,6 +4,7 @@ import TuteeAppliedList from '@/pendingLectures/TuteeAppliedList.vue';
 import TutorAppliedList from '@/pendingLectures/TutorAppliedList.vue';
 import AdminAppliedList from '@/pendingLectures/AdminAppliedList.vue';
 import ApplyLecturePage from '@/views/ApplyLecturePage.vue';
+import LectureDetailView from '@/components/LectureDetailInfoComponent.vue';
 
 export const FirstRouter = [
     // 메인 화면
@@ -39,6 +40,13 @@ export const FirstRouter = [
         path: "/apply-lecture",
         name: "ApplyLecture",
         component: ApplyLecturePage,
+    },
+
+    // 강의 상세 정보 페이지
+    {
+        path: "/lecture/:id",
+        name: "LectureDetail",
+        component: LectureDetailView,
     }
 
 ]

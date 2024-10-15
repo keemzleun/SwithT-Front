@@ -5,54 +5,15 @@
                 <v-icon>mdi-menu-right</v-icon>
             </template>
         </v-breadcrumbs>
-        <!-- 노란색 v-card -->
-        <v-card class="pa-4" style="border: 5px #FFF490 solid;">
-            <v-row>
-                <v-col cols="3">
-                    <v-img :src="this.infoData.image" alt="썸네일" width="90%" height="100%"></v-img>
-                </v-col>
 
-                <v-col cols="9" class="pa-4">
-                    <div class="d-flex align-center">
-                        <h2>{{ this.infoData.title }}</h2>
-                        <v-btn variant="tonal" class="ma-2" @click="clickChatRoom()">채팅</v-btn>
-                    </div>
-                    <v-row>
-                        <v-col cols="6" class="text-left">
-                            <div style="margin-bottom: 10px;"><strong>분야:</strong> {{ this.infoData.category }}</div>
-                            <div style="margin-bottom: 10px;"><strong>시작 일자:</strong> {{ this.infoData.startDate }}
-                            </div>
-                            <div style="margin-bottom: 1px;"><strong>강의 일정:</strong></div>
-                            <div v-html="lectureSchedules" style="margin-bottom: 10px;"></div>
-                            <div style="margin-bottom: 10px;"><strong>튜터:</strong> {{ this.infoData.memberName }}</div>
-                        </v-col>
+        <!-- Lecture Info Card 컴포넌트 -->
+        <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" />
 
-                        <v-col cols="6" class="text-left">
-                            <!-- todo : 주소 뽑는 거 api 고치기 -->
-
-                            <div><strong>장소:</strong> 서울특별시 동작구 신대방동 플레이데이터 4층 API 고쳐야함 주소 스트링으로 받을까?</div>
-                            <!-- <KakaoMap :lat="this.infoData.latitude" :lng="this.infoData.longtitude" :draggable="true"
-                                width="90%" height="100%">
-                                <KakaoMapMarker :lat="this.infoData.latitude" :lng="this.infoData.longtitude">
-                                </KakaoMapMarker>
-                            </KakaoMap> -->
-                            <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" :draggable="true" width="90%"
-                                height="100%">
-                                <KakaoMapMarker :lat="coordinate.lat" :lng="coordinate.lng"></KakaoMapMarker>
-                            </KakaoMap>
-                            <!-- Kakao Map API -->
-                            <!-- <div id="map" style="width: 100%; height: 150px;"></div> -->
-                        </v-col>
-                    </v-row>
-                </v-col>
-            </v-row>
-        </v-card>
-
-        <!-- Tabs -->
+        <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="assignment">과제</v-tab>
             <v-tab value="notice">게시판</v-tab>
-            <v-tab value="tuteeList">튜티 리스트</v-tab>
+            <v-tab value="tuteeList" v-if="isLecture&&istutor">튜티 리스트</v-tab>
         </v-tabs>
 
         <v-tabs-window v-model="tab">
@@ -61,7 +22,8 @@
                 <v-card flat>
                     <v-card-text>
                         <v-row justify="end" class="mr-4">
-                            <v-btn color="#90CDFF" @click="assignmentCreateModal = true"><strong>생성</strong></v-btn>
+                            <v-btn color="#90CDFF" @click="assignmentCreateModal = true"
+                                v-if="this.istutor"><strong>생성</strong></v-btn>
                         </v-row>
 
                         <!-- 과제 목록 -->
@@ -70,32 +32,76 @@
                                 class="text-left">
                                 <v-card class="pa-4 mb-3" outlined>
                                     <v-row>
-                                        <v-col>
+                                        <v-col @click="viewAssignmentOpen(assignment.id)">
                                             <h3>{{ assignment.title }}</h3>
                                             <p>제출 시작 날짜: {{ assignment.startDate }}</p>
                                             <p>제출 마감 날짜: {{ assignment.endDate }}</p>
                                         </v-col>
 
                                         <v-col cols="auto">
-                                            <v-btn color="#90CDFF"
-                                                @click="updateAssignmentOpen(assignment.id)"><strong>수정</strong></v-btn>
+                                            <v-btn color="#90CDFF" @click="updateAssignmentOpen(assignment.id)"
+                                                v-if="this.istutor"><strong>수정</strong></v-btn>
                                         </v-col>
                                     </v-row>
                                 </v-card>
                             </v-col>
                         </v-row>
+                        <v-pagination v-model="assignmentPage" :length="assignmentPages"
+                            @click="handleAssignmentPageChange()"></v-pagination>
+
                     </v-card-text>
                 </v-card>
             </v-tabs-window-item>
             <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
-                <v-card flat>
+                <v-row justify="end" class="mt-4 mb-4 mr-12">
+                    <v-btn color="#90CDFF" @click="assignmentCreateModal = true"><strong>생성</strong></v-btn>
+                </v-row>
+                <v-row>
+                    <v-col>
+
+                        <v-row class="header">
+                            <v-col cols="2">작성자</v-col>
+                            <v-col cols="2">분류</v-col>
+                            <v-col cols="4">제목</v-col>
+                            <v-col cols="2">작성 일자</v-col>
+                            <v-col cols="2">수정/삭제</v-col>
+                        </v-row>
+                    </v-col>
+                </v-row>
+                <v-row>
+
+                    <v-col v-if="notices.length">
+
+                        <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
+                            <v-col cols="2">{{ notice.memberName }}</v-col>
+                            <v-col cols="2">{{ notice.type }}</v-col>
+                            <v-col cols="4">{{ notice.title }}</v-col>
+                            <v-col cols="2">{{ notice.postDate }}</v-col>
+                            <v-col cols="2">
+                                <!-- <template v-slot:[getitemcontrols()]="{ item }"> -->
+
+                                <v-icon class="me-2" size="small" @click.stop="editItem(notice)" v-if="notice.author">
+                                    mdi-pencil
+                                </v-icon>
+                                <v-icon size="small" @click.stop="deleteItem(notice)" v-if="notice.author">
+                                    mdi-delete
+                                </v-icon>
+                                <!-- </template> -->
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                </v-row>
+                <v-pagination v-model="noticePage" :length="noticePages"
+                    @click="handleNoticePageChange()"></v-pagination>
+
+                <!-- <v-card flat>
                     <v-card-text>
                         <v-row justify="end" class="mr-4">
                             <v-btn color="#90CDFF" @click="noticeCreateModal = true"><strong>생성</strong></v-btn>
                         </v-row>
                         <v-data-table :headers="headers" :items="notices" class="elevation-1"
-                            @click:row="noticeViewModal = true">
+                            @click:row="(item) => noticeView(item)">
                             <template v-slot:[getitemcontrols()]="{ item }">
 
                                 <v-icon class="me-2" size="small" @click.stop="editItem(item)">
@@ -107,11 +113,11 @@
                             </template>
                         </v-data-table>
                     </v-card-text>
-                </v-card>
+                </v-card> -->
 
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
-            <v-tabs-window-item value="tuteeList">
+            <v-tabs-window-item value="tuteeList" v-if="this.isLecture&&this.istutor">
                 <v-card flat>
                     <v-card-text>
                         <!-- 튜티 리스트 -->
@@ -130,8 +136,10 @@
                                     <v-col class="d-flex justify-center" style="align-items: center;">
                                         <v-list-item-content>
                                             <v-list-item-title class="tutee-name"
-                                                style="font-weight:400; text-align: center;"><h5>{{
-                                                    tutee.tuteeName }}</h5></v-list-item-title>
+                                                style="font-weight:400; text-align: center;">
+                                                <h5>{{
+                                                    tutee.tuteeName }}</h5>
+                                            </v-list-item-title>
                                         </v-list-item-content>
                                     </v-col>
                                 </v-row>
@@ -144,6 +152,7 @@
         </v-tabs-window>
 
         <!-- 과제 모달 -->
+
         <v-dialog v-model="assignmentCreateModal" max-width="500px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
@@ -165,7 +174,7 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="cancelAssignment()" class="mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="renewAssignment()" class="mr-3">취소하기</v-btn>
                         <v-btn variant="outlined" @click="submitAssignmentCreate()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
@@ -173,6 +182,35 @@
 
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="assignmentViewModal" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                    과제 조회
+                </v-card-title>
+                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+
+                <v-card-text class="pa-4 pt-0">
+                    <!-- 제목  -->
+                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
+                    <input class="mb-2 ml-2 mr-2" v-model="assignmentDate" type="datetime-local" outlined>
+                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
+                    <v-textarea v-model="assignmentContent" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-2 mr-2"></v-textarea>
+                </v-card-text>
+                <v-card-actions class="pa-4">
+                    <v-row justify="center">
+                        <v-btn variant="outlined" @click="assignmentViewModal = false" class="mr-3">확인</v-btn>
+                    </v-row>
+                </v-card-actions>
+                <v-divider class="mt-2 mb-10"></v-divider>
+
+            </v-card>
+        </v-dialog>
+
         <v-dialog v-model="assignmentUpdateModal" max-width="500px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
@@ -194,8 +232,8 @@
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
                         <v-btn variant="outlined" @click="assignmentUpdateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="assignmentUpdateModal = false" class="mr-3">삭제하기</v-btn>
-                        <v-btn variant="outlined" @click="submitForm">등록하기</v-btn>
+                        <v-btn variant="outlined" @click="deleteAssignments()" class="mr-3">삭제하기</v-btn>
+                        <v-btn variant="outlined" @click="updateAssignment()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -218,16 +256,16 @@
                         hide-details></v-switch>
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-2 mr-2"></v-text-field>
                     <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
                         class="mb-2 ml-2 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
                         <v-btn variant="outlined" @click="noticeCreateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitForm">등록하기</v-btn>
+                        <v-btn variant="outlined" @click="noticeCreate()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -247,17 +285,16 @@
                         hide-details></v-switch>
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="title" type="text" rounded="xs" variant="outlined"
+                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-2 mr-2"></v-text-field>
                     <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="content" label="내용" variant="outlined" rows="5"
+                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
                         class="mb-2 ml-2 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
                         <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">삭제하기</v-btn>
-                        <v-btn variant="outlined" @click="submitForm">수정하기</v-btn>
+                        <v-btn variant="outlined" @click="submitEditNotice()">수정하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -275,10 +312,10 @@
 
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="title" type="text" rounded="xs" disabled
-                        class="mb-2 ml-2 mr-2"></v-text-field>
+                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
+
                     <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="content" label="내용" disabled rows="5" class="mb-2 ml-2 mr-2"></v-textarea>
+                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeContent }}</v-row>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -291,19 +328,30 @@
         </v-dialog>
     </v-container>
 </template>
-<script setup>
-import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
-const coordinate = {
-    lat: 33.450701,
-    lng: 126.570667
-};
-</script>
+
 <script>
+import LectureInfoCard from './LectureInfoCard.vue';
+// import LectureTabs from './LectureTabs.vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 export default {
+    components: {
+        LectureInfoCard,
+        // LectureTabs,
+    },
     data() {
         return {
+            istutor: false,
+            page: 0,
+            size: 5,
+            noticePages: 0,
+            noticePage: 1,
+            assignmentPages: 0,
+            assignmentPage: 1,
+            coordinate: {
+                lat: 33.450701,
+                lng: 126.570667
+            },
             infoData: {
                 category: "",
                 chatRoomId: 0,
@@ -319,41 +367,42 @@ export default {
             },
 
             notice: [],
+            noticeTitle: "",
+            noticeContent: "",
+            noticeId: null,
+
             tab: 0,
             lectureSchedules: "",
             lectureGroupId: 0,
             assignmentCreateModal: false,
             assignmentUpdateModal: false,
+            assignmentViewModal: false,
             noticeCreateModal: false,
             noticeUpdateModal: false,
             noticeViewModal: false,
             isNotice: false,
             breadItems: [
                 {
-                    title: '강의',
+                    title: '',
                     disabled: false,
                     href: 'breadcrumbs_dashboard',
                 },
 
                 {
-                    title: '수학 천재가 되는 길',
+                    title: '',
                     disabled: true,
                     href: 'breadcrumbs_link_2',
                 },
             ],
-            headers: [
-                { text: '작성자', value: 'memberName' },
-                { text: '분류', value: 'type' },
-                { text: '제목', value: 'title' },
-                { text: '작성 일자', value: 'postDate' },
-                { text: '수정/삭제', value: 'actions', sortable: false }
-            ],
+
             assignments: [],
-            assignmentTitle:"",
-            assignmentDate:null,
-            assignmentContent:"",
+            assignmentTitle: "",
+            assignmentDate: null,
+            assignmentContent: "",
+            assignmentId: null,
             notices: [],
             tutees: [],
+            isLecture: false,
         };
     },
     async created() {
@@ -363,6 +412,9 @@ export default {
         console.log(infoGetResponse);
         const data = infoGetResponse?.data?.result;
         this.infoData.category = this.changeCategory(data.category);
+        this.isLecture = data.lectureType === "LECTURE" ? true : false;
+        console.log("강의야?" + this.isLecture)
+        this.breadItems[0].title = this.isLecture ? "강의" : "과외"
         this.infoData.chatRoomId = data.chatRoomId;
         this.infoData.contents = data.contents;
         this.infoData.image = data.image;
@@ -372,6 +424,7 @@ export default {
         this.infoData.memberName = data.memberName;
         this.infoData.startDate = data.startDate;
         this.infoData.title = data.title;
+        this.breadItems[1].title = this.infoData.title
         this.infoData.lectureGroupTimes = data.lectureGroupTimes;
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
             return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
@@ -379,47 +432,158 @@ export default {
 
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
-        const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`)
+        let params = {
+            size: this.size,
+            page: this.page,
+        };
+        const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
         this.notices = noticeResponse?.data?.result?.content;
-        const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
+        this.noticePages = noticeResponse?.data?.result?.totalPages;
+        console.log(this.notices)
+        const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params })
         this.assignments = assignmentResponse?.data?.result?.content;
+        this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
+
+        console.log(this.assignments);
+        const memberInfo = localStorage.getItem('memberInfo');
+        if (memberInfo && JSON.parse(memberInfo).name === this.infoData.memberName) {
+            this.istutor = true;
+        }
     },
     methods: {
-        cancelAssignment(){
-            this.assignmentCreateModal=false;
-            this.assignmentTitle="";
-            this.assignmentDate=null;
-            this.assignmentContent="";
+        async handleNoticePageChange() {
+            this.page = this.noticePage - 1;
+            let params = {
+                size: this.size,
+                page: this.page,
+            };
+            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+            this.notices = noticeResponse?.data?.result?.content;
+            this.noticePages = noticeResponse?.data?.result?.totalPages;
         },
-        async submitAssignmentCreate(){
-            try{
+        async handleAssignmentPageChange() {
+            this.page = this.assignmentPage - 1;
+            let params = {
+                size: this.size,
+                page: this.page,
+            };
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params })
+            this.assignments = response?.data?.result?.content;
+            this.assignmentPages = response?.data?.result?.totalPages;
+        },
+        async noticeView(item) {
+            this.noticeViewModal = true;
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
+            console.log(response)
+            this.noticeTitle = response?.data?.result?.title;
+            this.noticeContent = response?.data?.result?.contents;
+        },
+        renewNotice() {
+            this.noticeTitle = "";
+            this.noticeContent = "";
+            this.isNotice = false;
+        },
+        async noticeCreate() {
+            let type = null;
+            if (this.isNotice) type = "NOTICE";
+            else type = "POST"
+            const body = {
+                title: this.noticeTitle,
+                contents: this.noticeContent,
+                type
+            }
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body)
+
+            console.log(response)
+
+        },
+        // 과제 CRUD 메서드
+        renewAssignment() {
+            this.assignmentCreateModal = false;
+            this.assignmentUpdateModal = false;
+            this.assignmentTitle = "";
+            this.assignmentDate = null;
+            this.assignmentContent = "";
+            this.assignmentId = null;
+        },
+        async submitAssignmentCreate() {
+            try {
                 console.log(this.assignmentTitle)
                 console.log(this.assignmentDate)
                 console.log(this.assignmentContent)
                 const endDate = this.assignmentDate.split('T')[0];
                 const endTime = this.assignmentDate.split('T')[1];
-                const body={
-                    title : this.assignmentTitle,
-                    contents : this.assignmentContent,
+                const body = {
+                    title: this.assignmentTitle,
+                    contents: this.assignmentContent,
                     endDate,
                     endTime
                 }
-                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`,body)
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body)
                 console.log(response);
-                this.cancelAssignment();
+                this.renewAssignment();
             }
-            catch(e){
+            catch (e) {
                 console.log(e);
             }
         },
-        async updateAssignmentOpen(id){
+        async viewAssignmentOpen(id) {
+            const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
+            this.assignmentViewModal = true;
+            this.assignmentTitle = getResponse?.data?.result?.title;
+            this.assignmentContent = getResponse?.data?.result?.contents;
+            this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
+            this.assignmentId = getResponse?.data?.result?.id;
+            console.log(getResponse)
+        },
+        async updateAssignmentOpen(id) {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentUpdateModal = true;
             this.assignmentTitle = getResponse?.data?.result?.title;
             this.assignmentContent = getResponse?.data?.result?.contents;
-            this.assignmentDate = getResponse?.data?.result?.endDate + 'T'+ getResponse?.data?.result?.endTime;
-
+            this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
+            this.assignmentId = getResponse?.data?.result?.id;
             console.log(getResponse)
+        },
+        async updateAssignment() {
+            try {
+                // 날짜 및 시간 분리
+                const [endDate, endTime] = this.assignmentDate.split('T');
+
+                const body = {
+                    title: this.assignmentTitle,
+                    contents: this.assignmentContent,
+                    endDate,
+                    endTime
+                };
+
+                // axios 요청
+                const response = await axios.put(
+                    `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/update`,
+                    body
+                );
+                this.renewAssignment();
+                // 응답이 성공적이면 새로고침
+                if (response && response.status === 200) {
+                    console.log('Update successful:', response);
+                    this.assignmentUpdateModal = false;
+                    await this.fetchAssignments();
+                } else {
+                    console.error('Update failed:', response);
+                }
+            } catch (error) {
+                console.error('Error updating assignment:', error);
+            }
+        },
+        // todo : update reload 잘 해보기
+        async fetchAssignments() {
+            const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
+            this.assignments = assignmentResponse?.data?.result?.content;
+        },
+        async deleteAssignments() {
+            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
+            console.log(response);
+            window.location.reload()
         },
         changeDay(day) {
             switch (day) {
@@ -457,14 +621,34 @@ export default {
         getitemcontrols() {
             return `item.actions`;
         },
-        editItem(item) {
+        async editItem(item) {
+            this.renewNotice();
+            const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
+            console.log(getResponse)
+            this.noticeTitle = getResponse?.data?.result?.title;
+            this.noticeContent = getResponse?.data?.result?.contents;
             this.noticeUpdateModal = true;
-            console.log(item)
+            this.noticeId = item.id;
         },
-        deleteItem(item) {
-            console.log(item)
+        async submitEditNotice() {
+            let type = null;
+            if (this.isNotice) type = "NOTICE";
+            else type = "POST"
+            const body = {
+                title: this.noticeTitle,
+                contents: this.noticeContent,
+                type
+            }
+            const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${this.noticeId}`, body)
+            console.log(response)
+            this.noticeUpdateModal = false;
+
         },
-        
+        async deleteItem(item) {
+            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}/delete`)
+            console.log(response)
+        },
+
     }
 
 };
@@ -475,6 +659,10 @@ export default {
     height: 150px;
 }
 
+.header {
+    font-weight: bold;
+    border-bottom: 2px solid #ccc;
+}
 
 .text-left {
     text-align: left;
@@ -495,5 +683,4 @@ export default {
 .v-list-item-avatar {
     margin-right: 10px;
 }
-
 </style>

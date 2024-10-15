@@ -33,13 +33,17 @@ export default {
       menuItems: []
     };
   },
-  created() {
+  async created() {
+    await this.getMyInfo();
     const token = localStorage.getItem('token');
       if (token) {
         this.isLogin = true;
+        this.userRole = localStorage.getItem('role');
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
+        this.profileUrl = response.data.profileImage;
         this.profileUrl = localStorage.getItem('profileImage');
         this.userName = localStorage.getItem('name');
-        this.userRole = localStorage.getItem('role');
+        
         console.log(this.userRole);
         this.setMenuItems();
       }
@@ -102,7 +106,7 @@ export default {
   background-color: #f8f9fa;
   padding: 20px;
   position: fixed;
-  z-index: 1;
+  z-index: 2 !important;
   right: 0;
 }
 .profile {

@@ -20,7 +20,8 @@
             </div>
             <a
               href="#"
-              class="btn btn-primary btn-block mt-3"
+              class="btn btn-block mt-0 ml-5"
+            :style="{ backgroundColor: '#6C97FD', color: 'white' }"
               @click="selectImage"
               >프로필 이미지 수정</a
             >
@@ -140,12 +141,19 @@
               <br />
               <button
                 type="button"
-                class="btn btn-secondary"
+                class="btn"
+                :style="{ backgroundColor: '#6C97FD', color: 'white' }"
                 @click="isEditing = true"
               >
-                수정하기
+                수정하기 
+                <!-- '#82D691' -->
               </button>
-              <button type="submit" class="btn btn-primary" v-if="isEditing">
+              <button 
+               type="submit" 
+               class="btn ml-3" 
+               v-if="isEditing"
+               :style="{ backgroundColor: '#82D691', color: 'white' }"
+               >
                 수정 완료
               </button>
             </form>

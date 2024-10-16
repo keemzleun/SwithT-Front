@@ -1,9 +1,17 @@
 <template>
-  <v-container class="d-flex justify-center align-center" style="height: 65vh">
+  <v-container 
+  class="d-flex justify-center align-center" 
+  style="height:65vh; margin-top:80px;">
+  
+    
     <v-card 
     class="pa-8" 
-    outlined style="background-color: ; width: 800px; height: 400px; border-radius: 25px">
+    outlined
+    style="background-color: white; width: 800px; height: 500px; border-width: 1px; border-radius: 10px;">
       <!-- 탭 메뉴 -->
+      <h3><strong>SwithT</strong></h3>
+      <h5 style="color: gray;">스위티에 오신걸 환영합니다.</h5>
+      <br>
       <v-tabs v-model="activeTab" background-color="#FFF490" grow centered>
         <v-tab style="font-weight: bold; color: black;">TUTOR 로그인</v-tab>
         <v-tab style="font-weight: bold; color: black;">TUTEE 로그인</v-tab>
@@ -30,7 +38,7 @@
             hide-details
           ></v-text-field>
           
-          <v-btn color="#70b8ff" class="mx-auto mt-3" large style="width: 700px;" type="submit">
+          <v-btn color="#6C97FD" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
             로그인
           </v-btn>
         </v-form>
@@ -58,7 +66,7 @@
               required
               hide-details
             ></v-text-field>
-            <v-btn color="#70b8ff" block large class="ma-3" type="submit">
+            <v-btn color="#6C97FD" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
               로그인
             </v-btn>
           </v-form>
@@ -135,5 +143,10 @@ export default {
 a {
   color: black;
   font-weight: bold;
+  text-decoration: none; /* 기본적으로 언더라인 없애기 */
+}
+
+a:hover {
+  text-decoration: underline; /* 마우스가 올라가면 언더라인 표시 */
 }
 </style>

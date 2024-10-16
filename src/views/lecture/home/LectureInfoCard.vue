@@ -1,30 +1,21 @@
 <template>
-    <v-card class="pa-4" style="border: 5px #FFF490 solid;">
+    <v-card class="custom-card">
         <v-row>
-            <v-col cols="3">
-                <v-img :src="infoData.image" alt="썸네일" width="90%" height="100%"></v-img>
+            <v-col cols="3" class="thumbnail-container rounded-circle">
+                <v-img :src="infoData.image" alt="썸네일" class="thumbnail-image rounded-circle"></v-img>
             </v-col>
 
             <v-col cols="9" class="pa-4">
-                <div class="d-flex align-center">
-                    <h2>{{ infoData.title }}</h2>
-                    <v-btn variant="tonal" class="ma-2" @click="clickChatRoom()">채팅</v-btn>
-                </div>
+                    <div class="text-left">
+                        <div class="ml-2" justify="start">{{infoData.memberName}} 선생님 <v-icon @click="clickChatRoom()">mdi-chat</v-icon> </div> 
+                        <h2>{{ infoData.title }}</h2>
+                    </div>
                 <v-row>
                     <v-col cols="6" class="text-left">
-                        <div style="margin-bottom: 10px;"><strong>분야:</strong> {{ infoData.category }}</div>
-                        <div style="margin-bottom: 10px;"><strong>시작 일자:</strong> {{ infoData.startDate }}</div>
+                        <v-chip label>{{ infoData.category }}</v-chip> 
+                        <div style="margin-top: 10px;margin-bottom: 10px;"><strong>시작 일자:</strong> {{ infoData.startDate }}</div>
                         <div style="margin-bottom: 1px;"><strong>강의 일정:</strong></div>
-                        <div v-html="lectureSchedules" style="margin-bottom: 10px;"></div>
-                        <div style="margin-bottom: 10px;"><strong>튜터:</strong> {{ infoData.memberName }}</div>
-                    </v-col>
-
-                    <v-col cols="6" class="text-left">
-                        <div><strong>장소:</strong> 서울특별시 동작구 신대방동 플레이데이터 4층 이건 string값 받으면 그때 변경</div>
-                        <!-- coordinate 값이 있을 경우에만 KakaoMap 렌더링 -->
-                        <KakaoMap v-if="coordinate" :lat="coordinate.lat" :lng="coordinate.lng" :draggable="true" width="90%" height="100%">
-                            <KakaoMapMarker :lat="coordinate.lat" :lng="coordinate.lng"></KakaoMapMarker>
-                        </KakaoMap>
+                        <div v-html="lectureSchedules" style="margin-bottom: 5px;"></div>
                     </v-col>
                 </v-row>
             </v-col>
@@ -33,21 +24,12 @@
 </template>
 
 <script>
-import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
-
 export default {
-    components: {
-        KakaoMap,
-        KakaoMapMarker,
-    },
     props: {
         infoData: Object,
         lectureSchedules: String,
-        coordinate: {
-            type: Object,
-            default: null, // coordinate 값이 없을 경우 null로 처리
-        },
     },
+    
     methods: {
         clickChatRoom() {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
@@ -57,7 +39,45 @@ export default {
 </script>
 
 <style scoped>
+.custom-card {
+    border: 1px solid #E0E0E0;
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+.thumbnail-container {
+
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.thumbnail-image {
+    width: 100%;
+    /* 너비를 고정 */
+    height: 100%;
+    /* 높이를 고정 */
+    border-radius: 100%;
+    /* 동그랗게 만듦 */
+    object-fit: cover;
+    /* 이미지가 잘리지 않게 설정 */
+}
+
+.pa-4 {
+    padding: 16px;
+}
+
 .text-left {
     text-align: left;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 </style>

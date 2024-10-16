@@ -1,6 +1,8 @@
 <template>
     <v-app-bar :elevation="0" scroll-behavior="hide" style="z-index: 1;">
-        <img src="@/assets/logo.png" alt="logo" style="width: 150px; margin-left: 20px;">
+        <router-link to="/">
+            <img src="@/assets/logo.png" alt="logo" style="width: 150px; margin-left: 20px;">
+        </router-link>
         <!-- <v-btn @click="$router.push('/')">SwithT</v-btn> -->
         <!-- <v-btn @click="LecturePageBtn()">과외</v-btn>
         <v-btn @click="LessonPageBtn()">강의</v-btn> -->
@@ -137,11 +139,13 @@ export default {
             
             this.member = response.data.result
             
-            const memberInfo = {
-                name: this.member.name,
-                profileImage: this.member.profileImage
-            }
-            localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+            // const memberInfo = {
+            //     name: this.member.name,
+            //     profileImage: this.member.profileImage
+            // }
+            // localStorage.setItem('memberInfo',JSON.stringify(memberInfo))
+            localStorage.setItem('profileImage', this.member.profileImage)
+            localStorage.setItem('name', this.member.name)
         
             }
 

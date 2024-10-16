@@ -23,8 +23,9 @@
     },
     methods: {
       navigateHome() {
-
-        this.$router.push('/home'); // /home 경로로 라우팅
+        
+        window.location.href = '/home';
+        // this.$router.push('/home'); // /home 경로로 라우팅
       
     }
     }

@@ -164,7 +164,7 @@ export default {
         localStorage.setItem("role", role);
         localStorage.setItem("id", id);
 
-        this.$router.push("/member/wellcome");
+        this.$router.push("/member/welcome");
       } catch (e) {
         const error_message =
           e.response?.data?.error_message ||

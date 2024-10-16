@@ -2,12 +2,14 @@
     <v-container style="margin-top: 60px;">
         <v-row justify="center">
             <v-col cols="4">
-                <v-card>
+                <div ref="scrollCard" class="chat-list-scroll-class">
+                <v-card >
                     <v-card-title>
                         채팅방 리스트
                     </v-card-title>
                     <v-card-text>
-                        <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id" class="custom-border text-left"
+                        <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id"
+                            :class="{ 'selected-chat-room': chatRoomId === chatRoom.chatRoomId, 'custom-border': true }"
                             @click="changeChatRoom(chatRoom)">
                             <v-card-title>
                                 <v-chip v-if="chatRoom.lectureType === 'LESSON'" color="primary"
@@ -21,6 +23,7 @@
                         </v-card>
                     </v-card-text>
                 </v-card>
+            </div>
             </v-col>
             <v-col cols="8" v-if="chatRoomId === null || chatRoomId === ''">
                 <v-card class="chat-card">
@@ -47,18 +50,23 @@
                                 </div>
                             </div>
                         </v-row>
+
+
                     </v-card-text>
+                    <v-card-actions>
+                        <v-row class="chat-input mt-auto">
+                            <v-col cols="9">
+                                <input v-model="message" type="text" placeholder="Enter your message..."
+                                    class="w-100 custom-input" @keydown.enter="sendMessage" />
+                            </v-col>
+                            <v-col cols="3">
+                                <v-btn @click="sendMessage" class="w-100">Send Message</v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-actions>
 
                 </v-card>
-                <v-row class="chat-input mt-auto">
-                    <v-col cols="9">
-                        <input v-model="message" type="text" placeholder="Enter your message..."
-                            class="w-100 custom-input" @keydown.enter="sendMessage" />
-                    </v-col>
-                    <v-col cols="3">
-                        <v-btn @click="sendMessage" class="w-100">Send Message</v-btn>
-                    </v-col>
-                </v-row>
+
             </v-col>
         </v-row>
     </v-container>
@@ -76,6 +84,8 @@ export default {
             chatRoomTitle: '',
             size: 5,
             page: 0,
+            isLastPage: false,
+
             chatRoomList: [],
 
 
@@ -83,11 +93,8 @@ export default {
             stompClient: null,
             message: '',
             chatHistory: [],
-            // role: localStorage.getItem('role'),
             lectureType: null,
             topic: '',
-            // lectureGroupId: 4,
-            // memberId: localStorage.getItem('id'),
 
         };
 
@@ -97,6 +104,17 @@ export default {
         this.connectWebSocket();
 
 
+
+
+    },
+    mounted(){
+        if (this.$refs.scrollCard) {
+            console.log("scroollll");
+            this.$refs.scrollCard.addEventListener('scroll', this.scrollPagination);
+        }
+    },
+    beforeUnmount() {
+        this.$refs.scrollCard.removeEventListener('scroll', this.scrollPagination);
     },
 
     methods: {
@@ -119,7 +137,7 @@ export default {
         disconnectWebSocket() {
             this.chatHistory = [];
             if (this.stompClient && this.stompClient.connected) {
-                this.stompClient.deactivate(); // Deactivate the current connection
+                this.stompClient.deactivate();
                 this.connectionStatus = 'Disconnected';
                 console.log('Disconnected from the WebSocket');
             }
@@ -138,35 +156,45 @@ export default {
                 };
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/list`, { params });
                 this.chatRoomList = response.data.result.content;
-                
-                if(this.$route.query.chatRoomId != ''){
-                    console.log("test");
+
+                if (this.$route.query.chatRoomId != '') {
                     this.setChatRoom(this.chatRoomList[0]);
                 }
 
             } catch (e) {
                 console.log(e.response.data.error_message);
             }
+        },
 
+        scrollPagination() {
+            const scrollElement = this.$refs.scrollCard;
 
-
+            // Check if the user has scrolled to the bottom of the specific element
+            if (
+                scrollElement.scrollTop + scrollElement.clientHeight >=
+                scrollElement.scrollHeight - 5
+            ) {
+                this.page++;
+                this.showChatRoomList();
+            }
         },
 
         setChatRoom(chatRoom) {
             this.chatRoomId = chatRoom.chatRoomId;
+            console.log("set chat Room id " + this.chatRoomId);
             if (chatRoom.lectureType === 'LESSON') {
                 this.chatRoomTitle = chatRoom.chatRoomTitle + ' - ' + chatRoom.memberName;
             } else {
                 this.chatRoomTitle = chatRoom.chatRoomTitle;
             }
 
-            console.log(this.chatRoomTitle);
         },
 
         changeChatRoom(chatRoom) {
             this.disconnectWebSocket();
 
             this.chatRoomId = chatRoom.chatRoomId;
+            console.log("chatRoom = " + this.chatRoomId);
             if (chatRoom.lectureType === 'LESSON') {
                 this.chatRoomTitle = chatRoom.chatRoomTitle + ' - ' + chatRoom.memberName;
             } else {
@@ -180,8 +208,7 @@ export default {
             console.log('Connected: ' + frame);
 
             this.topic = '/topic/chat-' + this.chatRoomId;
-            console.log("topic:" + this.topic);
-            // Subscribe to the chatroom topic
+            //topic 구독
             this.stompClient.subscribe(this.topic, (message) => {
                 console.log('Received message: ' + message.body);
                 this.addToChatHistory(message.body);
@@ -216,12 +243,6 @@ export default {
                     }
                 });
 
-                // Optionally, add the sent message to the chat history
-                // this.addToChatHistory(`You: ${this.message}`);
-
-                // Clear the input box after sending
-                // this.addToChatHistory(JSON.stringify(chatMessage)); // Add the sent message to history immediately
-
                 this.message = '';
             }
         },
@@ -236,7 +257,7 @@ export default {
                 return;
             }
 
-            // 메시지를 히스토리에 추가
+            // 메시지를 채팅이력에 추가
             this.chatHistory.push({
                 memberName: parsedMessage.memberName,
                 memberId: parsedMessage.memberId,
@@ -246,16 +267,18 @@ export default {
             // 채팅 화면 스크롤을 자동으로 아래로
             this.$nextTick(() => {
                 const chatHistoryElement = this.$refs.chatHistory;
-                chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
+                if (chatHistoryElement) {
+                    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
+                }
             });
         },
         getMessageClass(msg) {
             const currentUserId = localStorage.getItem('id');
 
             if (msg.memberId == currentUserId) {
-                return 'chat-message sent';  
+                return 'chat-message sent';
             } else {
-                return 'chat-message received';  
+                return 'chat-message received';
             }
         },
 
@@ -264,26 +287,33 @@ export default {
 }
 </script>
 <style scoped>
+.selected-chat-room {
+
+    box-shadow: none !important;
+    background-color: #6C97FD !important;
+    color: white !important;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
 .custom-border {
     border: 2px solid #D9D9D9;
     border-radius: 8px;
     box-shadow: none !important;
-    background-color: #D9D9D9;
+    background-color: #ffffff;
     margin-bottom: 10px;
+    text-align: left;
 }
 
-/* Set a fixed height for the chat card */
 .chat-card {
-    height: 540px; /* increased height */
+    height: 540px;
     display: flex;
     flex-direction: column;
     padding: 10px;
 }
 
-/* Flexbox to make the message area grow and input stay at the bottom */
 .chat-content {
     flex: 1;
-    /* The content area will expand to fill the space */
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -292,21 +322,75 @@ export default {
 .chat-messages {
     flex-grow: 1;
     overflow-y: auto;
-    max-height: 450px;
+    max-height: 410px;
 }
 
 
+
+.chat-message {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    position: relative;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
 .sent {
-    background-color: #DCF8C6; /* Light green color for sent messages */
-    align-self: flex-end; /* Align to right for sent messages */
+    background-color: #6C97FD !important;
+    color: white !important;
+    align-self: flex-end;
     text-align: right;
+    border-radius: 20px;
+    position: relative;
+    margin-left: auto;
 }
 
 .received {
-    background-color: #f1f1f1; /* Light grey color for received messages */
-    align-self: flex-start; /* Align to left for received messages */
+    background-color: #f1f1f1;
+    align-self: flex-start;
     text-align: left;
+    border-radius: 20px;
+    position: relative;
+    margin-right: auto;
 }
+
+.sent::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 8px;
+    border-color: transparent transparent transparent #6C97FD;
+}
+
+.received::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 8px 8px 0;
+    border-color: transparent #f1f1f1 transparent transparent;
+}
+
+
+.chat-history {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 100%;
+    padding: 10px;
+    scrollbar-width: none;
+}
+
+
 
 
 .chat-history {
@@ -332,7 +416,6 @@ export default {
 
 .custom-input {
     height: 36px;
-    /* Adjust this value to match the button height */
     border: 1px solid #ccc;
     padding: 10px;
     box-sizing: border-box;

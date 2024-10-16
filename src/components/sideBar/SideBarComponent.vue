@@ -120,7 +120,7 @@ export default {
     setMenuItems() {
       if (this.userRole === 'TUTEE') {
         this.menuItems = [
-          { title: '채팅', icon: 'chat' },
+          { title: '채팅', icon: 'chat' , route: '/chat-room?chatRoomId='},
           { title: '내 강의', icon: 'book' },
           { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
           { title: '신청 내역', icon: 'assignment', route: '/tutee-applied-list'},
@@ -128,7 +128,7 @@ export default {
         ];
       } else if (this.userRole === 'TUTOR') {
         this.menuItems = [
-          { title: '채팅', icon: 'chat' },
+          { title: '채팅', icon: 'chat' , route: '/chat-room?chatRoomId='},
           { title: '내 강의', icon: 'book', route:'/tutor-lecture-list'},
           { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
           { title: '신청 내역', icon: 'assignment', route: '/tutor-applied-list'},

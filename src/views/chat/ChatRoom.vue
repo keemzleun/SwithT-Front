@@ -1,13 +1,14 @@
 <template>
-    <v-container style="margin-top: 60px;">
+    <v-container style="width: 70%; margin-top: 60px; margin-bottom: 20px;">
+        <br>
+        <br>
         <v-row justify="center">
             <v-col cols="4">
-                <div ref="scrollCard" class="chat-list-scroll-class">
-                <v-card >
-                    <v-card-title>
+                <v-card  style="height: 650px;">
+                    <v-card-title class="title-font-size">
                         채팅방 리스트
                     </v-card-title>
-                    <v-card-text>
+                    <v-card-text class="chat-list-scroll">
                         <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id"
                             :class="{ 'selected-chat-room': chatRoomId === chatRoom.chatRoomId, 'custom-border': true }"
                             @click="changeChatRoom(chatRoom)">
@@ -23,11 +24,10 @@
                         </v-card>
                     </v-card-text>
                 </v-card>
-            </div>
             </v-col>
             <v-col cols="8" v-if="chatRoomId === null || chatRoomId === ''">
                 <v-card class="chat-card">
-                    <v-card-title>
+                    <v-card-title class="title-font-size">
                         채팅방 선택하세요
                     </v-card-title>
                 </v-card>
@@ -35,7 +35,7 @@
 
             <v-col cols="8" v-else>
                 <v-card class="chat-card">
-                    <v-card-title>
+                    <v-card-title class="title-font-size">
                         {{ chatRoomTitle }}
                     </v-card-title>
 
@@ -82,9 +82,6 @@ export default {
         return {
             chatRoomId: this.$route.query.chatRoomId,
             chatRoomTitle: '',
-            size: 5,
-            page: 0,
-            isLastPage: false,
 
             chatRoomList: [],
 
@@ -103,19 +100,8 @@ export default {
         this.showChatRoomList();
         this.connectWebSocket();
 
-
-
-
     },
-    mounted(){
-        if (this.$refs.scrollCard) {
-            console.log("scroollll");
-            this.$refs.scrollCard.addEventListener('scroll', this.scrollPagination);
-        }
-    },
-    beforeUnmount() {
-        this.$refs.scrollCard.removeEventListener('scroll', this.scrollPagination);
-    },
+    
 
     methods: {
 
@@ -146,38 +132,23 @@ export default {
 
 
         async showChatRoomList() {
-
             try {
                 let params = {
-                    chatRoomId: this.chatRoomId,
-                    size: this.size,
-                    page: this.page,
-
+                    chatRoomId: this.chatRoomId
                 };
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/list`, { params });
-                this.chatRoomList = response.data.result.content;
-
+                
+                this.chatRoomList= response.data.result;
                 if (this.$route.query.chatRoomId != '') {
+                    console.log("정해짐");
                     this.setChatRoom(this.chatRoomList[0]);
                 }
 
             } catch (e) {
-                console.log(e.response.data.error_message);
+                console.log(e);
             }
         },
 
-        scrollPagination() {
-            const scrollElement = this.$refs.scrollCard;
-
-            // Check if the user has scrolled to the bottom of the specific element
-            if (
-                scrollElement.scrollTop + scrollElement.clientHeight >=
-                scrollElement.scrollHeight - 5
-            ) {
-                this.page++;
-                this.showChatRoomList();
-            }
-        },
 
         setChatRoom(chatRoom) {
             this.chatRoomId = chatRoom.chatRoomId;
@@ -306,7 +277,8 @@ export default {
 }
 
 .chat-card {
-    height: 540px;
+    height: 650px;
+    width: 90%;
     display: flex;
     flex-direction: column;
     padding: 10px;
@@ -322,7 +294,7 @@ export default {
 .chat-messages {
     flex-grow: 1;
     overflow-y: auto;
-    max-height: 410px;
+    max-height: 490px;
 }
 
 
@@ -391,17 +363,6 @@ export default {
 }
 
 
-
-
-.chat-history {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    max-height: 100%;
-    padding: 10px;
-}
-
 .chat-message {
     padding: 5px 10px;
     margin-bottom: 5px;
@@ -421,4 +382,18 @@ export default {
     box-sizing: border-box;
     border-radius: 4px;
 }
+
+.chat-list-scroll {
+    height: calc(650px - 56px);
+    overflow-y: auto; 
+    padding: 10px;
+    scrollbar-width: none;
+
+  }
+
+
+  .title-font-size{
+    font-size: 30px;
+    font-weight: bold;
+  }
 </style>

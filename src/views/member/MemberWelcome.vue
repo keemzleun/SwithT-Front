@@ -23,7 +23,7 @@
     },
     methods: {
       navigateHome() {
-        window.location.reload();
+
         this.$router.push('/home'); // /home 경로로 라우팅
       
     }

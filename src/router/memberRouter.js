@@ -7,6 +7,8 @@ import MemberEmailLoginView from "@/views/member/MemberEmailLoginView.vue";
 import TuteeEmailRegisterView from "@/views/member/TuteeEmailRegisterView.vue";
 import MemberWelcome from "@/views/member/MemberWelcome.vue";
 import MemberMyPage from "@/views/member/MemberMyPage.vue";
+import ReviewList from "@/views/review/ReviewList.vue"; AdminLogin
+import AdminLogin from "@/views/member/AdminLogin.vue"; 
 export const memberRouter = [
     {
         path: '/member/main',
@@ -52,5 +54,15 @@ export const memberRouter = [
         path: '/member/mypage',
         name: 'MemberMyPage',
         component: MemberMyPage
+    },
+    {
+        path: '/review/list',
+        name: 'ReviewList',
+        component: ReviewList
+    },
+    {
+        path: '/admin',
+        name: 'AdminLogin',
+        component: AdminLogin
     },
 ]

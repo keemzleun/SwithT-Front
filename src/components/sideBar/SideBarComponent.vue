@@ -180,7 +180,7 @@ export default {
             localStorage.clear();
             this.isLogin = false
             window.redirect
-            this.$router.push("/home")
+            window.location.href = '/home';
         },
         LecturePageBtn() {
             this.$router.push("/lecture")

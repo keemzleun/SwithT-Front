@@ -9,12 +9,12 @@
           class="review-item"
           justify="center"
         >
-          {{ review.id }}
+
           <v-row align="center">
             <v-col cols="1" class="d-flex flex-column align-start">
-              <v-row class="mb-3 ml-4">{{ review.name }}</v-row>
+              
 
-              <v-avatar size="80" class="mb-10">
+              <v-avatar size="80" class="mb-5">
                 <v-img
                   :src="
                     review.profileImage || 'https://via.placeholder.com/150'
@@ -22,6 +22,7 @@
                   alt="Profile"
                 ></v-img>
               </v-avatar>
+              <v-row class="mb-3 ml-4">{{ review.name }}</v-row>
             </v-col>
 
             <v-col class="review-detail ml-3 mb-10" cols="8">
@@ -66,9 +67,16 @@
               </v-row>
 
               <br />
-              <v-row class="ml-1 mt-3" style="font-weight: 500">
-                {{ review.contents }}</v-row
-              >
+
+              <v-row
+              class="ml-2 mt-1"
+              justify="start"
+              align="start"
+              style="font-weight: 500; text-align: left;"
+            >
+              {{ review.contents }}
+            </v-row>
+            
             </v-col>
             <v-col cols="12" class="text-right">
               <v-row justify="end" class="edit-delete-buttons">
@@ -88,7 +96,7 @@
     </v-row>
 
     <!-- 수정 모달 -->
-    <v-dialog v-model="editDialog" max-width="600px">
+    <v-dialog v-model="editDialog" max-width="800px">
         <v-card class="bg-light text-dark" style="padding-top: 10px">
           <v-card-title class="d-flex justify-end" style="padding-top: 10px; margin-right: 10px">
             <v-btn icon @click="closeEditModal" class="modal-close-btn">
@@ -165,10 +173,8 @@ export default {
           }
         );
 
-        console.log(response.data.result.content + "찍어보기");
-
-        this.reviewList = response.data.result.content; // 서버로부터 받은 데이터를 reviewList에 저장
-        console.log(this.reviewList + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        this.reviewList = response.data.result.content;
+    
       } catch (error) {
         console.error("리뷰를 불러오는 중 에러 발생:", error);
       }
@@ -183,9 +189,11 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/member-service/review/update/${this.reviewId}`,
           this.editedReview
         );
-        // 성공 메시지나 알림을 추가할 수 있습니다.
+    
         console.log(response.data); // 응답 데이터 확인
         this.closeEditModal(); // 모달 닫기
+        window.location.reload();
+
       } catch (error) {
         console.error("리뷰 업데이트 중 에러 발생:", error);
         // 에러 처리 로직 추가

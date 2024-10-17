@@ -29,15 +29,20 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => response,
   async error => {
-      if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 500 || error.response.status === 401) {
+          
           const refreshToken = localStorage.getItem('refreshToken');
+          
           try {
+
               localStorage.removeItem('token');
-              const response = await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/refresh-token`, { refreshToken });
+              const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/refresh-token`, { refreshToken });
               localStorage.setItem('token', response.data.result.token);
+              console.log("리프레쉬토큰으로 바꾼다~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               window.location.reload();
+
           } catch (e) {
-              console.log(e);
+              console.log(e + "이거 인터셉터에서 나온거임여");
               localStorage.clear();
               window.location.href = "/member/main";
 
@@ -49,6 +54,7 @@ axios.interceptors.response.use(
 );
 
 useKakao('03a055c21377bee26ab1559dedf4af6f',['clusterer', 'services', 'drawing']);
+
 app.use(router);
 app.use(vuetify);
 app.mount('#app');

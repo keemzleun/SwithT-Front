@@ -15,7 +15,7 @@
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate }}</div>
                 <div class="detailInfo">강의 일정 : </div>
                 <div v-html="lectureSchedules" class="detailInfo"></div> 
-                <div class="detailInfo">위치 : {{ infoData.address }} <v-icon @click="showMap()">mdi-map</v-icon> </div>
+                <div class="detailInfo">위치 : {{ infoData.address }} <v-icon @click="showMap()">mdi-google-maps</v-icon> </div>
 
             </v-col>
             <v-col cols="5" class="d-flex align-center justify-center">

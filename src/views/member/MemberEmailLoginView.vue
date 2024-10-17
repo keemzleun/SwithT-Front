@@ -38,7 +38,7 @@
             hide-details
           ></v-text-field>
           
-          <v-btn color="#70b8ff" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
+          <v-btn color="#6C97FD" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
             로그인
           </v-btn>
         </v-form>
@@ -66,7 +66,7 @@
               required
               hide-details
             ></v-text-field>
-            <v-btn color="#70b8ff" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
+            <v-btn color="#6C97FD" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
               로그인
             </v-btn>
           </v-form>

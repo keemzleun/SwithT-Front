@@ -7,7 +7,6 @@
             <v-row class="form-group align-center">
               <v-col cols="3" class="d-flex align-center justify-center">
                 <label>수업 방식</label>
-                <span class="essential">*</span>
               </v-col>
               <v-col cols="8">
                 <div class="custom-select-box">
@@ -31,7 +30,6 @@
             <v-row class="form-group align-center">
               <v-col cols="3" class="d-flex align-center justify-center">
                 <label>분야</label>
-                <span class="essential">*</span>
               </v-col>
               <v-col cols="8">
                 <div class="custom-select-box">
@@ -56,7 +54,6 @@
             <v-row class="form-group align-center">
               <v-col cols="3" class="d-flex align-center justify-center">
                 <label>강의명</label><br/>
-                <span class="essential"> *</span>
               </v-col>
               <v-col cols="8">
                 <input
@@ -88,7 +85,6 @@
             <v-row class="form-group align-center">
               <v-col cols="3" class="d-flex align-center justify-center">
                 <label>강의 소개</label>
-                <span class="essential">*</span>
               </v-col>
               <v-col cols="8">
                 <textarea
@@ -164,8 +160,8 @@
                           <tr v-for="(hour, index) in hours" :key="index">
                             <td >{{ hour }}</td>
                             <td v-for="day in days" :key="day" :style="{ backgroundColor: schedule[day] && schedule[day][index] ? schedule[day][index].color : ''}" >
-                              <div v-if="schedule[day] && schedule[day][index]">
-                                {{ schedule[day][index].name }}
+                              <div v-if="schedule[day] && schedule[day][index]" style="color: #fff; font-weight: bold;">
+                                {{ schedule[day][index].index }}
                               </div>
                             </td>
                           </tr>
@@ -403,8 +399,9 @@ import axios from 'axios';
         getRandomColor() {
             const colors = [
                 '#d0e2ff', '#9ec5fe', '#6ea8fe',
-                '#3d8bfd', '#0d6efd', '#0b58ca',
-                '#084298', '#052c65', '#031633'
+                '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8',
+                '#abc3ea', '#7fa3dd', '#5982c4', '#426caf', 
+
             ];
             const randomIndex = Math.floor(Math.random() * colors.length);
             return colors[randomIndex];
@@ -469,7 +466,7 @@ import axios from 'axios';
                 for (let i = startHour; i <= endHour; i++) {
                     this.schedule[day][i] = {
                         name: this.currentLecture.name,
-                        color: color
+                        color: color,
                     };
                 }
             }
@@ -640,37 +637,37 @@ import axios from 'axios';
     border-radius: 5px; /* 모서리 둥글게 */
     background-color: #f9f9f9; /* 배경 색상 */
 }
-  .time-form {
-    border: 1px solid #e1e1e1;
-    border-radius: 10px;
-    margin: 30px 0;
-    padding: 40px 0;
-  }
-  .time-form select {
-    width: 120px;
-    display: inline-block;
-  }
-  .time-add:hover {
-    cursor: pointer;
-  }
-  .custom-select-box {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .custom-option {
-    /* padding: 7px 12px;
-    border: 1px solid #cdcdcd;
-    border-radius: 3px;
-    cursor: pointer;
-    background-color: #f5f5f5;
-    color: #7d7d7d; */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.time-form {
+  border: 1px solid #e1e1e1;
+  border-radius: 10px;
+  margin: 30px 0;
+  padding: 40px 0;
+}
+.time-form select {
+  width: 120px;
+  display: inline-block;
+}
+.time-add:hover {
+  cursor: pointer;
+}
+.custom-select-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.custom-option {
+  /* padding: 7px 12px;
+  border: 1px solid #cdcdcd;
+  border-radius: 3px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  color: #7d7d7d; */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .custom-option.selected {
@@ -681,45 +678,40 @@ import axios from 'axios';
     background-color: white;
     color: #0d6efd; */
 }
-  .label-width {
-    width: 120px; /* 원하는 너비로 조정 */
-  }
-  
-  .input-width {
-    width: 100px; /* 원하는 너비로 조정 */
-  }
-  .essential {
-    font-weight: bold;
-    color: #0d6efd;
-  }
-  .submit-group {
-    background-color: #78CB67;
-    color: #f5f5f5;
-    width: 100px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 10px;
-    right: 0;
-    font-weight: bold;
-  }
-  .submit-group:hover {
-    cursor: pointer;
-  }
-  .create-lecture {
-    background-color: #0d6efd;
-    color: #f5f5f5;
-    font-size: 16px;
-    font-weight: bold;
-    height: 50px;
-    width: 300px;
-    border-radius: 10px;
-    line-height: 50px;
-    margin-top: 120px;
-  }
-  .create-lecture:hover{
-    cursor: pointer;
-  }
-  .minus-btn:hover {
-    cursor: pointer;
-  }
+.label-width {
+  width: 120px; /* 원하는 너비로 조정 */
+}
+.input-width {
+  width: 100px; /* 원하는 너비로 조정 */
+}
+.submit-group {
+  background-color: #78CB67;
+  color: #f5f5f5;
+  width: 100px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 10px;
+  right: 0;
+  font-weight: bold;
+}
+.submit-group:hover {
+  cursor: pointer;
+}
+.create-lecture {
+  background-color: #0d6efd;
+  color: #f5f5f5;
+  font-size: 16px;
+  font-weight: bold;
+  height: 50px;
+  width: 300px;
+  border-radius: 10px;
+  line-height: 50px;
+  margin-top: 120px;
+}
+.create-lecture:hover{
+  cursor: pointer;
+}
+.minus-btn:hover {
+  cursor: pointer;
+}
 </style>

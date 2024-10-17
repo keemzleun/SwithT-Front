@@ -4,31 +4,31 @@
             임시 배너
         </div>
         <div class="search-container">
-            <v-text-field
+            <input
                 v-model="searchValue"
-                label="SwithT와 함께 배우고, 나누고, 성장하세요"
                 dense
                 hide-details="true"
                 class="search-bar"
+                placeholder="SwithT와 함께 배우고, 나누고, 성장하세요"
                 @keyup.enter="performSearch"
             />
-            <v-btn @click="performSearch" class="search-btn">검색</v-btn>
+            <span @click="performSearch" class="search-btn mdi mdi-magnify"></span>
         </div>
         <section class="menu">
             <div class="menu-list" @click="performCategorySearch('DEVELOPMENT')">
-                <div class="menu-icon">🧘‍♀️</div>
+                <img src="@/assets/target_2656366.png" class="menu-icon">
                 <div class="menu-title">자기계발</div>
             </div>
             <div class="menu-list" @click="performCategorySearch('ADMISSION')">
-                <div class="menu-icon">🧑‍🏫</div>
+                <img src="@/assets/mortarboard_2655764.png" class="menu-icon">
                 <div class="menu-title">입시</div>
             </div>
             <div class="menu-list" @click="performCategorySearch('HOBBY')">
-                <div class="menu-icon">🏄</div>
+                <img src="@/assets/painting_2655642.png" class="menu-icon">
                 <div class="menu-title">취미</div>
             </div>
             <div class="menu-list" @click="performCategorySearch('CAREER')">
-                <div class="menu-icon">👨‍💼</div>
+                <img src="@/assets/manager_2704454.png" class="menu-icon">
                 <div class="menu-title">취업/직무</div>
             </div>
             <div class="menu-list">
@@ -41,6 +41,8 @@
             </div>
         </section>
             
+
+        
         <hr/>
 
         <section class="recommendation">
@@ -84,6 +86,7 @@
         </section>
     </v-container>   
 </template>
+
 <script>
 import axios from "axios";
 
@@ -137,9 +140,9 @@ export default {
         performSearch() {
             const requestData = {
                 searchTitle: this.searchValue,  // 입력된 검색어
-                category: null,  
+                category: "",  
                 status: "ADMIT", // status는 ADMIT 고정
-                lectureType: null 
+                lectureType: "" 
             };
             // 검색 데이터를 쿼리 파라미터로 넘기면서 페이지 이동
             this.$router.push({ 
@@ -274,18 +277,36 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 800px;
-    margin-left: 20%;
-    margin-top: 20px;
+    margin-top: 50px;
 }
 .search-bar {
-    width: 700px;
+    width: 40vw;
     height: 50px;
-    font-size: 20px;
-    border-radius: 10px;
+    border-radius: 50px;
+    background-color: #d1e4fb;
+    border: 1px solid #a7caef;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
+    padding: 14px 20px;
+    border-radius: 28px;
+    height: auto;
+    transition: all .2s ease;
 }
+.search-bar:focus {
+    outline: unset;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
+    border: 1px solid #dedede;
+    background-color: #fff;
+}
+
 .search-btn {
-    margin-left: 20px; /* 검색창과 버튼 사이 간격 */
-    height: 70px; /* 검색창과 버튼 높이 동일하게 설정 */
+    color: #555;
+    margin-left: 10px;
+    font-size: 30px;
+    transition: all .2s ease;
 }
+.search-btn:hover {
+    cursor: pointer;
+    font-size: 35px;
+}
+
 </style>

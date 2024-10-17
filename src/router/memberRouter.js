@@ -5,8 +5,13 @@ import MemberTutorSocialRegisterView from "@/views/member/MemberTutorSocialRegis
 import MemberTuteeSocialRegisterView from "@/views/member/MemberTuteeSocialRegisterView.vue";
 import MemberEmailLoginView from "@/views/member/MemberEmailLoginView.vue";
 import TuteeEmailRegisterView from "@/views/member/TuteeEmailRegisterView.vue";
-import MemberWellcome from "@/views/member/MemberWellcome.vue";
+import MemberWelcome from "@/views/member/MemberWelcome.vue";
 import MemberMyPage from "@/views/member/MemberMyPage.vue";
+import ReviewList from "@/views/review/ReviewList.vue"; AdminLogin
+import AdminLogin from "@/views/member/AdminLogin.vue"; 
+
+
+import { jwtDecode } from 'jwt-decode'
 export const memberRouter = [
     {
         path: '/member/main',
@@ -44,13 +49,75 @@ export const memberRouter = [
         component: TuteeEmailRegisterView
     },
     {
-        path: '/member/wellcome',
-        name: 'MemberWellcome',
-        component: MemberWellcome
+        path: '/member/welcome',
+        name: 'MemberWelcome',
+        component: MemberWelcome
     },
     {
         path: '/member/mypage',
         name: 'MemberMyPage',
         component: MemberMyPage
     },
+    {
+        path: '/review/list',
+        name: 'ReviewList',
+        component: ReviewList
+    },
+    {
+        path: '/admin',
+        name: 'AdminLogin',
+        component: AdminLogin
+    },
+    {
+        path: '/loginSuccess',
+        component: MemberMainView,
+        beforeEnter: (to, from, next) => {
+            
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+    
+            // 쿠키에서 토큰과 추가 정보를 가져옴
+            const token = getCookie('accessToken');
+            const refreshToken = getCookie('refreshToken');
+            const id = getCookie('memberId');
+            
+            console.log(token+" 토큰 가져옴");
+            console.log(refreshToken+" 리프레쉬토큰 가져옴");
+            console.log(id+" id 가져옴");
+            
+    
+            if (token) {
+                try {
+                    console.log("여기옴? if문 내부");
+                    // JWT에서 role 정보 추출
+                    const role = jwtDecode(token).role;
+    
+                    // LocalStorage에 저장
+                    localStorage.setItem('token', token);
+                    if (refreshToken) {
+                        localStorage.setItem('refreshToken', refreshToken);
+                    }
+                    localStorage.setItem('role', role);
+                    localStorage.setItem('id', id);
+    
+                    // 홈 페이지로 리다이렉트
+                    window.location.href = '/home';
+                    // next('/home');
+                } catch (error) {
+                    console.log("여기냐?");
+
+                    console.error('Invalid token', error);
+                    
+                    next('/member/main');  // 토큰이 유효하지 않을 경우 로그인 페이지로 리다이렉트
+                }
+            } else {
+                next('/member/main');  // 쿠키에 토큰이 없을 경우 로그인 페이지로 리다이렉트
+            }
+        }
+    },
+    
+
 ]

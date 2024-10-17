@@ -8,18 +8,16 @@
           <div class="card">
             <div class="card-body text-center" :style="{ minHeight: '567px' }">
               <img
-                :src="
-                  memberInfo.profileImage || 'https://via.placeholder.com/150'
-                "
+                :src=" memberInfo.profileImage || 'https://via.placeholder.com/150'"
                 class="rounded-circle mb-3"
                 alt="Profile"
                 style="width: 150px"
               />
+              <!-- 여기 나중에 수정하는거 고려해보기 -->
               <h4>{{ memberInfo.name }}</h4>
-              <p>{{ memberInfo.company || "반갑습니다" }}</p>
+              <p>{{ "반갑습니다 "+memberInfo.name+"님"}}</p> 
               <hr />
               <div class="text-left">
-                <!-- 추가 정보 등 -->
               </div>
               <a
                 href="#"

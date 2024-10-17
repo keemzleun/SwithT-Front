@@ -4,7 +4,7 @@
       class="pa-16"
       outlined
       style="width: 800px; height: 500px; 
-          background-color: white; border-width: 1px; margin-top: 120px; border-radius: 25px;"
+          background-color: white; border-width: 1px; margin-top: 90px; border-radius: 25px;"
     >
       <v-tabs v-model="activeTab" background-color="#fff9db" grow centered>
         <v-tab style="font-weight: bold; color: black">TUTOR 로그인</v-tab>

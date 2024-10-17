@@ -52,6 +52,7 @@
                 <div class="menu-icon">👨‍💼</div>
                 <div class="menu-title">취업/직무</div>
             </div>
+            
         </section>
         <div v-if="searchResult.length === 0">검색 결과가 없습니다.</div>
         <div v-else>

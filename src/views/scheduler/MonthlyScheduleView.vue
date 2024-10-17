@@ -19,7 +19,7 @@
       
       <!-- 이번 주 알림 일정 -->
       <div class="week-alert-schedule">
-        <h3>이번 주 알림 일정</h3>
+        <h3>주간 알림 일정</h3>
         <ul style="list-style: none; padding: 0; margin: 0;">
           <li v-for="event in sortedWeekAlertEvents" :key="event.id">{{ event.title }} - {{ formatWeekAlertTime(event.start) }}</li>
         </ul>
@@ -440,7 +440,7 @@ export default {
 }
 
 .sidebar {
-  width: 250px;
+  width: 350px;
   background-color: #f5f5f5;
   padding: 10px;
   display: flex;
@@ -451,6 +451,11 @@ export default {
 ::v-deep .mini-calendar-container {
   margin-top: 25%;
   margin-bottom: 20px;
+  height: 800px;
+}
+
+::v-deep .fc-media-screen fc-direction-ltr fc-theme-standard{
+  height: 800px;
 }
 
 ::v-deep .mini-calendar-container .fc-header-toolbar {
@@ -479,15 +484,15 @@ export default {
   padding: 5px 0;
 }
 
-
 /* 메인 캘린더 */
 ::v-deep .calendar-container {
   margin-left: 5%;
   margin-top: 5%;
-  max-width: 950px;
+  max-width: 1250px;
   flex-grow: 0;
   padding: 10px;
   color: #000;
+  height: 800px;
 }
 
 .today-schedule,
@@ -509,7 +514,7 @@ export default {
 
 /* FullCalendar 내부 스타일에 영향 주기 위해 deep 사용 */
 ::v-deep .fc-event {
-  font-size: 12px !important;
+  font-size: 15px !important;
   color: black !important;
 }
 

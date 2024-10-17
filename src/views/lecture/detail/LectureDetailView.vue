@@ -11,42 +11,115 @@
                 <div class="contents-section">
                     <v-tabs-window v-model="activeTab">
                         <v-tabs-window-item value="lecture-info">
-                            <div style="font-size: 18px; margin: 0 10px; color: #333;">
+                            <div class="contents-title">강의 소개</div>
+                            <div style="font-size: 18px; margin: 0px 10px 50px; color: #333; text-align: left;">
                                 {{ lectureInfo?.contents }}
                             </div>
-
-                            <!-- 강의 그룹 목록 -->
-                            <v-row v-for="(group, index) in lectureGroups" :key="index" class="mb-4">
+                            <hr/>
+                            <div class="contents-title">강의 시간</div>
+                            <v-row v-for="(group, index) in lectureGroups" :key="index">
                                 <v-col>
-                                    <v-card class="pa-3">
-                                        <v-row justify="space-between" align="center">
-                                            <v-col>
-                                                <div style="font-weight: bold; font-size: 20px;">
-                                                    {{ `강의 그룹 ${index + 1}` }}
-                                                </div>
+                                  <div class="pa-3 groups-info">
+                                    <v-row style="padding: 20px 0">
+                                      <v-col cols="3" class="d-flex align-center justify-center">
+                                        <div style="font-weight: bold; font-size: 17px;">
+                                          {{ `강의 그룹 ${index + 1}` }}
+                                        </div>
+                                      </v-col>
+                                      <v-col cols="9" style="text-align: left; font-size: 15px">
+                                        <v-row>
+                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
+                                                <strong>강의료</strong>
                                             </v-col>
-                                            <v-col class="text-right">
-                                                <v-btn icon @click="deleteLectureGroup(index)">
-                                                    <v-icon color="red">mdi-delete</v-icon>
-                                                </v-btn>
+                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                                {{ group.price }}원</v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
+                                                <strong>모집인원</strong>
+                                            </v-col>
+                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                                {{ group.participants }}명
                                             </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col>
+                                            <v-col cols="4" class="d-flex align-center justify-start" style="padding: 10px">
+                                                <strong>강의시간</strong>
+                                            </v-col>
+                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
                                                 <div>
-                                                    <strong>강의료/인원: </strong>{{ group.price }}원 (인원: {{ group.participants }})
-                                                </div>
-                                                <div>
-                                                    <strong>강의 시간: </strong>{{ group.day }} {{ group.startTime }} ~ {{ group.endTime }}
+                                                    <div v-for="time in group.groupTimes" :key="time.groupTimeId">
+                                                        <span style="font-weight: bold; color: #6C97FD">{{ time.day }}요일</span>
+                                                        {{ formatTime(time.startTime) }} ~ {{ formatTime(time.endTime) }}
+                                                    </div>
                                                 </div>
                                             </v-col>
                                         </v-row>
-                                    </v-card>
+                                      </v-col>
+                                    </v-row>
+                                  </div>
                                 </v-col>
-                            </v-row>
+                              </v-row>
                         </v-tabs-window-item>
                         <v-tabs-window-item value="tutor-info">
                             <!-- 강사 정보 내용 -->
+                             <v-col>
+                                <v-row class="d-flex align-center justify-center">
+                                    <div class="tutor-profile">
+                                        <img :src="tutorInfo?.profileImage" alt="tutor profile"/>
+                                    </div>
+                                </v-row>
+
+                                <v-row class="d-flex align-center justify-center">
+                                    <div style="font-style: italic; font-size: 24px; margin: 20px 0"> 안녕하세요.<br/>
+                                        <span style="font-size: 27px; font-style: normal; font-weight: 700; color:#6C97FD;">
+                                            {{ tutorInfo.name }}
+                                        </span>
+                                        튜터입니다.
+                                    </div>
+                                </v-row>
+                               
+                                <v-row class="d-flex align-center justify-center">
+                                    <div class="tutor-info" style="padding: 20px">
+                                        <v-row>
+                                            <v-col cols="2" class="d-flex align-center justify-center">
+                                                <span style="font-weight: bold; margin-right: 15px">평점</span>
+                                            </v-col>
+                                            <v-col>
+                                                {{tutorInfo.avgScore}}점
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="2" class="d-flex align-center justify-center">
+                                                <span style="font-weight: bold; margin-right: 15px">학력</span>
+                                            </v-col>
+                                            <v-col>
+                                                {{tutorInfo.education}}점
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="2" class="d-flex align-center justify-center">
+                                                <span style="font-weight: bold; margin-right: 15px">성별</span>
+                                            </v-col>
+                                            <v-col>
+                                                {{tutorInfo.gender}}
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="2" class="d-flex align-center justify-center">
+                                                <span style="font-weight: bold; margin-right: 15px">연락처</span>
+                                            </v-col>
+                                            <v-col>
+                                                {{tutorInfo.email}}
+                                            </v-col>
+                                        </v-row>
+                                    </div>
+                                </v-row>
+
+                                <v-row style="margin: 20px 50px">
+                                    <div style="font-size: 18px; text-align: left; padding: 30px" >{{tutorInfo.introduce}}</div>
+                                </v-row>
+                             </v-col>
                         </v-tabs-window-item>
                         <v-tabs-window-item value="tutor-review">
                             <!-- 리뷰 내용 -->
@@ -106,112 +179,156 @@ export default {
       ],
       schedule: {},
       lectureInfo: null,
-      lectureGroups: [] // 강의 그룹 데이터
+      lectureGroups: [], // 강의 그룹 데이터
+      tutorInfo: null,
+      tutorId: null,
     };
   },
   created() {
     this.fetchLectureGroupInfo();
-    this.fetchLectureDetail();
+  },
+  async mounted() {
+    await this.fetchLectureDetail(); // 강의 세부 정보를 먼저 가져옵니다.
+    await this.fetchTutorInfo(); // 이후 강사 정보를 가져옵니다.
   },
   methods: {
     async fetchLectureDetail() {
-        const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
-        try {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`);
-            this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
-        } catch (error) {
-            console.error('강의 정보를 가져오는 데 실패했습니다:', error);
-        }
+      const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`);
+        this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
+        this.tutorId = this.lectureInfo.memberId; // 강사 ID를 저장
+        console.log(this.tutorId);
+      } catch (error) {
+        console.error('강의 정보를 가져오는 데 실패했습니다:', error);
+      }
     },
     async fetchLectureGroupInfo() {
       try {
-          const id = this.$route.params.id; // URL에서 강의 ID 가져오기
-          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-info/${id}`);
-          const data = response.data;
+        const id = this.$route.params.id; // URL에서 강의 ID 가져오기
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-info/${id}`);
+        const data = response.data;
 
-          if (data.result && Array.isArray(data.result) && data.result.length > 0) {
-              // 강의 그룹 데이터를 lectureGroups에 저장
-              this.lectureGroups = data.result.map(group => ({
-                  price: group.price || 0,
-                  participants: group.participants || 1,
-                  day: this.convertDayToKorean(group.groupTimes[0].lectureDay),
-                  startTime: group.groupTimes[0].startTime,
-                  endTime: group.groupTimes[0].endTime,
-              }));
+        console.log(data);
 
-              // 시간표에 맞는 스케줄 데이터 포맷
-              const allGroupTimes = data.result.flatMap(group => group.groupTimes);
-              this.schedule = this.formatSchedule(allGroupTimes);
-          }
+        if (data.result && Array.isArray(data.result) && data.result.length > 0) {
+          // 강의 그룹 데이터를 lectureGroups에 저장
+          this.lectureGroups = data.result.map((group, index) => ({
+            price: group.price || 0,
+            participants: group.participants || 1,
+            groupTimes: group.groupTimes.map(time => ({
+              day: this.convertDayToKorean(time.lectureDay), // 요일을 한글로 변환
+              startTime: time.startTime,
+              endTime: time.endTime,
+              groupIndex: index + 1 // 인덱스를 강의 그룹 순서대로 부여
+            }))
+          }));
+
+          // 시간표에 맞는 스케줄 데이터 포맷
+          const allGroupTimes = data.result.flatMap((group, index) => 
+            group.groupTimes.map(time => ({ ...time, groupIndex: index + 1 })) // 그룹 인덱스를 추가로 부여
+          );
+          this.schedule = this.formatSchedule(allGroupTimes);
+        }
       } catch (error) {
-          console.error('강의 그룹 정보를 가져오는 데 실패했습니다:', error);
+        console.error('강의 그룹 정보를 가져오는 데 실패했습니다:', error);
       }
     },
+    formatTime(time) {
+      // 시간에서 앞의 5자리만 잘라서 반환 (HH:MM)
+      return time.substring(0, 5);
+    },
+
     deleteLectureGroup(index) {
       // 강의 그룹 삭제 기능 (단순히 배열에서 삭제)
       this.lectureGroups.splice(index, 1);
     },
     convertDayToKorean(day) {
-        const dayMap = {
-            MONDAY: '월요일',
-            TUESDAY: '화요일',
-            WEDNESDAY: '수요일',
-            THURSDAY: '목요일',
-            FRIDAY: '금요일',
-            SATURDAY: '토요일',
-            SUNDAY: '일요일'
-        };
-        return dayMap[day] || '요일 미상';
+      const dayMap = {
+        MONDAY: '월',
+        TUESDAY: '화',
+        WEDNESDAY: '수',
+        THURSDAY: '목',
+        FRIDAY: '금',
+        SATURDAY: '토',
+        SUNDAY: '일'
+      };
+      return dayMap[day] || '요일 미상';
     },
     formatSchedule(times) {
-        const schedule = {};
-        const dayMap = {
-            MONDAY: '월',
-            TUESDAY: '화',
-            WEDNESDAY: '수',
-            THURSDAY: '목',
-            FRIDAY: '금',
-            SATURDAY: '토',
-            SUNDAY: '일'
-        };
+      const schedule = {};
+      const dayMap = {
+        MONDAY: '월',
+        TUESDAY: '화',
+        WEDNESDAY: '수',
+        THURSDAY: '목',
+        FRIDAY: '금',
+        SATURDAY: '토',
+        SUNDAY: '일'
+      };
 
-        times.forEach((time, index) => {
-            const day = dayMap[time.lectureDay];
-            const startHourIndex = this.hours.indexOf(time.startTime.split(':')[0] + ':00');
-            const endHourIndex = this.hours.indexOf(time.endTime.split(':')[0] + ':00');
-            const color = this.getRandomColor();
+      const groupColors = {}; // 그룹 인덱스별 색상을 저장
 
-            if (!schedule[day]) {
-                schedule[day] = Array(this.hours.length).fill(null);
-            }
+      times.forEach((time) => {
+        const day = dayMap[time.lectureDay]; // 요일 변환
+        const startHourIndex = this.hours.indexOf(time.startTime.split(':')[0] + ':00'); // 시작 시간의 index
+        const endHourIndex = this.hours.indexOf(time.endTime.split(':')[0] + ':00'); // 종료 시간의 index
 
-            for (let hour = startHourIndex; hour < endHourIndex; hour++) {
-                schedule[day][hour] = {
-                    name: time.title || '강의',
-                    color: color,
-                    index: index + 1
-                };
-            }
-        });
-        return schedule;
+        // 그룹 인덱스로 색을 할당하고, 해당 색상이 없으면 새롭게 생성
+        if (!groupColors[time.groupIndex]) {
+          groupColors[time.groupIndex] = this.getRandomColor(); // 그룹 인덱스별로 고유 색상 할당
+        }
+
+        const color = groupColors[time.groupIndex]; // 해당 그룹의 색상 가져오기
+
+        if (!schedule[day]) {
+          schedule[day] = Array(this.hours.length).fill(null); // 해당 요일에 스케줄 배열 초기화
+        }
+
+        // 시작 시간부터 종료 시간까지 색상 및 그룹 인덱스 설정
+        for (let hour = startHourIndex; hour < endHourIndex; hour++) {
+          schedule[day][hour] = {
+            name: '강의',
+            color: color, // 그룹별 색상 적용
+            index: time.groupIndex // 그룹 인덱스
+          };
+        }
+      });
+      return schedule;
     },
+
     getRandomColor() {
-        const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
-        const randomIndex = Math.floor(Math.random() * colors.length);
-        return colors[randomIndex];
+      const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
+      const randomIndex = Math.floor(Math.random() * colors.length);
+      return colors[randomIndex];
+    },
+
+    async fetchTutorInfo() {
+      console.log(this.tutorId);
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
+        this.tutorInfo = response.data.result; // 강사 정보를 저장
+        console.log(this.tutorInfo);
+      } catch (error) {
+        console.error('강사 정보를 가져오는 데 실패했습니다:', error);
+      }
     }
   }
 }
 </script>
 
+
 <style scoped>
 .v-container {
     position: relative;
+    
 }
 
 .contents-section {
-    display: flex;
+    /*display: flex;*/
     justify-content: space-between;
+    gap: 20px;
+    height: 1000px;
 }
 
 .float-info {
@@ -221,7 +338,7 @@ export default {
     border: 2px solid #f0efef;
     border-radius: 10px;
     padding: 30px 5px;
-    margin-top: 60px;
+    margin-top: 60px; /* 화면 상단과 40px 거리 */
     top: 40px;
 }
 
@@ -245,5 +362,28 @@ th, td {
   
 td {
     height: 10px;
+}
+.groups-info {
+    border: 1px solid #f0efef;
+    border-radius: 10px;
+}
+.contents-title {
+    text-align: left;
+    margin: 20px 10px;
+    font-size: 22px;
+    font-weight: 700;
+}
+.tutor-profile img{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+.tutor-info {
+     background-color: #e1e8fa;
+     border-radius: 10px;
+     width: 80%;
+     padding: 20px 50px;
+     font-size: 17px;
+     text-align: left;
 }
 </style>

@@ -2,7 +2,7 @@
     <LectureDetailInfoComponent 
         :lectureId=this.lectureId
         />
-    <v-container width="60%"  style="margin-top: 60px;">
+    <v-container width="50%"  style="margin-top: 60px;">
         
         
         <v-row justify="center">
@@ -24,15 +24,23 @@
                     <v-row v-for="lesson in notAvailableClassList" :key="lesson.id">
                         <v-col>
                             <v-card class="custom-border">
-                                <v-card-text class="d-flex justify-space-between align-center">
-                                    <div>
-                                        {{ lesson.title }}
-                                    </div>
-                                    <v-btn color="#6C97FD"  @click="clickLectureHome(lesson.lectureGroupId)"  small>강의홈</v-btn>
-                                </v-card-text>
-                                <v-card-text class="d-flex justify-space-between align-center">
-                                    <div> {{ lesson.memberName }} </div>
-
+                                <v-card-text class="d-flex justify-space-between  align-center">
+                                    <v-col cols="10" class="text-left card-text-class">
+                                        <div class="lecture-group-title">
+                                            {{lesson.title}}
+                                        </div>
+                                        <br>
+                                        <div class="lecture-group-info">
+                                            튜티  {{lesson.memberName}}
+                                            <br>
+                                            기간  2024-11-11 ~ 2024-12-12
+                                            <br />
+                                            가격  1,000,000원
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="1" >
+                                        <v-btn color="#6C97FD" style="font-size:18px;"  @click="clickLectureHome(lesson.lectureGroupId)" >강의 홈</v-btn>
+                                    </v-col>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -42,13 +50,19 @@
                     <v-row v-for="lesson in availableClassList" :key="lesson.id">
                         <v-col>
                             <v-card class="custom-border" style="height: 104px;">
-                                <v-card-text class="d-flex justify-space-between align-center">
-                                    <div>
-                                        {{ lesson.title }}
-                                    </div>
-                                    <v-btn color="#82D691" @click="clickLessonApplyList(lesson.lectureGroupId, lesson.title)"
+                                <v-card-text class="d-flex justify-space-between  align-center">
+                                    <v-col cols="10" class="text-left card-text-class">
+                                        <div class="lecture-group-title">
+                                            {{lesson.title}}
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="1" >
+                                        <v-btn color="#82D691" style="font-size:18px;" @click="clickLessonApplyList(lesson.lectureGroupId, lesson.title)"
                                         class="white-text" small>모집중</v-btn>
+
+                                    </v-col>
                                 </v-card-text>
+                                
                             </v-card>
                         </v-col>
                     </v-row>
@@ -58,11 +72,21 @@
                     <v-row v-for="lesson in allClassList" :key="lesson.id">
                         <v-col>
                             <v-card class="custom-border">
-                                <v-card-text class="d-flex justify-space-between align-center">
-                                    <div>
-                                        {{ lesson.title }}
-                                    </div>
-                                    <v-btn color="#6C97FD" @click="clickLectureHome(lesson.lectureGroupId)" small>강의홈</v-btn>
+                                <v-card-text class="d-flex justify-space-between  align-center">
+                                    <v-col cols="10" class="text-left card-text-class">
+                                        <div class="lecture-group-title">
+                                            {{lesson.title}}
+                                        </div>
+                                        <br>
+                                        <div class="lecture-group-info">
+                                            기간  2024-11-11 ~ 2024-12-12
+                                            <br />
+                                            가격  1,000,000원
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="1" >
+                                        <v-btn color="#6C97FD" style="font-size:18px;"  @click="clickLectureHome(lesson.lectureGroupId)" >강의 홈</v-btn>
+                                    </v-col>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -119,14 +143,17 @@ export default {
 
             this.showLessonClassList();
             
-
-
         }
     },
 
     
     beforeUnmount(){
         window.removeEventListener('scroll', this.scrollPagination);
+    },
+
+    mounted(){
+        window.addEventListener('scroll', this.scrollPagination);
+
     },
 
     created() {
@@ -140,9 +167,14 @@ export default {
             this.tab = 'NOT_AVAILABLE_CLASS_LIST';
             this.isAvailable = 'N';
         }
+        if(this.lectureType === 'LECTURE' && this.lectureStatus === 'ADMIT'){
+            this.tab = 'ALL_CLASS_LIST';
+            this.isAvailable = '';
+            this.showLessonClassList();
 
-        // this.showLessonClassList();
-        window.addEventListener('scroll', this.scrollPagination);
+        }
+
+        
 
     },
 
@@ -154,7 +186,6 @@ export default {
                     return;
                 }
                 this.isLoading = true;
-
                 let params = {
                     size: this.size,
                     page: this.page,
@@ -192,7 +223,6 @@ export default {
         },
 
         scrollPagination(){
-            // alert("scroll");
             const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
             if(isBottom && !this.isLastPage && !this.isLoading){
                 this.showLessonClassList();
@@ -210,7 +240,7 @@ export default {
 
 <style scoped>
 .custom-border {
-    border: 2px solid #cccccc;
+    border: 2px solid #d1e1ff;
     border-radius: 8px;
     box-shadow: none !important;
 }
@@ -223,5 +253,18 @@ export default {
 
 .white-text {
     color: white !important;
+}
+
+.lecture-group-title{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.lecture-group-info{
+    font-size: 17px;
+}
+
+.card-text-class{
+    margin-left: 20px;
 }
 </style>

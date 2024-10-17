@@ -1,93 +1,112 @@
 <template>
-  <v-container>
-    <h1>TUTEE 추가 정보 입력 화면</h1>
-    <br />
+  <div class="container mt-15">
+    <h3 class="text-center mb-4">회원 정보 입력</h3>
+    <hr />
+    <form @submit.prevent="addInfo">
+      <!-- 이름 -->
+      <div class="form-group row mb-3">
+        <label for="name" class="col-sm-2 col-form-label">이름</label>
+        <div class="col-sm-10">
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            placeholder="이름을 입력하세요."
+            v-model="name"
+            required
+          />
+        </div>
+      </div>
 
-    <v-card>
-      <v-card-text>
-        <v-form @submit.prevent="addInfo">
-          <!-- 이름 -->
-          <v-row>
-            <v-col><h2>이름</h2></v-col>
-            <v-col>
-              <v-text-field label="이름" v-model="name" required hide-details />
-            </v-col>
-          </v-row>
+      <!-- 생년월일 -->
+      <div class="form-group row mb-3">
+        <label for="birthDate" class="col-sm-2 col-form-label">생년월일</label>
+        <div class="col-sm-10">
+          <input
+            type="date"
+            id="birthDate"
+            class="form-control"
+            v-model="birthday"
+            required
+          />
+        </div>
+      </div>
 
-          <!-- 생년월일 -->
-          <v-row>
-            <v-col><h2>생년월일</h2></v-col>
-            <v-col>
-              <v-text-field
-                label="생년월일"
-                v-model="birthday"
-                required
-                hide-details
-                type="date"
-              />
-            </v-col>
-          </v-row>
+      <!-- 성별 -->
+      <div class="form-group row mb-3">
+        <label class="col-sm-2 col-form-label">성별</label>
+        <div class="col-sm-10 text-left">
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="male"
+              value="남성"
+              v-model="displayGender"
+              required
+            />
+            <label class="form-check-label" for="male">남성</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="female"
+              value="여성"
+              v-model="displayGender"
+            />
+            <label class="form-check-label" for="female">여성</label>
+          </div>
+        </div>
+      </div>
 
-          <!-- 성별 -->
-          <v-row>
-            <v-col><h2>성별</h2></v-col>
-            <v-col>
-              <v-select
-                label="성별"
-                v-model="displayGender"
-                :items="['남성', '여성']"
-                item-text="text"
-                item-value="value"
-                required
-                hide-details
-              ></v-select>
-            </v-col>
-          </v-row>
+      <!-- 핸드폰 -->
+      <div class="form-group row mb-3">
+        <label for="phoneNumber" class="col-sm-2 col-form-label">휴대전화</label>
+        <div class="col-sm-10">
+          <input
+            type="tel"
+            id="phoneNumber"
+            class="form-control"
+            placeholder="휴대전화를 입력하세요."
+            v-model="phoneNumber"
+            required
+          />
+        </div>
+      </div>
 
-          <!-- 핸드폰 -->
-          <v-row>
-            <v-col><h2>핸드폰</h2></v-col>
-            <v-col>
-              <v-text-field
-                label="핸드폰"
-                v-model="phoneNumber"
-                required
-                hide-details
-              />
-            </v-col>
-          </v-row>
+      <!-- 주소 -->
+      <div class="form-group row mb-3">
+        <label for="address" class="col-sm-2 col-form-label">주소</label>
+        <div class="col-sm-10">
+          <input
+            type="text"
+            id="address"
+            class="form-control"
+            placeholder="주소를 입력하세요."
+            v-model="address"
+            required
+          />
+        </div>
+      </div>
 
-          <!-- 주소 -->
-          <v-row>
-            <v-col><h2>주소</h2></v-col>
-            <v-col>
-              <v-text-field
-                label="주소"
-                v-model="address"
-                required
-                hide-details
-              />
-            </v-col>
-          </v-row>
 
-          <v-row>
-            <v-col><h2>프로필 이미지</h2></v-col>
-            <v-col>
-              <v-file-input
-                label="프로필 이미지"
-                accept="image/*"
-                @change="fileUpdate"
-                hide-details
-              />
-            </v-col>
-          </v-row>
-
-          <!-- 제출 버튼 -->
-          <v-btn type="submit" block class="join-btn">회원가입</v-btn>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-container>
+      <!-- 제출 버튼 -->
+      <div class="form-group row mb-3 text-center mt-4">
+        <div class="col-sm-12">
+          <button 
+            type="submit" 
+            class="btn"
+            style="background-color: #6C97FD; color: white; border: none;"
+          >
+            완료
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
 <script>
 import axios from "axios";
@@ -145,7 +164,7 @@ export default {
         localStorage.setItem("role", role);
         localStorage.setItem("id", id);
 
-        this.$router.push("/member/wellcome");
+        this.$router.push("/member/welcome");
       } catch (e) {
         const error_message =
           e.response?.data?.error_message ||

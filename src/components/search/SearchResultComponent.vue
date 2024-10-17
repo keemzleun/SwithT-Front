@@ -12,19 +12,35 @@
             <v-btn @click="performSearch" class="search-btn">검색</v-btn>
         </div>
         <section class="menu">
-            <div class="menu-list" @click="performCategorySearch('DEVELOPMENT')">
+            <div
+                class="menu-list"
+                :class="{ 'highlighted': selectedCategory === 'DEVELOPMENT' }"
+                @click="performCategorySearch('DEVELOPMENT')"
+            >
                 <div class="menu-icon">🧘‍♀️</div>
                 <div class="menu-title">자기계발</div>
             </div>
-            <div class="menu-list" @click="performCategorySearch('ADMISSION')">
+            <div
+                class="menu-list"
+                :class="{ 'highlighted': selectedCategory === 'ADMISSION' }"
+                @click="performCategorySearch('ADMISSION')"
+            >
                 <div class="menu-icon">🧑‍🏫</div>
                 <div class="menu-title">입시</div>
             </div>
-            <div class="menu-list" @click="performCategorySearch('HOBBY')">
+            <div
+                class="menu-list"
+                :class="{ 'highlighted': selectedCategory === 'HOBBY' }"
+                @click="performCategorySearch('HOBBY')"
+            >
                 <div class="menu-icon">🏄</div>
                 <div class="menu-title">취미</div>
             </div>
-            <div class="menu-list" @click="performCategorySearch('CAREER')">
+            <div
+                class="menu-list"
+                :class="{ 'highlighted': selectedCategory === 'CAREER' }"
+                @click="performCategorySearch('CAREER')"
+            >
                 <div class="menu-icon">👨‍💼</div>
                 <div class="menu-title">취업/직무</div>
             </div>
@@ -32,6 +48,7 @@
         <div v-if="searchResult.length === 0">검색 결과가 없습니다.</div>
         <div v-else>
             <div v-for="lecture in searchResult" :key="lecture.id">
+                <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lecture-image" />
                 <p>{{ lecture.title }}</p>
                 <p>{{ lecture.memberName }} 튜터</p>
                 <p v-if="lecture.isContainsFree">재능기부</p>
@@ -47,7 +64,8 @@ export default {
     data() {
         return {
             searchValue: "",
-            searchResult: [] // 검색 결과 저장할 배열
+            searchResult: [], // 검색 결과 저장할 배열
+            selectedCategory: "", // 선택된 카테고리를 저장
         };
     },
     async mounted() {
@@ -59,6 +77,9 @@ export default {
         '$route.query': 'fetchSearchResults'
     },
     methods: {
+        getlectureImage(lecture) {
+            return lecture.image;
+        },
         async fetchSearchResults() {
             // 쿼리 파라미터로 전달된 requestData 받기
             const requestData = this.$route.query;
@@ -70,9 +91,9 @@ export default {
                     requestData
                 );
 
-                // 콘솔에서 응답을 JSON 문자열 형태로 확인
-                console.log('result: ', JSON.stringify(response.data.result.content, null, 2));
-
+                if(requestData.searchTitle === ""  && requestData.category != "" && requestData.category) {
+                    this.selectedCategory = requestData.category;  // 선택된 카테고리 저장
+                }
                 // 검색 결과를 content 배열에 저장
                 this.searchResult = response.data.result.content;
             } catch (error) {
@@ -82,9 +103,9 @@ export default {
         performSearch() {
             const requestData = {
                 searchTitle: this.searchValue,  // 입력된 검색어
-                category: null,  
+                category: "",  
                 status: "ADMIT", // status는 ADMIT 고정
-                lectureType: null 
+                lectureType: "" 
             };
             // 검색 데이터를 쿼리 파라미터로 넘기면서 페이지 이동
             this.$router.push({ 
@@ -108,6 +129,7 @@ export default {
     }
 };
 </script>
+
 <style scoped>
 .v-container {
     color: #333;
@@ -127,12 +149,16 @@ export default {
     border-radius: 10px;
     cursor: pointer;
 }
-.menu-icon{
+.menu-icon {
     font-size: 60px;
     width: 80px;
     height: 80px;
 }
 .menu-title {
     font-weight: 700;
+}
+.highlighted {
+    background-color: #f6ec98;  /* 하이라이트 색상 */
+    border-radius: 10px;
 }
 </style>

@@ -140,9 +140,9 @@ export default {
         performSearch() {
             const requestData = {
                 searchTitle: this.searchValue,  // 입력된 검색어
-                category: null,  
+                category: "",  
                 status: "ADMIT", // status는 ADMIT 고정
-                lectureType: null 
+                lectureType: "" 
             };
             // 검색 데이터를 쿼리 파라미터로 넘기면서 페이지 이동
             this.$router.push({ 

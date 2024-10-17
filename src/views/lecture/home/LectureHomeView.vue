@@ -1,14 +1,20 @@
 <template>
+    <!-- Lecture Info Card 컴포넌트 -->
+    <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
+    <!-- <v-banner >
+        <v-row class="ml-15">
+            <div class="mr-5"><strong> {{this.topNotice[0].title}}</strong></div>
+            <div>{{this.topNotice[0].contents}}</div>
+        </v-row>
+    </v-banner> -->
     <v-container>
-        <v-breadcrumbs :items="breadItems" class="mt-5">
+        <!-- <v-breadcrumbs :items="breadItems" class="mt-5">
             <template v-slot:divider>
                 <v-icon>mdi-menu-right</v-icon>
             </template>
-        </v-breadcrumbs>
+        </v-breadcrumbs> -->
 
-        <!-- Lecture Info Card 컴포넌트 -->
-        <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
-
+        
         <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="dashboard">대시보드</v-tab>
@@ -468,6 +474,7 @@ export default {
     },
     data() {
         return {
+            topNotice:"",
             isShowMap: false,
             istutor: false,
             page: 0,
@@ -572,6 +579,12 @@ export default {
         this.notices = noticeResponse?.data?.result?.content;
         this.noticePages = noticeResponse?.data?.result?.totalPages;
         console.log(this.notices)
+
+        const topNoticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list?page=0&type=notice`)
+        console.log("왜 이렇게 나와?"+JSON.stringify(topNoticeResponse))
+        this.topNotice = topNoticeResponse?.data?.result?.content;
+
+        
         const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params })
         this.assignments = assignmentResponse?.data?.result?.content;
         this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
@@ -895,5 +908,13 @@ export default {
 
 .v-list-item-avatar {
     margin-right: 10px;
+}
+.v-container {
+    padding: 0 !important;
+}
+.noticeBanner {
+    background-color: #D9D9D9;
+    color: white;
+    text-align: left; 
 }
 </style>

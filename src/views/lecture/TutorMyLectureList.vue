@@ -22,7 +22,7 @@
         </v-row>
         <v-row justify="center">
             <v-col>
-                <v-btn width="100%" color="#6C97FD">과외/강의 개설하기</v-btn>
+                <v-btn width="100%" color="#6C97FD" @click="clickCreateLectureBtn">과외/강의 개설하기</v-btn>
             </v-col>
         </v-row>
 
@@ -143,6 +143,9 @@ export default {
             if (this.status === 'ADMIT') {
                 this.$router.push(`/tutor-lecture-class-list?lectureId=${id}&lectureType=${this.tab}&lectureStatus=${this.status}`);
             }
+        },
+        clickCreateLectureBtn(){
+            this.$router.push(`/create-lecture`);
         }
 
     }

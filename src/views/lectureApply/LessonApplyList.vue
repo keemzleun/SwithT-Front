@@ -1,12 +1,10 @@
 <template>
+    <LectureDetailInfoComponent 
+        :lectureId=this.lectureId
+        />
     <v-container width="60%"  style="margin-top: 60px;">
-        <h1>썸네일 자리</h1>
-
-        <h4>{{this.title}}</h4>
+        <h4 style="font-weight:bold">{{this.title}}</h4>
         <hr><br>
-
-
-
         <v-row v-for="apply in lessonApplyList" :key="apply.id">
             <v-col>
                 <v-card class="custom-border">
@@ -32,11 +30,7 @@
             </v-col>
         </v-row>
 
-
-
         <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange"></v-pagination>
-
-        
 
         <YesOrNoModal
         v-model="yesOrNoModal" 
@@ -52,14 +46,17 @@
 
 <script>
 import YesOrNoModal from '@/components/YesOrNoModal.vue';
+import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
 import axios from 'axios';
 export default {
     components:{
         YesOrNoModal,
+        LectureDetailInfoComponent,
     },
 
     data() {
         return {
+            lectureId: this.$route.query.lectureId,
             lessonApplyList: [],
             page: 0,
             size: 5,
@@ -69,12 +66,9 @@ export default {
             lectureGroupId: null,
             selectedApplyId: null,
 
-
-
             yesOrNoModal: false,
             modalTitle: 'kk',
             modalContents: 'kk',
-
 
         };
 
@@ -165,7 +159,6 @@ export default {
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`, registerData);
                 console.log(response.data.result);
                 chatRoomId = response.data.result.roomId;
-                
                 
             }
             this.$router.push(`/chat-room?chatRoomId=${chatRoomId}`);

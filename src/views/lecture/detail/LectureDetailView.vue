@@ -141,7 +141,7 @@
 
             <v-col cols="4">
                 <aside class="float-info">
-                    <table border="3" class="time-table">
+                    <table border="3" class="time-table" >
                         <thead>
                           <tr>
                             <th>시간</th>
@@ -357,11 +357,13 @@ export default {
     padding: 30px 5px;
     margin-top: 60px; /* 화면 상단과 40px 거리 */
     top: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
 .time-table {
     margin: auto;
     width: 250px;
+    
 }
 
 table {

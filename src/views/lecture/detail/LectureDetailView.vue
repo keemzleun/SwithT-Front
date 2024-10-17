@@ -50,14 +50,7 @@
                                                 {{ group.participants }}명
                                             </v-col>
                                         </v-row>
-                                        <v-row>
-                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
-                                                <strong>강의 기간</strong>
-                                            </v-col>
-                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                                    {{ group.startDate }} ~ {{group.endDate }}
-                                            </v-col>
-                                        </v-row>
+                                        
                                         <v-row>
                                             <v-col cols="4" class="d-flex align-center justify-start" style="padding: 10px">
                                                 <strong>강의시간</strong>
@@ -77,6 +70,7 @@
                                 </v-col>
                               </v-row>
                         </v-tabs-window-item>
+
                         <v-tabs-window-item value="tutor-info">
                             <!-- 강사 정보 내용 -->
                              <v-col>
@@ -171,6 +165,7 @@
                           </tr>
                         </tbody>
                     </table>
+                    <v-btn style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
                 </aside>
             </v-col>
         </v-row>
@@ -409,7 +404,7 @@ td {
      text-align: left;
 }
 .date-info {
-    background-color: #c5d4f8;
+    background-color: #d0e2ff;
     border-radius: 10px;
     padding: 20px;
     margin: 20px 0;

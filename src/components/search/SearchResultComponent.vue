@@ -1,17 +1,19 @@
 <template>
+    <div class="temporary-banner">
+        임시 배너
+    </div>
     <v-container>
         <div class="search-container" style="margin-top: 60px">
-            <v-text-field
+            <input
                 v-model="searchValue"
-                label="SwithT와 함께 배우고, 나누고, 성장하세요"
                 dense
                 hide-details="true"
                 class="search-bar"
+                placeholder="SwithT와 함께 배우고, 나누고, 성장하세요"
                 @input="fetchSuggestions"
                 @keyup.enter="performSearch"
             />
-
-            <v-btn @click="performSearch" class="search-btn">검색</v-btn>
+            <span @click="performSearch" class="search-btn mdi mdi-magnify"></span>
             <!-- 추천 검색어 표시 -->
             <ul v-if="suggestions.length > 0" class="suggestions-list">
                 <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)">
@@ -25,7 +27,7 @@
                 :class="{ 'highlighted': selectedCategory === 'DEVELOPMENT' }"
                 @click="performCategorySearch('DEVELOPMENT')"
             >
-                <div class="menu-icon">🧘‍♀️</div>
+                <img src="@/assets/target_2656366.png" class="menu-icon">
                 <div class="menu-title">자기계발</div>
             </div>
             <div
@@ -33,7 +35,7 @@
                 :class="{ 'highlighted': selectedCategory === 'ADMISSION' }"
                 @click="performCategorySearch('ADMISSION')"
             >
-                <div class="menu-icon">🧑‍🏫</div>
+                <img src="@/assets/mortarboard_2655764.png" class="menu-icon">
                 <div class="menu-title">입시</div>
             </div>
             <div
@@ -41,7 +43,7 @@
                 :class="{ 'highlighted': selectedCategory === 'HOBBY' }"
                 @click="performCategorySearch('HOBBY')"
             >
-                <div class="menu-icon">🏄</div>
+                <img src="@/assets/painting_2655642.png" class="menu-icon">
                 <div class="menu-title">취미</div>
             </div>
             <div
@@ -49,8 +51,24 @@
                 :class="{ 'highlighted': selectedCategory === 'CAREER' }"
                 @click="performCategorySearch('CAREER')"
             >
-                <div class="menu-icon">👨‍💼</div>
+                <img src="@/assets/manager_2704454.png" class="menu-icon">
                 <div class="menu-title">취업/직무</div>
+            </div>
+            <div 
+                class="menu-list"
+                :class="{ 'highlighted': selectedCategory === 'LESSON' }"
+                @click="performTypeSearch('LESSON')"
+            >
+                <img src="@/assets/meeting-room_2645420.png" class="menu-icon">
+                <div class="menu-title">강의</div>
+            </div>
+            <div 
+                class="menu-list"
+                :class="{ 'highlighted': selectedCategory === 'LECTURE' }"
+                @click="performTypeSearch('LECTURE')"
+            >
+                <img src="@/assets/conversation_2821731.png" class="menu-icon">
+                <div class="menu-title">과외</div>
             </div>
             
         </section>
@@ -104,22 +122,25 @@ export default {
                 } catch (error) {
                     console.error("추천 검색어 가져오기 실패:", error);
                 }
+            } else{
+                this.suggestions = [];
             }
         },
 
         async fetchSearchResults() {
             // 쿼리 파라미터로 전달된 requestData 받기
             const requestData = this.$route.query;
-
             // API 호출을 통해 검색 결과 가져오기
             try {
                 const response = await axios.post(
                     `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/search`,
                     requestData
                 );
-
                 if(requestData.searchTitle === ""  && requestData.category != "" && requestData.category) {
                     this.selectedCategory = requestData.category;  // 선택된 카테고리 저장
+                }
+                if(requestData.searchTitle === ""  && requestData.lectureType != "" && requestData.lectureType){
+                    this.selectedCategory = requestData.lectureType
                 }
                 // 검색 결과를 content 배열에 저장
                 this.searchResult = response.data.result.content;
@@ -148,6 +169,21 @@ export default {
                 lectureType: ""  // 모든 강의 유형
             };
             // 카테고리별 검색 데이터를 쿼리 파라미터로 넘기면서 페이지 이동
+            this.searchValue = ""
+            this.$router.push({ 
+                name: 'SearchResult', 
+                query: requestData 
+            });
+        },
+        performTypeSearch(type){
+            const requestData = {
+                searchTitle: "",  // 빈 검색어
+                category: "",  
+                status: "ADMIT", 
+                lectureType: type  // 모든 강의 유형
+            };
+            // 카테고리별 검색 데이터를 쿼리 파라미터로 넘기면서 페이지 이동
+            this.searchValue = ""
             this.$router.push({ 
                 name: 'SearchResult', 
                 query: requestData 
@@ -156,6 +192,7 @@ export default {
         selectSuggestion(suggestion) {
             this.searchValue = suggestion;  // 선택된 추천어로 검색어 설정
             this.performSearch();  // 선택된 추천어로 바로 검색 실행
+            this.suggestions = [];
         }
 
     }
@@ -166,6 +203,11 @@ export default {
 .v-container {
     color: #333;
     padding: none;
+}
+.temporary-banner{
+    height: 250px;
+    width: auto;
+    background-color: #999;
 }
 .menu {
     margin: 20px 0;
@@ -196,12 +238,14 @@ export default {
 .suggestions-list {
     list-style: none;
     padding: 0;
-    margin-top: 5px;
+    margin-top: 22%;
     position: absolute; 
     background-color: white;
-    width: 100%;  
+    width: 40vw;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-    z-index: 10;  
+    z-index: 10;
+    border-radius: 28px;
+    height: auto;
 }
 .suggestions-list li {
     padding: 5px;
@@ -211,4 +255,39 @@ export default {
 .suggestions-list li:hover {
     background-color: #EEE;
 }
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+}
+.search-bar {
+    width: 40vw;
+    height: 50px;
+    border-radius: 50px;
+    background-color: #d1e4fb;
+    border: 1px solid #a7caef;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
+    padding: 14px 20px;
+    border-radius: 28px;
+    height: auto;
+    transition: all .2s ease;
+}
+.search-bar:focus {
+    outline: unset;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
+    border: 1px solid #dedede;
+    background-color: #fff;
+}
+.search-btn {
+    color: #555;
+    margin-left: 10px;
+    font-size: 30px;
+    transition: all .2s ease;
+}
+.search-btn:hover {
+    cursor: pointer;
+    font-size: 35px;
+}
+
 </style>

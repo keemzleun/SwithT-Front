@@ -7,21 +7,21 @@
         <span class="mdi mdi-calendar"></span> {{ selectedSchedule ? '일정 수정' : '일정 등록' }}
       </h2>
 
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleSubmit" style="text-align: left">
         <!-- 제목 입력 -->
-        <label for="title">제목:</label>
+        <label for="title">제목</label>
         <input type="text" v-model="title" :readonly="isReadOnly" required />
 
         <!-- 날짜 선택 -->
-        <label for="schedulerDate">일자:</label>
+        <label for="schedulerDate">일자</label>
         <input type="date" v-model="schedulerDate" :readonly="isReadOnly" required />
 
         <!-- 시간 선택 -->
-        <label for="schedulerTime">시간:</label>
+        <label for="schedulerTime">시간</label>
         <input type="time" v-model="schedulerTime" :readonly="isReadOnly" required />
 
         <!-- 내용 입력 -->
-        <label for="content">내용:</label>
+        <label for="content">내용</label>
         <textarea v-model="content" :readonly="isReadOnly" class="content-textarea" required></textarea>
 
         <!-- 알림 여부 및 시간 설정 -->

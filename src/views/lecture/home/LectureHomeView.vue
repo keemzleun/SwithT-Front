@@ -7,14 +7,19 @@
             <div>{{this.topNotice[0].contents}}</div>
         </v-row>
     </v-banner> -->
+    <div class="notice-slider">
+        <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
+            <v-icon>mdi-bullhorn-variant-outline</v-icon> <strong> [{{ notice.title }}] </strong>    {{ notice.contents }}
+        </div>
+    </div>
     <v-container>
+
         <!-- <v-breadcrumbs :items="breadItems" class="mt-5">
             <template v-slot:divider>
                 <v-icon>mdi-menu-right</v-icon>
             </template>
-        </v-breadcrumbs> -->
+</v-breadcrumbs> -->
 
-        
         <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="dashboard">대시보드</v-tab>
@@ -30,15 +35,16 @@
                     <v-row>
                         <!-- 과제 리스트 -->
                         <v-col cols="12" md="6">
-                            <v-card class="pa-4 mb-3" outlined>
-                                <v-card-title>과제 리스트</v-card-title>
+                            <v-card class="pa-4 mb-3" outlined height="400px">
+                                <v-card-title><strong>과제 리스트</strong> </v-card-title>
+                                <v-spacer></v-spacer>
                                 <v-card-text>
                                     <v-row class="mb-1">
                                         <v-col cols="4"><strong>과제 제목</strong></v-col>
                                         <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
                                         <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
                                     </v-row>
-                                    <v-row v-for="assignment in assignments" :key="assignment.id" class="mb-2">
+                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2">
                                         <v-col cols="4">{{ assignment.title }}</v-col>
                                         <v-col cols="4">{{ assignment.startDate }}</v-col>
                                         <v-col cols="4">{{ assignment.endDate }}</v-col>
@@ -48,26 +54,24 @@
                         </v-col>
 
                         <!-- 공지사항 -->
+
                         <v-col cols="12" md="6">
-                            <v-card class="pa-4 mb-3" outlined>
-                                <v-card-title>공지사항</v-card-title>
+                            <v-card class="pa-4 mb-3" outlined height="400px">
+                                <v-card-item>
+                                    <v-card-title><strong>학습 진행률</strong></v-card-title>
+                                    <v-card-subtitle>지금까지 학습한 내용과 진도율을 확인해보세요</v-card-subtitle>
+                                </v-card-item>
                                 <v-card-text>
-                                    <v-row class="mb-1">
-                                        <v-col cols="4"><strong>제목</strong></v-col>
-                                        <v-col cols="4"><strong>작성자</strong></v-col>
-                                        <v-col cols="4"><strong>작성 일자</strong></v-col>
-                                    </v-row>
-                                    <v-row v-for="notice in notices" :key="notice.id" class="mb-2">
-                                        <v-col cols="4">{{ notice.title }}</v-col>
-                                        <v-col cols="4">{{ notice.memberName }}</v-col>
-                                        <v-col cols="4">{{ notice.postDate }}</v-col>
-                                    </v-row>
+                                    <div class="chartDoughnut">
+                                        <DoughnutChart :totalDayCount="infoData.totalDayCount"
+                                            :pastDayCount="infoData.pastDayCount" />
+                                    </div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
 
                         <!-- 강의 정보 -->
-                        <v-col cols="12" md="6">
+                        <!-- <v-col cols="12" md="6">
                             <v-card class="pa-4 mb-3" outlined>
                                 <v-card-title>강의 상세 정보</v-card-title>
                                 <v-card-text>
@@ -77,14 +81,12 @@
                                         <strong>위치:</strong> {{ this.infoData.address }}
                                         <v-icon @click="showMap()">mdi-map</v-icon>
                                     </div>
-                                    <!-- <div>
-                                        <div id="map" style="width:100%;height:350px;"></div>
-                                    </div> -->
+
                                 </v-card-text>
                             </v-card>
-                        </v-col>
+                        </v-col> -->
                         <!-- 게시글 -->
-                        <v-col cols="12" md="6">
+                        <!-- <v-col cols="12" md="6">
                             <v-card class="pa-4 mb-3" outlined>
                                 <v-card-title>게시글</v-card-title>
                                 <v-card-text>
@@ -100,7 +102,7 @@
                                     </v-row>
                                 </v-card-text>
                             </v-card>
-                        </v-col>
+                        </v-col> -->
                     </v-row>
 
 
@@ -462,19 +464,21 @@
 
 <script>
 /* global kakao */
-
 import LectureInfoCard from './LectureInfoCard.vue';
 // import LectureTabs from './LectureTabs.vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
+import DoughnutChart from './DoughnutChart.vue';
 export default {
     components: {
         LectureInfoCard,
         // LectureTabs,
+        DoughnutChart
     },
     data() {
         return {
-            topNotice:"",
+            topNotice: [],
+            currentNotice: 0,
             isShowMap: false,
             istutor: false,
             page: 0,
@@ -495,7 +499,9 @@ export default {
                 memberName: "",
                 startDate: "",
                 title: "",
-                lectureGroupTimes: []
+                lectureGroupTimes: [],
+                totalDayCount: 0,
+                pastDayCount: 0
             },
 
             notice: [],
@@ -539,9 +545,12 @@ export default {
             tutees: [],
             isLecture: false,
             isKakaoScriptLoaded: false,
-            mapModal:false,
-
+            mapModal: false,
+            urgentAssignment: [],
         };
+    },
+    mounted() {
+        this.startSlider();
     },
     async created() {
         const route = useRoute();
@@ -563,12 +572,14 @@ export default {
         this.infoData.startDate = data.startDate;
         this.infoData.title = data.title;
         this.infoData.address = data.address;
-        this.breadItems[1].title = this.infoData.title
+        this.infoData.totalDayCount = data.totalDayCount,
+            this.infoData.pastDayCount = data.pastDayCount,
+            this.breadItems[1].title = this.infoData.title
         this.infoData.lectureGroupTimes = data.lectureGroupTimes;
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
             return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
         }, '');
-
+        console.log("헤이헹히에히에히에힝히에힝" + JSON.stringify(this.infoData))
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
         let params = {
@@ -581,10 +592,11 @@ export default {
         console.log(this.notices)
 
         const topNoticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list?page=0&type=notice`)
-        console.log("왜 이렇게 나와?"+JSON.stringify(topNoticeResponse))
+        console.log("왜 이렇게 나와?" + JSON.stringify(topNoticeResponse))
         this.topNotice = topNoticeResponse?.data?.result?.content;
 
-        
+        const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
+        this.urgentAssignment = urgentAssignmentResponse?.data?.result?.content;
         const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params })
         this.assignments = assignmentResponse?.data?.result?.content;
         this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
@@ -600,9 +612,14 @@ export default {
 
     },
     methods: {
-        showMap(){
+        startSlider() {
+            setInterval(() => {
+                this.currentNotice = (this.currentNotice + 1) % this.topNotice.length;
+            }, 5000); // 3초마다 다음 공지로
+        },
+        showMap() {
             this.execDaumPostcode();
-            this.mapModal=true;
+            this.mapModal = true;
         },
         loadKakaoMapScript() {
             const script = document.createElement('script');
@@ -909,12 +926,30 @@ export default {
 .v-list-item-avatar {
     margin-right: 10px;
 }
+
 .v-container {
     padding: 0 !important;
 }
+
 .noticeBanner {
     background-color: #D9D9D9;
     color: white;
-    text-align: left; 
+    text-align: left;
+}
+
+.chartDoughnut {
+    max-width: 300px;
+    /* 차트 크기 조정 */
+    margin: 0 auto;
+}
+
+.notice-slider {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    font-size:20px;
+    color:white;
 }
 </style>

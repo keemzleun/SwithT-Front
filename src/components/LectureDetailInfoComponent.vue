@@ -53,7 +53,7 @@ export default {
                     return '취업&직무';
                 case 'HOBBY':
                     return '취미';
-                case 'ADDMISSION':
+                case 'ADMISSION':
                     return '입시';
                 case 'DEVELOPMENT':
                     return '자기계발';

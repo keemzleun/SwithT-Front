@@ -11,15 +11,23 @@
                 <div class="contents-section">
                     <v-tabs-window v-model="activeTab">
                         <v-tabs-window-item value="lecture-info">
+                            
                             <div class="contents-title">강의 소개</div>
+                            
                             <div style="font-size: 18px; margin: 0px 10px 50px; color: #333; text-align: left;">
                                 {{ lectureInfo?.contents }}
                             </div>
                             <hr/>
                             <div class="contents-title">강의 시간</div>
+                            <div v-if="lectureInfo?.lectureType === 'LECTURE'" class="date-info" >
+                                <span style="font-weight: 800; margin-right: 10px;">📅 진행기간 </span> {{ lectureGroups[0]?.startDate }} ~ {{ lectureGroups[0]?.endDate }}
+                            </div>
                             <v-row v-for="(group, index) in lectureGroups" :key="index">
+                                
                                 <v-col>
+                                    
                                   <div class="pa-3 groups-info">
+                                    
                                     <v-row style="padding: 20px 0">
                                       <v-col cols="3" class="d-flex align-center justify-center">
                                         <div style="font-weight: bold; font-size: 17px;">
@@ -40,6 +48,14 @@
                                             </v-col>
                                             <v-col class="d-flex align-center justify-start" style="padding: 10px">
                                                 {{ group.participants }}명
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
+                                                <strong>강의 기간</strong>
+                                            </v-col>
+                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                                    {{ group.startDate }} ~ {{group.endDate }}
                                             </v-col>
                                         </v-row>
                                         <v-row>
@@ -82,31 +98,32 @@
                                 <v-row class="d-flex align-center justify-center">
                                     <div class="tutor-info" style="padding: 20px">
                                         <v-row>
-                                            <v-col cols="2" class="d-flex align-center justify-center">
+                                            <v-col cols="3" class="d-flex align-center justify-center">
                                                 <span style="font-weight: bold; margin-right: 15px">평점</span>
                                             </v-col>
                                             <v-col>
-                                                {{tutorInfo.avgScore}}점
+                                                <span class="mdi mdi-star" style="font-size: 18px;"> </span>
+                                                {{tutorInfo.avgScore}} / 5.0
                                             </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col cols="2" class="d-flex align-center justify-center">
-                                                <span style="font-weight: bold; margin-right: 15px">학력</span>
+                                            <v-col cols="3" class="d-flex align-center justify-center">
+                                                <span style="font-weight: bold; margin-right: 15px">최종 학력</span>
                                             </v-col>
                                             <v-col>
-                                                {{tutorInfo.education}}점
+                                                {{tutorInfo.education}}
                                             </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col cols="2" class="d-flex align-center justify-center">
+                                            <v-col cols="3" class="d-flex align-center justify-center">
                                                 <span style="font-weight: bold; margin-right: 15px">성별</span>
                                             </v-col>
                                             <v-col>
-                                                {{tutorInfo.gender}}
+                                                {{ convertGender(tutorInfo.gender) }} 
                                             </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col cols="2" class="d-flex align-center justify-center">
+                                            <v-col cols="3" class="d-flex align-center justify-center">
                                                 <span style="font-weight: bold; margin-right: 15px">연락처</span>
                                             </v-col>
                                             <v-col>
@@ -197,8 +214,8 @@ export default {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`);
         this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
-        this.tutorId = this.lectureInfo.memberId; // 강사 ID를 저장
-        console.log(this.tutorId);
+        this.tutorId = this.lectureInfo.memberId;
+        console.log('Lecture Type:', this.lectureInfo.lectureType);
       } catch (error) {
         console.error('강의 정보를 가져오는 데 실패했습니다:', error);
       }
@@ -214,6 +231,8 @@ export default {
         if (data.result && Array.isArray(data.result) && data.result.length > 0) {
           // 강의 그룹 데이터를 lectureGroups에 저장
           this.lectureGroups = data.result.map((group, index) => ({
+            startDate: group.startDate,
+            endDate: group.endDate,
             price: group.price || 0,
             participants: group.participants || 1,
             groupTimes: group.groupTimes.map(time => ({
@@ -312,6 +331,9 @@ export default {
       } catch (error) {
         console.error('강사 정보를 가져오는 데 실패했습니다:', error);
       }
+    },
+    convertGender(gender) {
+        return gender === 'MAN' ? '남성' : '여성';
     }
   }
 }
@@ -385,5 +407,15 @@ td {
      padding: 20px 50px;
      font-size: 17px;
      text-align: left;
+}
+.date-info {
+    background-color: #c5d4f8;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    font-size: 18px;
+    color: #333;
+    text-align: left;
+
 }
 </style>

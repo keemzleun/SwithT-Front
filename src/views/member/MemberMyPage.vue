@@ -8,9 +8,7 @@
           <div class="card">
             <div class="card-body text-center" :style="{ minHeight: '567px' }">
               <img
-                :src="
-                  memberInfo.profileImage || 'https://via.placeholder.com/150'
-                "
+                :src=" memberInfo.profileImage || 'https://via.placeholder.com/150'"
                 class="rounded-circle mb-3"
                 alt="Profile"
                 style="width: 150px"

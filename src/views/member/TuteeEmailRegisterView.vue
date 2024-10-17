@@ -183,7 +183,7 @@
           <button 
           type="submit" 
           class="btn"
-          style="background-color: #6C97FD; color: white; border: none;"
+          style="background-color: #6C97FD; color: white; border: none; width: 200px;"
           >가입하기</button>
         </div>
       </div>

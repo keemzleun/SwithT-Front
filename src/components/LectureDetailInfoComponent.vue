@@ -19,7 +19,7 @@
             </v-col>
             <v-col cols="5" class="d-flex align-center justify-center">
                 <div class="thumbnail">
-                    <img :src="lectureInfo?.image" alt="Lecture Thumbnail" />
+                    <img :src="lectureInfo?.image" alt="Lecture Thumbnail"/>
                 </div>
             </v-col>
         </v-row>
@@ -111,7 +111,8 @@ export default {
     font-size: 1.5rem;
 }
 .thumbnail img {
-    width: 80%;
     border-radius: 8px;
+    height: 300px;
+    object-fit: contain;
 }
 </style>

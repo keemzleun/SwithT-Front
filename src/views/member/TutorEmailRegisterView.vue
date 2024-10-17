@@ -237,8 +237,8 @@
           <button 
           type="submit" 
           class="btn"
-          style="background-color: #6C97FD; color: white; border: none;"
-          >가입하기</button>
+          style="background-color: #6C97FD; color: white; border: none; width: 200px;"
+          >가입 하기</button>
         </div>
       </div>
     </form>

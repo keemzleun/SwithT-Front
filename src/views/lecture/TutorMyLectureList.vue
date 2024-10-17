@@ -1,8 +1,8 @@
 <template>
-    <v-container width="60%">
+    <v-container width="60%" style="margin-top: 60px;">
         <v-row justify="center">
             <v-col cols="auto">
-                <v-tabs v-model="tab" color="black" slider-color="#FFF490">
+                <v-tabs v-model="tab" color="black" slider-color="#6C97FD">
                     <v-tab value="LESSON">나의 과외</v-tab>
                     <v-tab value="LECTURE">나의 강의</v-tab>
                 </v-tabs>
@@ -12,7 +12,7 @@
         <br>
         <v-row justify="left">
             <v-col cols="1">
-                <v-btn class="admit-color" @click="changeStatus('ADMIT')">진행중</v-btn>
+                <v-btn color="#6C97FD" @click="changeStatus('ADMIT')">진행중</v-btn>
             </v-col>
             <v-col cols="1">
                 <v-btn color="#CFCFCF" @click="changeStatus('TERMINATE')">종료</v-btn>
@@ -22,7 +22,7 @@
         </v-row>
         <v-row justify="center">
             <v-col>
-                <v-btn width="100%" color="#CFCFCF">과외/강의 개설하기</v-btn>
+                <v-btn width="100%" color="#6C97FD" @click="clickCreateLectureBtn">과외/강의 개설하기</v-btn>
             </v-col>
         </v-row>
 
@@ -30,40 +30,30 @@
         <v-card-text>
             <v-tabs-window v-model="tab">
                 <v-tabs-window-item value="LESSON">
-                    <v-row v-for="lesson in lessons" :key="lesson.id">
-                        <v-col>
-                            <v-card class="custom-border">
-                                <v-card-text class="d-flex justify-space-between align-center">
-                                    <div>
-                                        {{ lesson.title }}
-                                        <span>
-                                            <v-chip v-if="status === 'ADMIT'" color="primary" class="mr-2">진행중</v-chip>
-                                            <v-chip v-if="status === 'TERMINATE'" color="#CFCFCF" class="mr-2">종료</v-chip>
-                                        </span>
-                                    </div>
-                                    <v-btn v-if="status === 'ADMIT'" class="admit-color"
-                                        @click="clickLectureDetail(lesson.id)" small>강의 상세</v-btn>
-                                </v-card-text>
-                            </v-card>
+                    <v-row v-if="tab === 'LESSON'" class="lessons-container">
+                        <v-col v-for="lesson in lessons" :key="lesson.id" cols="4" class="mb-4">
+                            <div @click="clickLectureDetail(lesson.id)" class="lesson-card">
+                                <img :src="lesson.image" alt="강의 썸네일" class="lecture-image" />
+                                <br>
+                                <v-chip v-if="status === 'ADMIT'" color="primary" class="mr-2">진행중</v-chip>
+                                <v-chip v-if="status === 'TERMINATE'" color="#CFCFCF" class="mr-2">종료</v-chip>
+                                {{ lesson.title }}
+  
+                            </div>
                         </v-col>
-                    </v-row>
+                    </v-row>            
                 </v-tabs-window-item>
+
                 <v-tabs-window-item value="LECTURE">
-                    <v-row v-for="lecture in lectures" :key="lecture.id">
-                        <v-col>
-                            <v-card class="custom-border">
-                                <v-card-text class="d-flex justify-space-between align-center">
-                                    <div>
-                                        {{ lecture.title }}
-                                        <span>
-                                            <v-chip v-if="status === 'ADMIT'" color="primary" class="mr-2">진행중</v-chip>
-                                            <v-chip v-if="status === 'TERMINATE'" color="#CFCFCF" class="mr-2">종료</v-chip>
-                                        </span>
-                                    </div>
-                                    <v-btn v-if="status === 'ADMIT'" class="admit-color"
-                                        @click="clickLectureDetail(lecture.id)" small>강의 상세</v-btn>
-                                </v-card-text>
-                            </v-card>
+                    <v-row v-if="tab === 'LECTURE'" class="lessons-container">
+                        <v-col v-for="lecture in lectures" :key="lecture.id" cols="4" class="mb-4">
+                            <div @click="clickLectureDetail(lecture.id)" class="lesson-card">
+                                <img :src="lecture.image" alt="강의 썸네일" class="lecture-image" />
+                                <br>
+                                <v-chip v-if="status === 'ADMIT'" color="primary" class="mr-2">진행중</v-chip>
+                                <v-chip v-if="status === 'TERMINATE'" color="#CFCFCF" class="mr-2">종료</v-chip>
+                                {{ lecture.title }}
+                            </div>
                         </v-col>
                     </v-row>
                 </v-tabs-window-item>
@@ -84,7 +74,7 @@ export default {
             lectures: [],
             status: 'ADMIT',
             page: 0,
-            size: 5,
+            size: 6,
             totalPages: 0,
             frontendPage: 1
 
@@ -131,6 +121,8 @@ export default {
                 else if (this.tab === 'LECTURE') {
                     this.lectures = response.data.result.content;
                 }
+
+                console.log(response.data.result);
             } catch (e) {
                 console.log(e.response.data.error_message);
             }
@@ -148,7 +140,12 @@ export default {
         },
 
         clickLectureDetail(id) {
-            this.$router.push(`/tutor-lecture-class-list?lectureId=${id}&lectureType=${this.tab}&lectureStatus=${this.status}`);
+            if (this.status === 'ADMIT') {
+                this.$router.push(`/tutor-lecture-class-list?lectureId=${id}&lectureType=${this.tab}&lectureStatus=${this.status}`);
+            }
+        },
+        clickCreateLectureBtn(){
+            this.$router.push(`/create-lecture`);
         }
 
     }
@@ -156,13 +153,17 @@ export default {
 </script>
 
 <style scoped>
+.lecture-image {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
 .custom-border {
     border: 2px solid #cccccc;
-    /* Custom border */
     border-radius: 8px;
-    /* Rounded corners */
     box-shadow: none !important;
-    /* Remove any shadow */
 }
 
 .v-tab {

@@ -26,52 +26,56 @@
                                 <span style="font-weight: 800; margin-right: 10px;">📅 진행기간 </span> {{ lectureGroups[0]?.startDate }} ~ {{ lectureGroups[0]?.endDate }}
                             </div>
                             <v-row v-for="(group, index) in lectureGroups" :key="index">
-                                
                                 <v-col>
-                                    
-                                  <div class="pa-3 groups-info">
-                                    
+                                  <div class="pa-3 groups-info" :style="{ backgroundColor: group.isAvailable === 'N' ? '#f0efef' : '' }">
                                     <v-row style="padding: 20px 0">
-                                      <v-col cols="3" class="d-flex align-center justify-center">
-                                        <div style="font-weight: bold; font-size: 17px;">
-                                          {{ `강의 그룹 ${index + 1}` }}
-                                        </div>
+                                      <v-col cols="3" class="align-content-center">
+                                        <v-row v-if="group.isAvailable === 'N'" class="align-center justify-center">
+                                            <div class="soldout">마감</div>
+                                        </v-row>
+                                        <v-row class="align-center justify-center">
+                                            <div style="font-weight: bold; font-size: 17px;">
+                                                {{ `강의 그룹 ${index + 1}` }}
+                                              </div>
+                                        </v-row>
                                       </v-col>
                                       <v-col cols="9" style="text-align: left; font-size: 15px">
                                         <v-row>
-                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
-                                                <strong>강의료</strong>
-                                            </v-col>
-                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                                {{ group.price }}원</v-col>
+                                          <v-col cols="4" class="align-center justify-start" style="padding: 10px">
+                                            <strong>강의료</strong>
+                                          </v-col>
+                                          <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                            {{ group.price }}원
+                                          </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
-                                                <strong>모집인원</strong>
-                                            </v-col>
-                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                                {{ group.participants }}명
-                                            </v-col>
+                                          <v-col cols="4" class="align-center justify-start" style="padding: 10px">
+                                            <strong>모집인원</strong>
+                                          </v-col>
+                                          <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                            {{ group.participants }}명
+                                          </v-col>
                                         </v-row>
                                         
                                         <v-row>
-                                            <v-col cols="4" class="d-flex align-center justify-start" style="padding: 10px">
-                                                <strong>강의시간</strong>
-                                            </v-col>
-                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                                <div>
-                                                    <div v-for="time in group.groupTimes" :key="time.groupTimeId">
-                                                        <span style="font-weight: bold; color: #6C97FD">{{ time.day }}요일</span>
-                                                        {{ formatTime(time.startTime) }} ~ {{ formatTime(time.endTime) }}
-                                                    </div>
-                                                </div>
-                                            </v-col>
+                                          <v-col cols="4" class="d-flex align-center justify-start" style="padding: 10px">
+                                            <strong>강의시간</strong>
+                                          </v-col>
+                                          <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                            <div>
+                                              <div v-for="time in group.groupTimes" :key="time.groupTimeId">
+                                                <span style="font-weight: bold; color: #6C97FD">{{ time.day }}요일</span>
+                                                {{ formatTime(time.startTime) }} ~ {{ formatTime(time.endTime) }}
+                                              </div>
+                                            </div>
+                                          </v-col>
                                         </v-row>
                                       </v-col>
                                     </v-row>
                                   </div>
                                 </v-col>
                               </v-row>
+                              
                         </v-tabs-window-item>
 
                         <v-tabs-window-item value="tutor-info">
@@ -234,6 +238,7 @@ export default {
             endDate: group.endDate,
             price: group.price || 0,
             participants: group.participants || 1,
+            isAvailable: group.isAvailable,
             groupTimes: group.groupTimes.map(time => ({
               day: this.convertDayToKorean(time.lectureDay), // 요일을 한글로 변환
               startTime: time.startTime,
@@ -274,46 +279,54 @@ export default {
       return dayMap[day] || '요일 미상';
     },
     formatSchedule(times) {
-      const schedule = {};
-      const dayMap = {
-        MONDAY: '월',
-        TUESDAY: '화',
-        WEDNESDAY: '수',
-        THURSDAY: '목',
-        FRIDAY: '금',
-        SATURDAY: '토',
-        SUNDAY: '일'
+  const schedule = {};
+  const dayMap = {
+    MONDAY: '월',
+    TUESDAY: '화',
+    WEDNESDAY: '수',
+    THURSDAY: '목',
+    FRIDAY: '금',
+    SATURDAY: '토',
+    SUNDAY: '일'
+  };
+
+  const groupColors = {}; // 그룹 인덱스별 색상을 저장
+
+  times.forEach((time) => {
+    const day = dayMap[time.lectureDay]; // 요일 변환
+    const startHourIndex = this.hours.indexOf(time.startTime.split(':')[0] + ':00'); // 시작 시간의 index
+    const endHourIndex = this.hours.indexOf(time.endTime.split(':')[0] + ':00'); // 종료 시간의 index
+
+    // group.isAvailable 값에 따라 색상을 결정
+    const group = this.lectureGroups[time.groupIndex - 1]; // 그룹 정보 가져오기 (인덱스 조정)
+    console.log(group)
+    let color;
+
+    if (group.isAvailable === 'N') {
+      color = '#f0efef'; // 사용 불가한 경우
+    } else {
+      // 그룹 인덱스로 색을 할당하고, 해당 색상이 없으면 새롭게 생성
+      if (!groupColors[time.groupIndex]) {
+        groupColors[time.groupIndex] = this.getRandomColor(); // 그룹 인덱스별로 고유 색상 할당
+      }
+      color = groupColors[time.groupIndex]; // 해당 그룹의 색상 가져오기
+    }
+
+    if (!schedule[day]) {
+      schedule[day] = Array(this.hours.length).fill(null); // 해당 요일에 스케줄 배열 초기화
+    }
+
+    // 시작 시간부터 종료 시간까지 색상 및 그룹 인덱스 설정
+    for (let hour = startHourIndex; hour < endHourIndex; hour++) {
+      schedule[day][hour] = {
+        name: '강의',
+        color: color, // 조건에 따른 색상 적용
+        index: time.groupIndex // 그룹 인덱스
       };
-
-      const groupColors = {}; // 그룹 인덱스별 색상을 저장
-
-      times.forEach((time) => {
-        const day = dayMap[time.lectureDay]; // 요일 변환
-        const startHourIndex = this.hours.indexOf(time.startTime.split(':')[0] + ':00'); // 시작 시간의 index
-        const endHourIndex = this.hours.indexOf(time.endTime.split(':')[0] + ':00'); // 종료 시간의 index
-
-        // 그룹 인덱스로 색을 할당하고, 해당 색상이 없으면 새롭게 생성
-        if (!groupColors[time.groupIndex]) {
-          groupColors[time.groupIndex] = this.getRandomColor(); // 그룹 인덱스별로 고유 색상 할당
-        }
-
-        const color = groupColors[time.groupIndex]; // 해당 그룹의 색상 가져오기
-
-        if (!schedule[day]) {
-          schedule[day] = Array(this.hours.length).fill(null); // 해당 요일에 스케줄 배열 초기화
-        }
-
-        // 시작 시간부터 종료 시간까지 색상 및 그룹 인덱스 설정
-        for (let hour = startHourIndex; hour < endHourIndex; hour++) {
-          schedule[day][hour] = {
-            name: '강의',
-            color: color, // 그룹별 색상 적용
-            index: time.groupIndex // 그룹 인덱스
-          };
-        }
-      });
-      return schedule;
-    },
+    }
+  });
+  return schedule;
+},
 
     getRandomColor() {
       const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
@@ -418,5 +431,13 @@ td {
     color: #333;
     text-align: left;
 
+}
+.soldout {
+    width: 50px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #fff;
+    background-color: #666;
 }
 </style>

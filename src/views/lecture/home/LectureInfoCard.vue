@@ -3,19 +3,21 @@
         <v-row class="align-center">
             <v-col cols="7">
                 <div>
-                    <span class="lectureType">
-                        {{ this.lectureType  }}
+                    <span class="lectureTypeStyle">
+                        {{ this.lectureType }}
                     </span>
                     <span class="category" style="font-size: 18px;">
-                        {{ this.category  }}
+                        {{ this.category }}
                     </span>
                 </div>
                 <div class="title">{{ infoData.title }}</div>
-                <div class="memberName"> {{infoData.memberName}} 튜터 <v-icon @click="clickChatRoom()">mdi-chat</v-icon></div>
+                <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()">mdi-chat</v-icon>
+                </div>
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate }}</div>
                 <div class="detailInfo">강의 일정 : </div>
-                <div v-html="lectureSchedules" class="detailInfo"></div> 
-                <div class="detailInfo">위치 : {{ infoData.address }} <v-icon @click="showMap()">mdi-google-maps</v-icon> </div>
+                <div v-html="lectureSchedules" class="detailInfo"></div>
+                <div class="detailInfo">위치 : {{ infoData.address }} <v-icon @click="showMap()">mdi-google-maps</v-icon>
+                </div>
 
             </v-col>
             <v-col cols="5" class="d-flex align-center justify-center">
@@ -78,17 +80,17 @@ export default {
         infoData: Object,
         lectureSchedules: String,
     },
-    data(){
-        return{
+    data() {
+        return {
             mapModal: false,
 
-            lectureType:this.formattedLectureType(),
-            category:this.formattedCategory(),
+            lectureType: "",
+            category: "",
         };
     },
-    created(){
-        this.lectureType="";
-        this.category="";
+    created() {
+        this.lectureType = this.formattedLectureType();
+        this.category = this.formattedCategory();
         this.loadKakaoMapScript();
 
     },
@@ -97,33 +99,38 @@ export default {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
         },
         formattedCategory() {
-            switch (this.infoData?.category) {
-                case 'CAREER':
-                    return '취업&직무';
-                case 'HOBBY':
-                    return '취미';
-                case 'ADDMISSION':
-                    return '입시';
-                case 'DEVELOPMENT':
-                    return '자기계발';
-                default:
-                    return this.infoData?.category;
+            if (this.infoData?.category) {
+                const category = this.infoData?.category;
+                switch (category) {
+                    case 'CAREER':
+                        return '취업&직무';
+                    case 'HOBBY':
+                        return '취미';
+                    case 'ADDMISSION':
+                        return '입시';
+                    case 'DEVELOPMENT':
+                        return '자기계발';
+                    default:
+                        return this.infoData?.category;
+                }
             }
         },
-        formattedLectureType(){
-            console.log("확인 들어왔는가  "+this.infoData.lectureGroupTimes[0].lectureType)
-            switch(this.infoData.lectureGroupTimes[0].lectureType) {
-                case 'LECTURE':
-                    return '강의';
-                case 'LESSON':
-                    return '과외';
-                default:
-                    return this.infoData.lectureGroupTimes[0].lectureType;
+        formattedLectureType() {
+            if (this.infoData?.lectureGroupTimes && this.infoData.lectureGroupTimes.length > 0) {
+                const lectureType = this.infoData.lectureGroupTimes[0].lectureType;
+                switch (lectureType) {
+                    case 'LECTURE':
+                        return '강의';
+                    case 'LESSON':
+                        return '과외';
+                    default:
+                        return this.infoData.lectureGroupTimes[0].lectureType;
+                }
             }
         },
-        showMap(){
+        showMap() {
             this.execDaumPostcode();
-            this.mapModal=true;
+            this.mapModal = true;
         },
         loadKakaoMapScript() {
             const script = document.createElement('script');
@@ -172,40 +179,48 @@ export default {
 .v-container {
     padding: 0 !important;
 }
+
 .top-info {
     background-color: #6C97FD;
     color: white;
     padding: 100px 20vw 40px;
-    text-align: left; 
+    text-align: left;
 }
-.lectureType {
+
+.lectureTypeStyle {
     display: inline-block;
     margin-right: 5px;
-    background-color:  #121212;
+    background-color: #121212;
     width: 50px;
     border-radius: 5px;
     font-size: 18px;
     font-weight: bold;
     text-align: center;
 }
+
 .title {
     font-size: 40px;
     font-weight: bold;
 }
+
 .memberName {
     font-size: 20px;
 }
+
 .detailInfo {
     font-size: 15px;
     margin-bottom: 5px;
 }
+
 .avgScore {
     font-size: 1.5rem;
 }
+
 .thumbnail img {
     width: 80%;
     border-radius: 8px;
 }
+
 .custom-card {
     border: 1px solid #E0E0E0;
     padding: 20px;

@@ -3,16 +3,23 @@
         <div class="temporary-banner">
             임시 배너
         </div>
-        <div class="search-container">
+        <div class="search-container" style="margin-top: 60px">
             <input
                 v-model="searchValue"
                 dense
                 hide-details="true"
                 class="search-bar"
                 placeholder="SwithT와 함께 배우고, 나누고, 성장하세요"
+                @input="fetchSuggestions"
                 @keyup.enter="performSearch"
             />
             <span @click="performSearch" class="search-btn mdi mdi-magnify"></span>
+            <!-- 추천 검색어 표시 -->
+            <ul v-if="suggestions.length > 0" class="suggestions-list">
+                <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)">
+                    {{ suggestion }}
+                </li>
+            </ul>
         </div>
         <section class="menu">
             <div class="menu-list" @click="performCategorySearch('DEVELOPMENT')">
@@ -94,11 +101,30 @@ export default {
     data() {
         return {
             searchValue: "",
+            suggestions: [],
             latestLectures: [],
             freeLectures: []
         };
     },
     methods: {
+        async fetchSuggestions() {
+            if (this.searchValue.length > 0) {  // 1글자 이상 입력 시 추천 검색어 요청
+                try {
+                    const response = await axios.post(
+                        `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/recommend`, 
+                        null,  // 바디를 비워두고
+                        { 
+                            params: { keyword: this.searchValue }  // 쿼리 스트링에 keyword 전달
+                        }
+                    );
+                    this.suggestions = response.data;  // 추천 검색어 저장
+                } catch (error) {
+                    console.error("추천 검색어 가져오기 실패:", error);
+                }
+            } else{
+                this.suggestions = [];
+            }
+        },
         async fetchLatestLectures() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lectures/latest`);
@@ -162,6 +188,11 @@ export default {
                 name: 'SearchResult', 
                 query: requestData 
             });
+        },
+        selectSuggestion(suggestion) {
+            this.searchValue = suggestion;  // 선택된 추천어로 검색어 설정
+            this.performSearch();  // 선택된 추천어로 바로 검색 실행
+            this.suggestions = [];
         },
     },
     created() {
@@ -278,6 +309,7 @@ export default {
     justify-content: center;
     align-items: center;
     margin-top: 50px;
+    position: relative;
 }
 .search-bar {
     width: 40vw;
@@ -307,6 +339,30 @@ export default {
 .search-btn:hover {
     cursor: pointer;
     font-size: 35px;
+}
+.suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 23%;
+    position: absolute; 
+    background-color: white;
+    width: 39vw;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    z-index: 10;
+    border-radius: 28px;
+    height: auto;
+    left: 28%;
+}
+.suggestions-list li {
+    padding: 5px;
+    margin: 0px;
+    width: 38.9vw;
+    border-radius: 28px;
+    cursor: pointer;
+    text-align: left;
+}
+.suggestions-list li:hover {
+    background-color: #EEE;
 }
 
 </style>

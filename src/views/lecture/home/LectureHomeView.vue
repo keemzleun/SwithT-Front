@@ -9,7 +9,7 @@
     </v-banner> -->
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
-            <v-icon>mdi-bullhorn-variant-outline</v-icon> <strong> [{{ notice.title }}] </strong>    {{ notice.contents }}
+            <v-icon>mdi-bullhorn-variant-outline</v-icon> <strong> [{{ notice.title }}] </strong> {{ notice.contents }}
         </div>
     </div>
     <v-container>
@@ -62,9 +62,13 @@
                                     <v-card-subtitle>지금까지 학습한 내용과 진도율을 확인해보세요</v-card-subtitle>
                                 </v-card-item>
                                 <v-card-text>
-                                    <div class="chartDoughnut">
-                                        <DoughnutChart :totalDayCount="infoData.totalDayCount"
-                                            :pastDayCount="infoData.pastDayCount" />
+                                    <div class="chartDoughnut" v-if="isDataLoaded">
+                                        <DoughnutChart :totalDayCount="infoData?.totalDayCount"
+                                            :pastDayCount="infoData?.pastDayCount" />
+                                    </div>
+                                    <div v-else>
+                                        <!-- 데이터가 로드되기 전까지는 로딩 메시지 또는 스피너를 보여줌 -->
+                                        <v-progress-circular color="primary" indeterminate></v-progress-circular>
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -111,18 +115,19 @@
 
             <!-- 과제 탭 -->
             <v-tabs-window-item value="assignment">
-                <v-card flat>
+                <v-card>
                     <v-card-text>
-                        <v-row justify="end" class="mr-4">
-                            <v-btn color="#90CDFF" @click="assignmentCreateModal = true"
-                                v-if="this.istutor"><strong>생성</strong></v-btn>
+                        <v-row justify="end" class="mr-6">
+                            <v-col cols="5" class="mr-5"><v-btn rounded color="#90CDFF"
+                                    @click="assignmentCreateModal = true"
+                                    v-if="this.istutor"><v-icon>mdi-plus</v-icon></v-btn></v-col>
                         </v-row>
 
                         <!-- 과제 목록 -->
-                        <v-row>
-                            <v-col cols="12" md="12" v-for="assignment in assignments" :key="assignment.id"
+                        <v-row justify="center">
+                            <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
                                 class="text-left">
-                                <v-card class="pa-4 mb-3" outlined>
+                                <v-card class="pa-4 mb-3" variant="outlined">
                                     <v-row>
                                         <v-col @click="viewAssignmentOpen(assignment.id)">
                                             <h3>{{ assignment.title }}</h3>
@@ -131,8 +136,15 @@
                                         </v-col>
 
                                         <v-col cols="auto">
+                                            <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)"
+                                                v-if="this.istutor">
+                                                <v-icon>mdi-pencil</v-icon>
+                                            </v-btn>
+                                            <!-- <v-icon class="me-2" size="small" @click.stop="updateAssignmentOpen(assignment.id)" v-if="notice.author">
+                                                mdi-pencil
+                                            </v-icon>
                                             <v-btn color="#90CDFF" @click="updateAssignmentOpen(assignment.id)"
-                                                v-if="this.istutor"><strong>수정</strong></v-btn>
+                                                v-if="this.istutor"><strong>수정</strong></v-btn> -->
                                         </v-col>
                                     </v-row>
                                 </v-card>
@@ -146,11 +158,12 @@
             </v-tabs-window-item>
             <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
-                <v-row justify="end" class="mt-4 mb-4 mr-12">
-                    <v-btn color="#90CDFF" @click="assignmentCreateModal = true"><strong>생성</strong></v-btn>
+                <v-row justify="end">
+                    <v-col class="mr-5" cols="5"><v-btn rounded color="#90CDFF"
+                            @click="noticeCreateModal = true"><v-icon>mdi-plus</v-icon></v-btn></v-col>
                 </v-row>
-                <v-row>
-                    <v-col>
+                <v-row justify="center">
+                    <v-col cols="8">
 
                         <v-row class="header">
                             <v-col cols="2">작성자</v-col>
@@ -161,10 +174,8 @@
                         </v-row>
                     </v-col>
                 </v-row>
-                <v-row>
-
-                    <v-col v-if="notices.length">
-
+                <v-row justify="center">
+                    <v-col cols="8" v-if="notices.length">
                         <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
                             <v-col cols="2">{{ notice.memberName }}</v-col>
                             <v-col cols="2">{{ notice.type }}</v-col>
@@ -213,10 +224,12 @@
                 <v-card flat>
                     <v-card-text>
                         <!-- 튜티 리스트 -->
-                        <v-list width="40%" class="mx-auto">
-                            <v-list-item v-for="tutee in this.tutees" :key="tutee.id"
+                        <v-list width="20%" class="mx-auto">
+                            <v-list-item v-for="tutee in this.tutees" :key="tutee.id" justify="center"
                                 class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
-                                style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; background-color: #f5f5f5; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;">
+                                style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
+                                variant="outlined">
+
                                 <v-row>
                                     <v-col>
                                         <v-list-item-avatar>
@@ -244,7 +257,6 @@
         </v-tabs-window>
 
         <!-- 과제 모달 -->
-
         <v-dialog v-model="assignmentCreateModal" max-width="500px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
@@ -274,7 +286,6 @@
 
             </v-card>
         </v-dialog>
-
         <v-dialog v-model="assignmentViewModal" max-width="500px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
@@ -302,7 +313,6 @@
 
             </v-card>
         </v-dialog>
-
         <v-dialog v-model="assignmentUpdateModal" max-width="500px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
@@ -547,6 +557,7 @@ export default {
             isKakaoScriptLoaded: false,
             mapModal: false,
             urgentAssignment: [],
+            isDataLoaded: false,
         };
     },
     mounted() {
@@ -556,30 +567,27 @@ export default {
         const route = useRoute();
         this.lectureGroupId = route.params.lectureGroupId;
         const infoGetResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-home/${this.lectureGroupId}`)
-        console.log(infoGetResponse);
         const data = infoGetResponse?.data?.result;
+        console.log("ckxm", data)
         this.infoData.category = this.changeCategory(data.category);
         this.isLecture = data.lectureType === "LECTURE" ? true : false;
-        console.log("강의야?" + this.isLecture)
         this.breadItems[0].title = this.isLecture ? "강의" : "과외"
         this.infoData.chatRoomId = data.chatRoomId;
         this.infoData.contents = data.contents;
         this.infoData.image = data.image;
-        this.infoData.latitude = data.latitude;
         this.infoData.limitPeople = data.limitPeople;
-        this.infoData.longtitude = data.longtitude;
         this.infoData.memberName = data.memberName;
         this.infoData.startDate = data.startDate;
         this.infoData.title = data.title;
         this.infoData.address = data.address;
-        this.infoData.totalDayCount = data.totalDayCount,
-            this.infoData.pastDayCount = data.pastDayCount,
-            this.breadItems[1].title = this.infoData.title
+        this.infoData.totalDayCount = data.totalDayCount;
+        this.infoData.pastDayCount = data.pastDayCount;
+        this.isDataLoaded = true;
+        this.breadItems[1].title = this.infoData.title;
         this.infoData.lectureGroupTimes = data.lectureGroupTimes;
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
             return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
         }, '');
-        console.log("헤이헹히에히에히에힝히에힝" + JSON.stringify(this.infoData))
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
         let params = {
@@ -589,10 +597,8 @@ export default {
         const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
         this.notices = noticeResponse?.data?.result?.content;
         this.noticePages = noticeResponse?.data?.result?.totalPages;
-        console.log(this.notices)
 
         const topNoticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list?page=0&type=notice`)
-        console.log("왜 이렇게 나와?" + JSON.stringify(topNoticeResponse))
         this.topNotice = topNoticeResponse?.data?.result?.content;
 
         const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
@@ -601,14 +607,11 @@ export default {
         this.assignments = assignmentResponse?.data?.result?.content;
         this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
 
-        console.log(this.assignments);
         const memberInfo = localStorage.getItem('memberInfo');
         if (memberInfo && JSON.parse(memberInfo).name === this.infoData.memberName) {
             this.istutor = true;
         }
         if (this.infoData.address != "") this.isShowMap = true;
-        console.log("map" + this.isShowMap)
-        this.loadKakaoMapScript();
 
     },
     methods: {
@@ -683,7 +686,6 @@ export default {
         async noticeView(item) {
             this.noticeViewModal = true;
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
-            console.log(response)
             this.noticeTitle = response?.data?.result?.title;
             this.noticeContent = response?.data?.result?.contents;
             this.noticeId = item.id;
@@ -693,7 +695,6 @@ export default {
         async fetchComments(noticeId) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list`)
             this.comments = response?.data?.result?.content || [];
-            console.log("comment" + JSON.stringify(this.comments))
         },
         async submitComment() {
             const body = {
@@ -776,7 +777,6 @@ export default {
             this.assignmentContent = getResponse?.data?.result?.contents;
             this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
             this.assignmentId = getResponse?.data?.result?.id;
-            console.log(getResponse)
         },
         async updateAssignmentOpen(id) {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
@@ -785,7 +785,6 @@ export default {
             this.assignmentContent = getResponse?.data?.result?.contents;
             this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
             this.assignmentId = getResponse?.data?.result?.id;
-            console.log(getResponse)
         },
         async updateAssignment() {
             try {
@@ -913,7 +912,6 @@ export default {
 
 .tutee-list-item {
     border-radius: 20px;
-    background-color: #f5f5f5;
     margin-bottom: 10px;
     padding: 10px;
     display: flex;
@@ -939,6 +937,7 @@ export default {
 
 .chartDoughnut {
     max-width: 300px;
+    min-height: 300px;
     /* 차트 크기 조정 */
     margin: 0 auto;
 }
@@ -949,7 +948,7 @@ export default {
     align-items: center;
     justify-content: center;
     background-color: black;
-    font-size:20px;
-    color:white;
+    font-size: 20px;
+    color: white;
 }
 </style>

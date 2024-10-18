@@ -1,5 +1,8 @@
 <template>
-    <LectureDetailInfoComponent/>
+    <LectureDetailInfoComponent
+    :lectureId=this.lectureId
+    />
+
     <v-container>
         <v-row>
             <v-col cols="8">
@@ -194,6 +197,7 @@ export default {
       lectureGroups: [], // 강의 그룹 데이터
       tutorInfo: null,
       tutorId: null,
+      lectureId : this.$route.params.id,
     };
   },
   created() {

@@ -30,7 +30,11 @@
                             <v-col cols="6" class="lecture-title">{{ lecture.title }}</v-col>
                             <v-col cols="3">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2">
-                                <span :class="getStatusClass(lecture.status)">{{ getStatusText(lecture.status) }}</span>
+                                <span :class="getStatusClass(lecture.status)"
+                                      @click="lecture.status === 'WAITING' ? (initiatePayment(),handlePaymentRequest(lecture.applyId)) : null"
+                                      :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
+                                    {{ getStatusText(lecture.status) }}
+                                </span>
                             </v-col>
                         </v-row>
                     </v-col>
@@ -58,12 +62,16 @@
                             <v-col cols="6" class="lecture-title">{{ lecture.title }}</v-col>
                             <v-col cols="3">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2" style="font-weight: 700">
-                                <span :class="getStatusClass(lecture.status)">{{ getStatusText(lecture.status) }}</span>
+                                <span :class="getStatusClass(lecture.status)"
+                                      @click="lecture.status === 'WAITING' ? (initiatePayment(),handlePaymentRequest(lecture.applyId)) : null"
+                                      :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
+                                    {{ getStatusText(lecture.status) }}
+                                </span>
                             </v-col>
                         </v-row>
                     </v-col>
                     <v-col v-else>
-                        <div style="margin: 20px 0">신청한 강의가 없습니다.</div>
+                        <div style="margin: 20px 0">신청한 강의가 없습니다.</div>   
                     </v-col>
                 </v-row>
             </v-tabs-window-item>
@@ -73,6 +81,7 @@
 
 <script>
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode'
 
 export default {
     data() {
@@ -143,6 +152,56 @@ export default {
                     return '결제 요청'
                 default:
                     return '상태 불명';
+            }
+        },
+        async handlePaymentRequest(applyId) {
+            try {
+                const lectureApplyId = Number(applyId)
+                this.applyId = lectureApplyId 
+
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/group/${lectureApplyId }`)
+                this.title = response.data.result.lectureName
+                this.price = response.data.result.price
+                console.log('결제 요청 처리 결과:', response.data)
+            } catch (error) {
+                console.error('결제 요청 처리 중 오류 발생:', error)
+            }
+        },
+        initiatePayment() {
+            const IMP = window.IMP  // 아임포트 전역 객체
+            IMP.init("imp00575764") // 아임포트 상점 고유코드로 초기화
+            console.log(jwtDecode(localStorage.getItem('token')).email)
+
+            const paymentData = {
+                pg: "html5_inicis", // 결제 PG사
+                pay_method: "card", // 결제 방법
+                merchant_uid: `merchant_${new Date().getTime()}`, // 주문번호
+                name: this.title, // 결제 내역
+                amount: this.price, // 결제 금액
+                buyer_email: jwtDecode(localStorage.getItem('token')).email,
+                buyer_name: jwtDecode(localStorage.getItem('token')).name,
+                buyer_tel: "",
+            }
+            console.log("payment DATA: "+paymentData)
+            IMP.request_pay(paymentData, this.processPayment) // 결제 요청
+        },
+        async processPayment(rsp){
+            try{
+                this.memberId = localStorage.getItem('id')
+                if(rsp.success) {
+                    const data = {
+                        impUid: rsp.imp_uid, // 아임포트 거래 고유번호
+                        title: this.title,
+                        price: this.price,
+                        memberId: this.memberId,
+                        id: this.applyId
+                    }
+                    console.log(data)
+                    const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/complete`, data)
+                    alert(response.data.responseMessage)
+                }
+            } catch(error){
+                console.log("what's the matter?: "+error)
             }
         },
     },

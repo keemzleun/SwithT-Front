@@ -45,7 +45,7 @@
                                             <strong>강의료</strong>
                                           </v-col>
                                           <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                            {{ group.price }}원
+                                            {{ formatPrice(group.price) }}원
                                           </v-col>
                                         </v-row>
                                         <v-row>
@@ -246,6 +246,7 @@ export default {
               groupIndex: index + 1 // 인덱스를 강의 그룹 순서대로 부여
             }))
           }));
+          
 
           // 시간표에 맞는 스케줄 데이터 포맷
           const allGroupTimes = data.result.flatMap((group, index) => 
@@ -346,7 +347,11 @@ export default {
     },
     convertGender(gender) {
         return gender === 'MAN' ? '남성' : '여성';
-    }
+    },
+    formatPrice(value) {
+            if (!value) return '0';
+            return new Intl.NumberFormat('ko-KR').format(value);
+        }
   }
 }
 </script>

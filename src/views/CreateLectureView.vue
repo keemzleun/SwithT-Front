@@ -310,6 +310,13 @@
             <v-row class="justify-center" style="padding: 0 10px">
                 <div @click="createLecture" class="create-lecture">개설 신청</div>
             </v-row>
+
+            <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="5000">
+              {{ snackbar.message }}
+              <template v-slot:action="{ attrs }">
+                <v-btn color="white" text v-bind="attrs" @click="snackbar.visible = false">닫기</v-btn>
+              </template>
+            </v-snackbar>
         </div>
     </v-container>
     
@@ -359,7 +366,12 @@ import axios from 'axios';
             '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
             '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
         ],
-        schedule: {}
+        schedule: {},
+        snackbar: {
+          visible: false,
+          message: '',
+          color: '#6C97FD'
+        }
       };
     },
     async created() {
@@ -508,7 +520,7 @@ import axios from 'axios';
 
     async createLecture() {
       if (this.lectureGroups.length === 0) {
-        alert('강의 그룹을 추가해야 합니다.');
+        this.showSnackbar('강의 그룹을 추가해야 합니다.');
         return; // 강의 그룹이 없을 경우 함수 종료
       }
 
@@ -560,13 +572,18 @@ import axios from 'axios';
             );
             console.log(formData);
             if (response.status === 200) {
-                alert('강의가 성공적으로 생성되었습니다!');
+              this.showSnackbar('강의가 성공적으로 생성되었습니다!', 'success');
             }
         } catch (e) {
             console.error('강의 생성 중 오류 발생:', e);
             
-            alert('강의 생성에 실패했습니다. 다시 시도해주세요.');
+            this.showSnackbar('강의 생성에 실패했습니다. 다시 시도해주세요.', 'error');
         }
+    },
+    showSnackbar(message, color) {
+      this.snackbar.message = message;
+      this.snackbar.color = color;
+      this.snackbar.visible = true;
     },
     removeLectureGroup(index) {
         this.lectureGroups.splice(index, 1);
@@ -714,4 +731,5 @@ import axios from 'axios';
 .minus-btn:hover {
   cursor: pointer;
 }
+
 </style>

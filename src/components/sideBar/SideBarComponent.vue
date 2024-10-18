@@ -10,7 +10,50 @@
           <span>{{ count }}</span>
         </div>
       </div>
-        
+      <v-dialog v-model="alertDialogSSE" style="width: 700px">
+        <v-card>
+          <v-card-title style="text-align: center;">
+            <v-row>
+              <!-- 결제 알림 탭 -->
+              <v-col
+                :class="{ 'highlight': selectedTab === 'payment' }"
+                style="cursor: pointer;"
+                @click="selectTab('payment')"
+              >
+                결제 알림
+              </v-col>
+    
+              <!-- 일반 알림 탭 -->
+              <v-col
+                :class="{ 'highlight': selectedTab === 'general' }"
+                style="cursor: pointer;"
+                @click="selectTab('general')"
+              >
+                일반 알림
+              </v-col>
+            </v-row>
+          </v-card-title>
+    
+          <v-card-text>
+            <!-- 알림 목록 표시 -->
+            <div v-if="filteredEventList.length === 0">
+              새로운 알림이 없습니다.
+            </div>
+            <div v-else>
+              <ul>
+                <li
+                  v-for="event in filteredEventList"
+                  :key="event.id"
+                  @click="goToAlertDetail(event)"
+                >
+                  {{ event.title }}
+                </li>
+              </ul>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
       <div class="profile-name">
         <span style="font-weight: 700">{{userName}}</span>
         <span> 님</span>
@@ -30,7 +73,6 @@
 <script>
 import axios from "axios";
 import { EventSourcePolyfill } from 'event-source-polyfill'
-import { jwtDecode } from 'jwt-decode'
 
 export default {
   data() {
@@ -40,8 +82,6 @@ export default {
       userName: null,
       userRole: null,
       menuItems: [],
-
-      count: 0,
       eventSource: null,
       member: "",
       title: "",
@@ -49,6 +89,10 @@ export default {
       applyId: "",
       eventList: [],
       alertDialogSSE: false,
+      selectedTab: 'general',
+      paymentEvents: [], // 결제 알림을 저장할 배열
+      generalEvents: [], // 일반 알림을 저장할 배열
+      count: 0,
       eventId: "",
     };
   },
@@ -79,32 +123,47 @@ export default {
         
         // const token = localStorage.getItem('token')
         if (token) {
-            let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/subscribe`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-            console.log("EventSource created") // 디버깅용 로그
-            sse.addEventListener('connect', (event) => {
-                console.log(event)
-            });
-            sse.addEventListener('notification', (event) => { // 'notification' 이벤트
-                console.log('Notification event received:', event) // 이벤트 수신 확인
-                if (event.data && event.data !== '""') {
-                    const newEvent = JSON.parse(event.data)
+        let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/subscribe`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
 
-                    // 중복 확인: 동일한 id의 알림이 있는지 확인
-                    const isDuplicate = this.eventList.some(e => e.id === newEvent.id)
+        sse.addEventListener('notification', (event) => {
+          console.log('Notification event received:', event);
+          if (event.data && event.data !== '""') {
+            const newEvent = JSON.parse(event.data);
 
-                    if (!isDuplicate) {
-                        this.eventList.push(newEvent) // 중복이 아니면 리스트에 추가
-                        this.count = this.eventList.length // 카운트 증가
-                        localStorage.setItem('eventList', JSON.stringify(this.eventList)) // localStorage에 저장
-                    }
-                }
-            });
-        } else {
-            console.log("Token not found"); // 토큰이 없을 경우
-        }
+            // 중복 확인: 동일한 id의 알림이 있는지 확인
+            const isDuplicatePayment = this.paymentEvents.some(e => e.id === newEvent.id);
+            const isDuplicateGeneral = this.generalEvents.some(e => e.id === newEvent.id);
 
+            // 결제 알림일 경우
+            if (newEvent.messageType === '결제요청' && !isDuplicatePayment) {
+              this.paymentEvents.push(newEvent);
+            } 
+            // 그 외의 알림은 일반 알림으로 처리
+            else if (!isDuplicateGeneral) {
+              this.generalEvents.push(newEvent);
+            }
+
+            // 전체 알림 개수 업데이트
+            this.count = this.paymentEvents.length + this.generalEvents.length;
+            localStorage.setItem('paymentEvents', JSON.stringify(this.paymentEvents));
+            localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents));
+          }
+        });
+      } else {
+        console.log("Token not found");
+      }
+  },
+  computed: {
+    filteredEventList() {
+      if (this.selectedTab === 'payment') {
+        return this.paymentEvents;
+      } else {
+        return this.generalEvents;
+      }
+    }
   },
   methods: {
     async getMyInfo() {
@@ -191,77 +250,16 @@ export default {
         async goToAlertDetail(event){
             const messageType = event.messageType
             this.eventId = event.id
-            // console.log(this.eventId)
             if(messageType === '결제요청'){
                 try{
-                    // 결제에 필요한 데이터 추출
-                    const lectureApplyId = event.contents
-                    await this.handlePaymentRequest(lectureApplyId)
-
-                    // 결제 시작
-                    this.initiatePayment() // initiatePayment()로 결제 요청 시작
+                    console.log("hihi")
                 } catch(error){
                     console.error('결제 처리 중 오류 발생:', error)
                 }
             }
         },
-        async handlePaymentRequest(applyId) {
-            try {
-                const lectureApplyId = Number(applyId)
-                this.applyId = lectureApplyId 
-
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/group/${lectureApplyId }`)
-                this.title = response.data.result.lectureName
-                this.price = response.data.result.price
-                console.log('결제 요청 처리 결과:', response.data)
-            } catch (error) {
-                console.error('결제 요청 처리 중 오류 발생:', error)
-            }
-        },
-        initiatePayment() {
-            
-            const IMP = window.IMP  // 아임포트 전역 객체
-            IMP.init("imp00575764") // 아임포트 상점 고유코드로 초기화
-
-            const paymentData = {
-                pg: "html5_inicis", // 결제 PG사
-                pay_method: "card", // 결제 방법
-                merchant_uid: `merchant_${new Date().getTime()}`, // 주문번호
-                name: this.title, // 결제 내역
-                amount: this.price, // 결제 금액
-                buyer_email: this.member.email,
-                buyer_name: this.member.name,
-                buyer_tel: this.member.phoneNumber,
-            }
-
-            IMP.request_pay(paymentData, this.processPayment) // 결제 요청
-        },
-        async processPayment(rsp){
-            const token = localStorage.getItem('token')
-            const decodedToken = jwtDecode(token)
-            if(token){
-                this.memberId = decodedToken.sub
-            }
-            if(rsp.success) {
-                const data = {
-                    impUid: rsp.imp_uid, // 아임포트 거래 고유번호
-                    title: this.title,
-                    price: this.price,
-                    memberId: this.memberId,
-                    id: this.applyId
-                }
-
-                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/complete`, data)
-                alert(response.data.responseMessage)
-
-                const eventList = JSON.parse(localStorage.getItem('eventList')) || []
-                const updatedEventList = eventList.filter(event => event.id !== this.eventId) // 결제된 알림 제거
-                localStorage.setItem('eventList', JSON.stringify(updatedEventList))
-
-            
-                this.count = updatedEventList.length
-                this.closeAlertListModal()
-            }
+        selectTab(tab) {
+          this.selectedTab = tab;
         },
   },  
 };
@@ -320,4 +318,8 @@ export default {
 .logout:hover {
   font-weight: bold;
 }
-</style>
+.highlight {
+  font-weight: bold;
+  background-color: grey;
+}
+</style>  

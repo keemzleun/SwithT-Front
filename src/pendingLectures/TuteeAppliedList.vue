@@ -170,7 +170,6 @@ export default {
         initiatePayment() {
             const IMP = window.IMP  // 아임포트 전역 객체
             IMP.init("imp00575764") // 아임포트 상점 고유코드로 초기화
-            console.log(jwtDecode(localStorage.getItem('token')).email)
 
             const paymentData = {
                 pg: "html5_inicis", // 결제 PG사
@@ -182,7 +181,7 @@ export default {
                 buyer_name: jwtDecode(localStorage.getItem('token')).name,
                 buyer_tel: "",
             }
-            console.log("payment DATA: "+paymentData)
+            
             IMP.request_pay(paymentData, this.processPayment) // 결제 요청
         },
         async processPayment(rsp){

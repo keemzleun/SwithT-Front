@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="noticeCreateModal" max-width="500px">
+    <v-dialog  max-width="500px">
         <v-card>
             <v-card-title class="text-h5 text-center">
                 <v-icon color="red" large>{{icon}}</v-icon>
@@ -10,14 +10,15 @@
                 {{contents}}
                 <br><br>
 
+
                 <v-row class="d-flex justify-center">
-                    <v-col cols="6" class="text-right">
+                    <v-col>
                         <v-btn @click="closeModal" outlined color="grey">닫기</v-btn>
                     </v-col>
-                    <v-col cols="6" class="text-left">
-                        <v-btn @click="clickYes" color="success">{{ yesBtnName }}</v-btn>
-                    </v-col>
+                    
                 </v-row>
+
+                
 
             </v-card-text>
                 
@@ -29,23 +30,17 @@
 </template>
 <script>
 export default {
-    props:['icon', 'title', 'contents', 'yesBtnName'],
+    props:['icon', 'title', 'contents'],
     data() {
         return {
         }
     },
     methods: {
-        clickYes(){
-            this.$emit('confirmed');
-
-        },
         
         closeModal() {
             this.$emit('update:dialog', false)
         }
     },
-
-
 }
 
 </script>

@@ -95,6 +95,7 @@ export default {
     methods: {
         clickChatRoom() {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
+            this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
         },
         formattedCategory() {
             switch (this.infoData?.category) {

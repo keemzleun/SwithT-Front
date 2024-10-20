@@ -1,6 +1,6 @@
 <template>
     <!-- Lecture Info Card 컴포넌트 -->
-    <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
+    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
 
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">

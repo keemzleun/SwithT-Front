@@ -2,15 +2,25 @@
     <section class="top-info">
         <v-row class="align-center">
             <v-col cols="7">
-                <div>
-                    <span class="lectureTypeStyle">
-                        {{ this.lectureType }}
-                    </span>
-                    <span class="category" style="font-size: 18px;">
-                        {{ this.category }}
-                    </span>
-                </div>
-                <div class="title">{{ infoData.title }}</div>
+                <v-row v-if="isLoading">
+                    <v-progress-circular color="primary" indeterminate></v-progress-circular>
+                </v-row>
+                <v-row v-else>
+                    <div>
+                        <span class="lectureTypeStyle">
+                            {{ this.lectureType }}
+                        </span>
+                        <span class="category" style="font-size: 18px;">
+                            {{ this.category }}
+                        </span>
+                    </div>
+                </v-row>
+                <v-row class="d-flex align-center justify-start">
+                    <div class="title mr-2">{{ infoData.title }}</div>
+
+                    <v-icon v-if="isTutor" @click="infoModal = true">mdi-pencil</v-icon>
+                </v-row>
+
                 <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()">mdi-chat</v-icon>
                 </div>
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate }}</div>
@@ -48,6 +58,35 @@
 
         </v-card>
     </v-dialog>
+    <v-dialog v-model="infoModal" max-width="800px">
+        <v-card>
+            <v-divider class="mt-10 mb-2"></v-divider>
+
+            <v-card-text class="pa-4 pt-0 mt-5">
+                <h4 class="mb-1 ml-6 mr-2"> <strong>강의 그룹 수정 및 삭제</strong> </h4>
+                <!-- 제목  -->
+                <v-row class="d-flex align-center justify-start">
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>주소</strong> </h6>
+                    <v-btn variant="outlined" @click="updateAddress()" class="align-center mt-3">수정</v-btn>
+                </v-row>
+
+                <div class="mb-2 ml-6 mr-6 mt-6"> {{ address }}</div>
+
+
+            </v-card-text>
+            <v-card-actions class="pa-4">
+                <v-row justify="center" class="flex">
+
+                    <v-btn variant="outlined" class="cancel-btn mr-3" @click="renewInfo()">취소하기</v-btn>
+                    <v-btn variant="outlined" class="delete-btn mr-3" @click="deleteGroup()">삭제하기</v-btn>
+                    <v-btn variant="outlined" class="submit-btn" @click="updateInfo()">등록하기</v-btn>
+                </v-row>
+
+            </v-card-actions>
+            <v-divider class="mt-2 mb-10"></v-divider>
+
+        </v-card>
+    </v-dialog>
     <!-- <v-card class="custom-card">
         <v-row>
             <v-col cols="3" class="thumbnail-container rounded-circle">
@@ -74,27 +113,66 @@
 
 <script>
 /* global kakao */
+import { useRoute } from 'vue-router';
+import axios from 'axios';
 
 export default {
     props: {
+        isTutor: Boolean,
         infoData: Object,
         lectureSchedules: String,
     },
     data() {
         return {
             mapModal: false,
-
+            isLoading: true,
             lectureType: "",
             category: "",
+            infoModal: false,
+            address: "",
+            lectureGroupId: 0
         };
     },
+    async mounted() {
+        this.loadDaumPostcodeScript();
+        this.loadKakaoMapScript();
+    },
     created() {
+        const route = useRoute();
+        this.lectureGroupId = route.params.lectureGroupId;
         this.lectureType = this.formattedLectureType();
         this.category = this.formattedCategory();
+        this.isLoading = false;
         this.loadKakaoMapScript();
+        this.address = this.infoData.address;
 
     },
     methods: {
+        renewInfo() {
+            this.address = this.infoData.address;
+            this.infoModal = false;
+        },
+        async deleteGroup() {
+            console.log("delete")
+            try {
+                await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/delete/lecture-group/${this.lectureGroupId}`)
+            }
+            catch (e) {
+                alert(e?.response?.data?.error_message)
+            }
+        },
+        async updateInfo() {
+            console.log(this.address, this.lectureGroupId)
+            const body = {
+                address: this.address,
+            };
+            try {
+                await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/lecture-group/${this.lectureGroupId}`, body)
+            } catch (e) {
+                alert(e?.response?.data?.error_message)
+            }
+
+        },
         clickChatRoom() {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
         },
@@ -131,6 +209,40 @@ export default {
         showMap() {
             this.execDaumPostcode();
             this.mapModal = true;
+        },
+        loadDaumPostcodeScript() {
+            const script = document.createElement('script');
+            script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+            script.onload = () => {
+                this.isDaumScriptLoaded = true;
+            };
+            document.head.appendChild(script);
+        },
+        updateAddress() {
+            console.log("come")
+            if (window.daum && window.daum.Postcode) {
+                // eslint-disable-next-line no-undef
+                new daum.Postcode({
+                    oncomplete: (data) => {
+                        this.address = data?.roadAddress;
+
+                        // 주소 검색한 거 기반으로 위도 경도
+                        // 좌표 검색을 위해 Kakao 지도 Geocoder 사용
+                        const geocoder = new kakao.maps.services.Geocoder();
+                        geocoder.addressSearch(this.roadAddress, (result, status) => {
+                            if (status === kakao.maps.services.Status.OK) {
+                                console.log('위도 : ' + result[0].y);
+                                console.log('경도 : ' + result[0].x);
+
+                                // 지도에 마커를 추가하는 로직
+                                this.initMap(result[0].y, result[0].x);
+                            }
+                        });
+                    }
+                }).open();
+            } else {
+                console.error("Daum Postcode 스크립트가 로드되지 않았습니다.");
+            }
         },
         loadKakaoMapScript() {
             const script = document.createElement('script');
@@ -261,5 +373,26 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.cancel-btn {
+    color: black;
+    border-color: #e0e0e0;
+    width: 30%;
+    height: 40px;
+}
+
+.delete-btn {
+    color: red;
+    border-color: red;
+    width: 30%;
+    height: 40px;
+}
+
+.submit-btn {
+    background-color: #0066ff;
+    color: white;
+    width: 30%;
+    height: 40px;
 }
 </style>

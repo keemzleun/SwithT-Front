@@ -1,25 +1,13 @@
 <template>
     <!-- Lecture Info Card 컴포넌트 -->
     <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
-    <!-- <v-banner >
-        <v-row class="ml-15">
-            <div class="mr-5"><strong> {{this.topNotice[0].title}}</strong></div>
-            <div>{{this.topNotice[0].contents}}</div>
-        </v-row>
-    </v-banner> -->
+
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
             <v-icon>mdi-bullhorn-variant-outline</v-icon> <strong> [{{ notice.title }}] </strong> {{ notice.contents }}
         </div>
     </div>
     <v-container>
-
-        <!-- <v-breadcrumbs :items="breadItems" class="mt-5">
-            <template v-slot:divider>
-                <v-icon>mdi-menu-right</v-icon>
-            </template>
-</v-breadcrumbs> -->
-
         <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="dashboard">대시보드</v-tab>
@@ -59,7 +47,7 @@
                             <v-card class="pa-4 mb-3" outlined height="400px">
                                 <v-card-item>
                                     <v-card-title><strong>학습 진행률</strong></v-card-title>
-                                    <v-card-subtitle>지금까지 학습한 내용과 진도율을 확인해보세요</v-card-subtitle>
+                                    <v-card-subtitle>지금까지 학습 한 내용과 진도율을 확인해보세요</v-card-subtitle>
                                 </v-card-item>
                                 <v-card-text>
                                     <div class="chartDoughnut" v-if="isDataLoaded">
@@ -257,36 +245,35 @@
         </v-tabs-window>
 
         <!-- 과제 모달 -->
-        <v-dialog v-model="assignmentCreateModal" max-width="500px">
+        <v-dialog v-model="assignmentCreateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                <!-- <v-card-title class="text-h4 pa-4 d-flex justify-center">
                     과제 생성
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
-
-                <v-card-text class="pa-4 pt-0">
+                </v-card-title> -->
+                <v-divider class="mt-10 mb-2"></v-divider>
+                <v-card-text class="pa-4 pt-0 mt-5">
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <h4 class="mb-1 ml-6 mr-2"> <strong>과제 생성</strong> </h4>
+                    <!-- 제목  -->
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
+                    <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6>
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
-
-                    <input class="mb-2 ml-2 mr-2" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="assignmentContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                        class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
+                    <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
+                        placeholder="제목을 입력해주세요" label="내용"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="renewAssignment()" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitAssignmentCreate()">등록하기</v-btn>
+                        <v-btn variant="outlined" @click="renewAssignment()" class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="submitAssignmentCreate()" class="submit-btn">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="assignmentViewModal" max-width="500px">
+        <v-dialog v-model="assignmentViewModal" max-width="800px">
             <v-card>
                 <v-card-title class="text-h4 pa-4 d-flex justify-center">
                     과제 조회
@@ -306,37 +293,36 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="assignmentViewModal = false" class="mr-3">확인</v-btn>
+                        <v-btn variant="outlined" @click="renewAssignment()" class="mr-3">확인</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="assignmentUpdateModal" max-width="500px">
+        <v-dialog v-model="assignmentUpdateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    과제 수정
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+                <v-divider class="mt-10 mb-2"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
+                <v-card-text class="pa-4 pt-0 mt-5">
+                    <h4 class="mb-1 ml-6 mr-2"> <strong>과제 수정</strong> </h4>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
+                    <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6>
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
-                    <input class="mb-2 ml-2 mr-2" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="assignmentContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                        class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
+                    <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
+                        placeholder="내용을 입력해주세요" label="내용"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
-                    <v-row justify="center">
-                        <v-btn variant="outlined" @click="assignmentUpdateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="deleteAssignments()" class="mr-3">삭제하기</v-btn>
-                        <v-btn variant="outlined" @click="updateAssignment()">등록하기</v-btn>
+                    <v-row justify="center" class="flex">
+
+                        <v-btn variant="outlined" class="cancel-btn mr-3" @click="renewAssignment()">취소하기</v-btn>
+                        <v-btn variant="outlined" class="delete-btn mr-3" @click="deleteAssignments()">삭제하기</v-btn>
+                        <v-btn variant="outlined" class="submit-btn" @click="updateAssignment()">등록하기</v-btn>
                     </v-row>
+
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
@@ -345,58 +331,62 @@
 
 
         <!-- 공지사항 모달-->
-        <v-dialog v-model="noticeCreateModal" max-width="500px">
+        <v-dialog v-model="noticeCreateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                <!-- <v-card-title class="text-h4 pa-4 d-flex justify-center">
                     게시판 작성
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+                </v-card-title> -->
+                <v-divider class="mt-10 mb-2"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
-
-                    <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
-                        hide-details></v-switch>
+                <v-card-text class="pa-4 pt-0 mt-5">
+                    <h5 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 작성</strong> </h5>
+                    <!-- 라디오 버튼 -->
+                    <!-- <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
+                        hide-details></v-switch> -->
+                    <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
+                    <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
+                        <v-radio label="공지사항으로 등록" :value="true"></v-radio>
+                        <v-radio label="게시글로 등록" :value="false"></v-radio>
+                    </v-radio-group>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                    <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
+                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-8 mr-2"></v-text-field>
+                    <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-8 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeCreateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="noticeCreate()">등록하기</v-btn>
+                        <v-btn variant="outlined" @click="noticeCreateModal = false" class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" class="submit-btn" @click="noticeCreate()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="noticeUpdateModal" max-width="500px">
+        <v-dialog v-model="noticeUpdateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    게시판 수정
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
-
+                <v-divider class="mt-10 mb-2"></v-divider>
                 <v-card-text class="pa-4 pt-0">
+                    <h5 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 수정</strong> </h5>
 
-                    <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
-                        hide-details></v-switch>
+                    <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
+                    <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
+                        <v-radio label="공지사항으로 등록" :value="true"></v-radio>
+                        <v-radio label="게시글로 등록" :value="false"></v-radio>
+                    </v-radio-group>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                    <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
+                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-8 mr-2"></v-text-field>
+                    <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-8 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitEditNotice()">수정하기</v-btn>
+                        <v-btn variant="outlined" @click="renewNotice()" class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="submitEditNotice()" class="submit-btn">수정하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -441,34 +431,14 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeViewModal = false" class="mr-3">확인</v-btn>
+                        <v-btn variant="outlined" @click="renewNotice()" class="mr-3">확인</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="mapModal" max-width="500px">
-            <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    주소 확인
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
-                    <div>
-                        <div id="map" style="width:100%;height:350px;"></div>
-                    </div>
-                </v-card-text>
-                <v-card-actions class="pa-4">
-                    <v-row justify="center">
-                        <v-btn variant="outlined" @click="mapModal = false" class="mr-3">확인</v-btn>
-                    </v-row>
-                </v-card-actions>
-                <v-divider class="mt-2 mb-10"></v-divider>
-
-            </v-card>
-        </v-dialog>
     </v-container>
 </template>
 
@@ -684,6 +654,7 @@ export default {
             this.assignmentPages = response?.data?.result?.totalPages;
         },
         async noticeView(item) {
+            this.renewNotice();
             this.noticeViewModal = true;
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
             this.noticeTitle = response?.data?.result?.title;
@@ -722,9 +693,12 @@ export default {
             console.log(response)
         },
         renewNotice() {
+            this.isNotice = false;
             this.noticeTitle = "";
             this.noticeContent = "";
-            this.isNotice = false;
+            this.noticeCreateModal = false;
+            this.noticeUpdateModal = false;
+            this.noticeViewModal = false;
         },
         async noticeCreate() {
             let type = null;
@@ -771,6 +745,7 @@ export default {
             }
         },
         async viewAssignmentOpen(id) {
+            this.renewAssignment();
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentViewModal = true;
             this.assignmentTitle = getResponse?.data?.result?.title;
@@ -781,6 +756,7 @@ export default {
         async updateAssignmentOpen(id) {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentUpdateModal = true;
+            
             this.assignmentTitle = getResponse?.data?.result?.title;
             this.assignmentContent = getResponse?.data?.result?.contents;
             this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
@@ -803,11 +779,10 @@ export default {
                     `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/update`,
                     body
                 );
-                this.renewAssignment();
                 // 응답이 성공적이면 새로고침
                 if (response && response.status === 200) {
                     console.log('Update successful:', response);
-                    this.assignmentUpdateModal = false;
+                    this.renewAssignment();
                     await this.fetchAssignments();
                 } else {
                     console.error('Update failed:', response);
@@ -824,6 +799,7 @@ export default {
         async deleteAssignments() {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
             console.log(response);
+            this.renewAssignment();
             window.location.reload()
         },
 
@@ -864,13 +840,15 @@ export default {
             return `item.actions`;
         },
         async editItem(item) {
-            this.renewNotice();
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
             console.log(getResponse)
             this.noticeTitle = getResponse?.data?.result?.title;
             this.noticeContent = getResponse?.data?.result?.contents;
+            if(getResponse?.data?.result?.type === "POST") this.isNotice = false;
+            else this.isNotice = true;
             this.noticeUpdateModal = true;
             this.noticeId = item.id;
+
         },
         async submitEditNotice() {
             let type = null;
@@ -883,12 +861,14 @@ export default {
             }
             const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${this.noticeId}`, body)
             console.log(response)
-            this.noticeUpdateModal = false;
+
+            this.renewNotice();
 
         },
         async deleteItem(item) {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}/delete`)
             console.log(response)
+            this.renewNotice();
         },
 
     }
@@ -950,5 +930,26 @@ export default {
     background-color: black;
     font-size: 20px;
     color: white;
+}
+
+.cancel-btn {
+    color: black;
+    border-color: #e0e0e0;
+    width: 30%;
+    height: 40px;
+}
+
+.delete-btn {
+    color: red;
+    border-color: red;
+    width: 30%;
+    height: 40px;
+}
+
+.submit-btn {
+    background-color: #0066ff;
+    color: white;
+    width: 30%;
+    height: 40px;
 }
 </style>

@@ -275,21 +275,19 @@
         </v-dialog>
         <v-dialog v-model="assignmentViewModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    과제 조회
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
+                <v-divider class="mt-10 mb-2"></v-divider>
+
+                <v-card-text class="pa-4 pt-0 mt-5">
+                    <h4 class="mb-1 ml-6 mr-2"> <strong>과제 생성</strong> </h4>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
-                    <input class="mb-2 ml-2 mr-2" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="assignmentContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                    <h4 class="mb-1 ml-8 mr-2"> 제목 </h4>
+                    <div class="mb-2 ml-8 mr-2">{{this.assignmentTitle}}</div>
+                    <h4 class="mb-1 ml-8 mr-2"> 내용 </h4>
+                    <div class="mb-2 ml-8 mr-2">{{this.assignmentContent}}</div>
+                    <h4 class="mb-1 ml-8 mr-2"> 제출 일자 </h4>
+                    <div class="mb-2 ml-8 mr-2">{{this.assignmentDate?.split('T')[0]}} {{this.assignmentDate?.split('T')[1]}}</div>
+  
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -393,41 +391,45 @@
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="noticeViewModal" max-width="500px">
+        <v-dialog v-model="noticeViewModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    게시판 조회
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+                <v-divider class="mt-10 mb-2"></v-divider>
 
                 <v-card-text class="pa-4 pt-0">
+                    <h4 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 조회</strong> </h4>
 
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
+                    <h4 class="mb-1 ml-7 mr-2"> 제목 </h4>
+                    <v-row class="mb-4 ml-7 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
 
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeContent }}</v-row>
+                    <h4 class="mb-1 ml-7 mr-2"> 내용 </h4>
+                    <v-row class="mb-4 ml-7 mr-2 mt-2">{{ this.noticeContent }}</v-row>
+                    <v-divider class="mt-10 mb-2"></v-divider>
 
                     <!-- 댓글 리스트 -->
-                    <h4 class="mb-2">댓글</h4>
-                    <v-row v-if="comments.length">
-                        <v-col v-for="comment in comments" :key="comment.id">
-                            <v-card class="pa-3 mb-2">
-                                <div>
+                    <h4 class="mt-6 mb-1 ml-6 mr-2">댓글</h4>
+                    <v-row v-for="comment in comments" :key="comment.id">
+                        <!-- <v-col v-for="comment in comments" :key="comment.id"> -->
+                            <!-- <v-card class="pa-3 mb-2"> -->
+                                <!-- <v-row> -->
+                                <div class="mb-4 ml-7 mr-2 mt-2 px-3">
                                     <strong>{{ comment.memberName }}</strong>
-                                    <span>{{ comment.contents }}</span>
+                                    <span class="ml-2">{{ comment.contents }}</span>
                                 </div>
-                                <v-btn small @click="editComment(comment)">수정</v-btn>
-                                <v-btn small @click="deleteComment(comment)">삭제</v-btn>
-                            </v-card>
-                        </v-col>
+                                <div class="align-center mt-1">
+                                <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
+                                <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
+                            </div>
+                            <!-- </v-row> -->
+                            <!-- </v-card> -->
+                        <!-- </v-col> -->
                     </v-row>
 
                     <!-- 댓글 입력 폼 -->
-                    <h4 class="mb-2">댓글 작성</h4>
-                    <v-textarea v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
-                    <v-btn @click="submitComment">댓글 등록</v-btn>
+                    <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
+                    <h4 class="mt-6 mb-1 ml-6 mr-2" v-else >댓글 작성 </h4>
+                    <v-textarea class="mb-1 ml-6 mr-2" v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
+                    <v-btn class="ml-6" @click="submitComment">댓글 등록</v-btn>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -528,6 +530,7 @@ export default {
             mapModal: false,
             urgentAssignment: [],
             isDataLoaded: false,
+            isCommentEdit:false,
         };
     },
     mounted() {
@@ -681,9 +684,11 @@ export default {
             }
 
             this.newComment = '';
+            this.isCommentEdit = false;
             await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
         },
         async editComment(comment) {
+            this.isCommentEdit = true;
             this.commentId = comment.id;
             this.newComment = comment.contents;
         },
@@ -718,6 +723,7 @@ export default {
         renewAssignment() {
             this.assignmentCreateModal = false;
             this.assignmentUpdateModal = false;
+            this.assignmentViewModal = false;
             this.assignmentTitle = "";
             this.assignmentDate = null;
             this.assignmentContent = "";

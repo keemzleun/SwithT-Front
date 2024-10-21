@@ -424,7 +424,8 @@
                             <!-- </v-card> -->
                         <!-- </v-col> -->
                     </v-row>
-
+                    <v-pagination v-model="commentPage" :length="commentPages"
+                    @click="handleCommentPageChange()"></v-pagination>
                     <!-- 댓글 입력 폼 -->
                     <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
                     <h4 class="mt-6 mb-1 ml-6 mr-2" v-else >댓글 작성 </h4>
@@ -469,6 +470,8 @@ export default {
             noticePage: 1,
             assignmentPages: 0,
             assignmentPage: 1,
+            commentPage:0,
+            commentPages:1,
             infoData: {
                 category: "",
                 chatRoomId: 0,
@@ -636,6 +639,16 @@ export default {
             });
             marker.setMap(map);
         },
+        async handleCommentPageChange() {
+            this.page = this.commentPage - 1;
+            let params = {
+                size: this.size,
+                page: this.page,
+            };
+            const commentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/list`, { params })
+            this.comments = commentResponse?.data?.result?.content;
+            this.commentPages = commentResponse?.data?.result?.totalPages;
+        },
         async handleNoticePageChange() {
             this.page = this.noticePage - 1;
             let params = {
@@ -644,7 +657,7 @@ export default {
             };
             const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
             this.notices = noticeResponse?.data?.result?.content;
-            this.noticePages = noticeResponse?.data?.result?.totalPages;
+            this.commentPages = noticeResponse?.data?.result?.totalPages;
         },
         async handleAssignmentPageChange() {
             this.page = this.assignmentPage - 1;
@@ -667,7 +680,8 @@ export default {
             await this.fetchComments(item.id);
         },
         async fetchComments(noticeId) {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list`)
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list?page=0`)
+            this.commentPages = response?.data?.result?.totalPages;
             this.comments = response?.data?.result?.content || [];
         },
         async submitComment() {

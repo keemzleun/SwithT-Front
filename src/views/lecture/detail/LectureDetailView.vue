@@ -140,6 +140,7 @@
                              </v-col>
                         </v-tabs-window-item>
                         <v-tabs-window-item value="tutor-review">
+                          <ReviewListComponent></ReviewListComponent>
                             <!-- 리뷰 내용 -->
                         </v-tabs-window-item>
                     </v-tabs-window>
@@ -254,10 +255,12 @@
 <script>
 import axios from 'axios';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
+import ReviewListComponent from '@/components/ReviewListComponent.vue';
 
 export default {
   components: {
     LectureDetailInfoComponent,
+    ReviewListComponent,
   },
   data() {
     return {
@@ -489,7 +492,6 @@ formatPrice(value) {
     /*display: flex;*/
     justify-content: space-between;
     gap: 20px;
-    height: 1000px;
 }
 
 .float-info {

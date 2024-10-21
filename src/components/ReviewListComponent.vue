@@ -80,7 +80,10 @@
             </v-row>
             <v-divider :thickness="3"></v-divider>
           </v-col>
+          <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange"></v-pagination>
         </v-row>
+
+        
       </v-row>
   
       <!-- 수정 모달 -->
@@ -150,6 +153,12 @@
           contents: "",
           rating: 0, // 평점 필드 추가
         },
+
+        // 페이징 처리
+        page: 0,
+        size: 5,
+        totalPages: 0,
+        frontendPage: 1
       };
     },
     methods: {
@@ -169,19 +178,26 @@
             `${process.env.VUE_APP_API_BASE_URL}/member-service/review/list`,
             {
               params: {
-                tutorId: 5, // 예시로 tutorId를 1로 설정 추후에 반드시 동적으로 처리하도록 수정해야함.
+                tutorId: 2, // 예시로 tutorId를 1로 설정 추후에 반드시 동적으로 처리하도록 수정해야함.
                 sortBy: "DESC",
                 order: "ASC",
+                size: this.size,
+                page: this.page,
               },
             }
           );
-  
+
+          this.totalPages = response.data.result.totalPages;
           this.reviewList = response.data.result.content;
       
         } catch (error) {
           console.error("리뷰를 불러오는 중 에러 발생:", error);
         }
       },
+      handlePageChange() {
+            this.page = this.frontendPage - 1;
+            this.fetchReviews();
+        },
       formatDate(date) {
         const options = { year: "numeric", month: "2-digit", day: "2-digit" };
         return new Date(date).toLocaleDateString(undefined, options);

@@ -1,7 +1,7 @@
 <template>
     <v-container style="margin-top: 60px">
-        <div class="temporary-banner">
-            임시 배너
+        <div class="temporary-banner" style="height: 300px; margin: 20px 0 50px;" >
+            <img src="@/assets/banner1.png" style="height: 300px">
         </div>
         <div class="search-container">
             <input

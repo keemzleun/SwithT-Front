@@ -27,10 +27,10 @@
                             </div>
                             <v-row v-for="(group, index) in lectureGroups" :key="index">
                                 <v-col>
-                                  <div class="pa-3 groups-info" :style="{ backgroundColor: group.isAvailable === 'N' ? '#f0efef' : '' }">
+                                  <div class="pa-3 groups-info" :style="{ backgroundColor: group.isAvailable === 'N'  || group.remaining === 0 ? '#f0efef' : '' }">
                                     <v-row style="padding: 20px 0">
                                       <v-col cols="3" class="align-content-center">
-                                        <v-row v-if="group.isAvailable === 'N'" class="align-center justify-center">
+                                        <v-row v-if="group.isAvailable === 'N' || group.remaining === 0" class="align-center justify-center">
                                             <div class="soldout">마감</div>
                                         </v-row>
                                         <v-row class="align-center justify-center">
@@ -172,11 +172,83 @@
                           </tr>
                         </tbody>
                     </table>
-                    <v-btn style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
+                    <v-btn @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
                 </aside>
             </v-col>
         </v-row>
     </v-container>
+
+    <!-- 신청 모달 -->
+    <v-dialog v-model="isApplyModalOpen" max-width="500px">
+        <v-card>
+          <v-card-title>강의 신청</v-card-title>
+          <v-card-text>
+            <div v-if="lectureInfo.lectureType === 'LECTURE'">
+              <!-- 강의 그룹 선택 (강의 타입이 LECTURE인 경우) -->
+              <v-select
+                v-model="selectedLectureGroup"
+                :items="availableLectureGroups"
+                :return-object="true"
+                label="강의 그룹 선택"
+                :rules="[v => !!v || '강의 그룹을 선택해 주세요.']"
+                item-value="index"
+                item-text="index"
+            >
+                <template v-slot:selection="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+                <template v-slot:item="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+            </v-select>
+            </div>
+  
+            <div v-else-if="lectureInfo.lectureType === 'LESSON'">
+              <!-- 강의 그룹 선택 (강의 타입이 LESSON인 경우) -->
+              <v-select
+                v-model="selectedLectureGroup"
+                :items="availableLectureGroups"
+                :return-object="true"
+                label="강의 그룹 선택"
+                :rules="[v => !!v || '강의 그룹을 선택해 주세요.']"
+                item-value="index"
+                item-text="index"
+            >
+                <template v-slot:selection="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+                <template v-slot:item="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+            </v-select>
+  
+              <!-- LESSON의 경우 추가로 시작일, 종료일 입력 -->
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="startDate"
+                    label="시작일"
+                    type="date"
+                    :rules="[v => !!v || '시작일을 입력해 주세요.']"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="endDate"
+                    label="종료일"
+                    type="date"
+                    :rules="[v => !!v || '종료일을 입력해 주세요.']"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="submitApplication">신청</v-btn>
+            <v-btn color="secondary" @click="closeApplyModal">취소</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 </template>
 
 <script>
@@ -190,6 +262,11 @@ export default {
   data() {
     return {
       activeTab: 'lecture-info',
+      isApplyModalOpen: false, // 모달 열림 상태
+      availableLectureGroups: [],
+      selectedLectureGroup: null,
+      startDate: null,
+      endDate: null,
       days: ['월', '화', '수', '목', '금', '토', '일'],
       hours: [
         '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -239,6 +316,8 @@ export default {
             price: group.price || 0,
             participants: group.participants || 1,
             isAvailable: group.isAvailable,
+            remaining: group.remaining,
+            groupIndex: index + 1,
             groupTimes: group.groupTimes.map(time => ({
               day: this.convertDayToKorean(time.lectureDay), // 요일을 한글로 변환
               startTime: time.startTime,
@@ -303,7 +382,7 @@ export default {
     console.log(group)
     let color;
 
-    if (group.isAvailable === 'N') {
+    if (group.isAvailable === 'N' || group.remaining === 0) {
       color = '#f0efef'; // 사용 불가한 경우
     } else {
       // 그룹 인덱스로 색을 할당하고, 해당 색상이 없으면 새롭게 생성
@@ -328,32 +407,75 @@ export default {
   });
   return schedule;
 },
+openApplyModal() {
+    this.isApplyModalOpen = true;
 
-    getRandomColor() {
-      const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
-      const randomIndex = Math.floor(Math.random() * colors.length);
-      return colors[randomIndex];
-    },
+    // 신청 가능한 강의 그룹 필터링 (remaining이 0이거나 isAvailable이 'N'인 그룹은 제외)
+    this.availableLectureGroups = this.lectureGroups.filter(
+        (group) => group.remaining > 0 && group.isAvailable !== "N"
+    );
+},
+closeApplyModal() {
+    this.isApplyModalOpen = false;
+    this.selectedLectureGroup = null;
+    this.startDate = null;
+    this.endDate = null;
+},
+displayLectureGroup(group) {
+    // group이 유효한지 확인
+    if (!group) {
+        return '정보 없음'; // group이 없을 경우 표시할 기본 메시지
+    }
 
-    async fetchTutorInfo() {
-      console.log(this.tutorId);
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
-        this.tutorInfo = response.data.result; // 강사 정보를 저장
-        console.log(this.tutorInfo);
-      } catch (error) {
-        console.error('강사 정보를 가져오는 데 실패했습니다:', error);
-      }
-    },
-    convertGender(gender) {
-        return gender === 'MAN' ? '남성' : '여성';
-    },
-    formatPrice(value) {
-            if (!value) return '0';
-            return new Intl.NumberFormat('ko-KR').format(value);
-        }
-  }
-}
+    // 강의 그룹 인덱스 반환
+    return `그룹 ${group.groupIndex}`;  // groupIndex를 사용하여 반환
+},
+async submitApplication() {
+    if (this.lectureInfo.lectureType === "LESSON" && (!this.startDate || !this.endDate)) {
+    this.$toast.error("시작일과 종료일을 입력해 주세요.");
+    return;
+    }
+
+    // 강의 신청 로직 추가
+    try {
+    const requestData = {
+        lectureGroupId: this.selectedLectureGroup, // 선택된 강의 그룹 ID
+        startDate: this.startDate, // LESSON 타입일 경우 시작일
+        endDate: this.endDate, // LESSON 타입일 경우 종료일
+    };
+
+    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/apply`, requestData);
+    this.$toast.success("강의 신청이 완료되었습니다.");
+    this.closeApplyModal();
+    } catch (error) {
+    console.error("강의 신청 중 오류가 발생했습니다:", error);
+    this.$toast.error("강의 신청에 실패했습니다.");
+    }
+},
+
+getRandomColor() {
+    const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+},
+
+async fetchTutorInfo() {
+    console.log(this.tutorId);
+    try {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
+    this.tutorInfo = response.data.result; // 강사 정보를 저장
+    console.log(this.tutorInfo);
+    } catch (error) {
+    console.error('강사 정보를 가져오는 데 실패했습니다:', error);
+    }
+},
+convertGender(gender) {
+    return gender === 'MAN' ? '남성' : '여성';
+},
+formatPrice(value) {
+    if (!value) return '0';
+    return new Intl.NumberFormat('ko-KR').format(value);
+}}}
 </script>
 
 

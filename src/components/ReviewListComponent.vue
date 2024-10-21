@@ -1,5 +1,15 @@
 <template>
     <v-container class="mt-16" style="max-width: 1000px">
+      <v-row justify="start">
+        <!-- 정렬 버튼 -->
+        <v-btn-toggle v-model="selectedSort" class="mb-4">
+          <v-btn @click="setSort('createdTime', 'DESC')">최신순</v-btn>
+          <v-btn @click="setSort('createdTime', 'ASC')">오래된순</v-btn>
+          <v-btn @click="setSort('star', 'DESC')">평점 높은순</v-btn>
+          <v-btn @click="setSort('star', 'ASC')">평점 낮은순</v-btn>
+        </v-btn-toggle>
+      </v-row>
+
       <v-row class="mt-15" justify="center">
         <v-row justify="center">
           <v-col
@@ -158,7 +168,13 @@
         page: 0,
         size: 5,
         totalPages: 0,
-        frontendPage: 1
+        frontendPage: 1,
+
+        selectedSort: "createdTime_DESC", // 기본값: 최신순
+    sortBy: "createdTime", // 정렬 기준 필드 (createdTime or star)
+    order: "DESC", // 정렬 순서 (ASC or DESC)
+
+        
       };
     },
     methods: {
@@ -169,6 +185,11 @@
         this.editedReview.rating = review.star; // 기존 평점 불러오기
         this.editDialog = true; // 모달 열기
       },
+      setSort(sortBy, order) {
+    this.sortBy = sortBy;
+    this.order = order;
+    this.fetchReviews(); // 정렬 기준에 맞춰 다시 리뷰 목록 조회
+  },
       closeEditModal() {
         this.editDialog = false; // 모달 닫기
       },
@@ -178,12 +199,12 @@
             `${process.env.VUE_APP_API_BASE_URL}/member-service/review/list`,
             {
               params: {
-                tutorId: 2, // 예시로 tutorId를 1로 설정 추후에 반드시 동적으로 처리하도록 수정해야함.
-                sortBy: "DESC",
-                order: "ASC",
-                size: this.size,
-                page: this.page,
-              },
+            tutorId: 2, // 예시로 tutorId를 1로 설정 추후에 동적으로 처리하도록 수정해야함.
+            sortBy: this.sortBy, // 선택된 정렬 기준
+            order: this.order, // 선택된 정렬 순서
+            size: this.size,
+            page: this.page,
+          },
             }
           );
 

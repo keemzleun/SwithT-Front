@@ -2,10 +2,10 @@
   <v-container class="mt-16" style="max-width: 1000px">
 
     <v-row justify="center" class="mb-1">
-      <v-col cols="4" class="text-center mt-16">
-        
+      <v-col cols="4" class="text-center mt-6">
+        <h3 class="mt-5"><strong>사용자 총 평점</strong></h3>
         <v-row class="ml-2 mt-5">
-          <v-col cols="auto" v-for="n in 5" :key="n">
+          <v-col cols="auto" v-for="n in 5" :key="n" class="pa-0 ml-4">
             <v-icon
               :color="n <= averageRating ? 'red' : 'grey'"
               size="40"
@@ -14,34 +14,35 @@
             </v-icon>
           </v-col>
         </v-row>
-
-        <h3>평균 평점: {{ averageRating }} / 5</h3>
+        <h3 class="mt-5"><strong>{{ averageRating }} / 5.0</strong></h3>
       </v-col>
     
-      <v-col cols="4" class="text-center mt-8">
-        <h3>전체 리뷰 수</h3>
+      <v-col cols="3" class="text-center mt-11">
+        <h3><strong>전체 리뷰 수</strong></h3>
         <v-icon
         color="blue-grey-darken-3s"
         icon="mdi-message-text"
         style="font-size: 80px;"
+        class="mt-5"
       ></v-icon>
-        <p class="text-h4">{{ totalReviews }}개</p>
+        <p class="text-h4"><strong>{{ totalReviews }}</strong></p>
       </v-col>
       
-      <v-col cols="4">
-        <h2 class="text-center mb-3">평점 비율</h2>
+      <v-col cols="5">
+        <h3 class="text-center mb-3 mt-10"><strong>평점 비율</strong></h3>
         <v-row v-for="n in 5" :key="n" align="center" class="mb-1">
           <v-col cols="2">{{ n }}점</v-col>
           <v-col cols="8">
             <v-progress-linear
               :value="(starDistribution[n] / totalReviews) * 100"
               height="15"
-              color="blue"
+              :style="getBarGradient(starDistribution[n] / totalReviews)"
             ></v-progress-linear>
           </v-col>
           <v-col cols="2" class="text-right">{{ starDistribution[n] }}개</v-col>
         </v-row>
       </v-col>
+
     </v-row>
     
     <v-divider></v-divider>
@@ -49,10 +50,10 @@
     <v-row justify="start">
       <!-- 정렬 버튼 -->
       <v-btn-toggle v-model="selectedSort" class="mb-4">
-        <v-btn @click="setSort('createdTime', 'DESC')">최신순</v-btn>
-        <v-btn @click="setSort('createdTime', 'ASC')">오래된순</v-btn>
-        <v-btn @click="setSort('star', 'DESC')">평점 높은순</v-btn>
-        <v-btn @click="setSort('star', 'ASC')">평점 낮은순</v-btn>
+        <v-btn @click="setSort('createdTime', 'DESC')" style="font-size: 18px;"><strong>최신순</strong></v-btn>
+        <v-btn @click="setSort('createdTime', 'ASC')" style="font-size: 18px;"><strong>오래된순</strong></v-btn>
+        <v-btn @click="setSort('star', 'DESC')" style="font-size: 18px;"><strong>평점 높은순</strong></v-btn>
+        <v-btn @click="setSort('star', 'ASC')" style="font-size: 18px;"><strong>평점 낮은순</strong></v-btn>
       </v-btn-toggle>
     </v-row>
 
@@ -247,6 +248,10 @@ export default {
     };
   },
   methods: {
+    getBarGradient(ratio) {
+    const percentage = ratio * 100;
+    return `background: linear-gradient(90deg, #6C97FD ${percentage}%, white ${percentage}%);`;
+  },
     
     openEditModal(review) {
       this.reviewId = review.id; // 리뷰 ID 저장

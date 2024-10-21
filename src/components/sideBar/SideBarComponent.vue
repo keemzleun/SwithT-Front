@@ -62,8 +62,6 @@ export default {
       this.profileUrl = response.data.profileImage;
       this.profileUrl = localStorage.getItem('profileImage');
       this.userName = localStorage.getItem('name');
-      
-      console.log(this.userRole);
       this.setMenuItems();
     }
     await this.checkLoginStatus()

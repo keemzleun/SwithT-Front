@@ -29,10 +29,12 @@
                     </v-col>
                     <!-- <v-col cols="3" class="lecture-title">{{ lecture.title }}</v-col> -->
                     <v-col cols="3">{{ formatDate(lecture.createdTime) }}</v-col>
-                    <v-col cols="3"> 
-                        <v-btn><strong>승인</strong></v-btn>
-                        <v-btn class="ml-2"><strong>거절</strong></v-btn>
-                    </v-col>
+                    <v-col cols="3">
+                        <!-- 승인 버튼 -->
+                        <v-btn color="#82D691" @click="updateLectureStatus(lecture.id, 'ADMIT')"><strong>승인</strong></v-btn>
+                        <!-- 거절 버튼 -->
+                        <v-btn color="#6C97FD" class="ml-2" @click="updateLectureStatus(lecture.id, 'REJECT')"><strong>거절</strong></v-btn>
+                      </v-col>
                 </v-row>
                 <div v-if="isLoading" class="text-center">
                     <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -59,6 +61,24 @@ export default {
         };
     },
     methods: {
+            // 강의 상태 변경 메서드
+    async updateLectureStatus(id, newStatus) {
+      try {
+        const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/member-service/lectures/${id}/status`, null, {
+          params: {
+            newStatus: newStatus,
+          },
+        });
+
+        if (response.status === 200) {
+          alert("상태 변경 완료");  // 성공 메시지 출력
+          window.location.reload();
+          this.fetchLectures();  // 상태 변경 후 강의 목록을 다시 불러옴
+        }
+      } catch (error) {
+        console.error("상태 변경 실패:", error);
+      }
+    },
         goToLectureDetail(id) {
       this.$router.push(`/lecture/${id}`);
     },

@@ -26,52 +26,56 @@
                                 <span style="font-weight: 800; margin-right: 10px;">📅 진행기간 </span> {{ lectureGroups[0]?.startDate }} ~ {{ lectureGroups[0]?.endDate }}
                             </div>
                             <v-row v-for="(group, index) in lectureGroups" :key="index">
-                                
                                 <v-col>
-                                    
-                                  <div class="pa-3 groups-info">
-                                    
+                                  <div class="pa-3 groups-info" :style="{ backgroundColor: group.isAvailable === 'N'  || group.remaining === 0 ? '#f0efef' : '' }">
                                     <v-row style="padding: 20px 0">
-                                      <v-col cols="3" class="d-flex align-center justify-center">
-                                        <div style="font-weight: bold; font-size: 17px;">
-                                          {{ `강의 그룹 ${index + 1}` }}
-                                        </div>
+                                      <v-col cols="3" class="align-content-center">
+                                        <v-row v-if="group.isAvailable === 'N' || group.remaining === 0" class="align-center justify-center">
+                                            <div class="soldout">마감</div>
+                                        </v-row>
+                                        <v-row class="align-center justify-center">
+                                            <div style="font-weight: bold; font-size: 17px;">
+                                                {{ `강의 그룹 ${index + 1}` }}
+                                              </div>
+                                        </v-row>
                                       </v-col>
                                       <v-col cols="9" style="text-align: left; font-size: 15px">
                                         <v-row>
-                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
-                                                <strong>강의료</strong>
-                                            </v-col>
-                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                                {{ group.price }}원</v-col>
+                                          <v-col cols="4" class="align-center justify-start" style="padding: 10px">
+                                            <strong>강의료</strong>
+                                          </v-col>
+                                          <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                            {{ formatPrice(group.price) }}원
+                                          </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col cols="4" class="align-center justify-start" style="padding: 10px">
-                                                <strong>모집인원</strong>
-                                            </v-col>
-                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                                {{ group.participants }}명
-                                            </v-col>
+                                          <v-col cols="4" class="align-center justify-start" style="padding: 10px">
+                                            <strong>모집인원</strong>
+                                          </v-col>
+                                          <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                            {{ group.participants }}명
+                                          </v-col>
                                         </v-row>
                                         
                                         <v-row>
-                                            <v-col cols="4" class="d-flex align-center justify-start" style="padding: 10px">
-                                                <strong>강의시간</strong>
-                                            </v-col>
-                                            <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                                <div>
-                                                    <div v-for="time in group.groupTimes" :key="time.groupTimeId">
-                                                        <span style="font-weight: bold; color: #6C97FD">{{ time.day }}요일</span>
-                                                        {{ formatTime(time.startTime) }} ~ {{ formatTime(time.endTime) }}
-                                                    </div>
-                                                </div>
-                                            </v-col>
+                                          <v-col cols="4" class="d-flex align-center justify-start" style="padding: 10px">
+                                            <strong>강의시간</strong>
+                                          </v-col>
+                                          <v-col class="d-flex align-center justify-start" style="padding: 10px">
+                                            <div>
+                                              <div v-for="time in group.groupTimes" :key="time.groupTimeId">
+                                                <span style="font-weight: bold; color: #6C97FD">{{ time.day }}요일</span>
+                                                {{ formatTime(time.startTime) }} ~ {{ formatTime(time.endTime) }}
+                                              </div>
+                                            </div>
+                                          </v-col>
                                         </v-row>
                                       </v-col>
                                     </v-row>
                                   </div>
                                 </v-col>
                               </v-row>
+                              
                         </v-tabs-window-item>
 
                         <v-tabs-window-item value="tutor-info">
@@ -168,11 +172,83 @@
                           </tr>
                         </tbody>
                     </table>
-                    <v-btn style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
+                    <v-btn @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
                 </aside>
             </v-col>
         </v-row>
     </v-container>
+
+    <!-- 신청 모달 -->
+    <v-dialog v-model="isApplyModalOpen" max-width="500px">
+        <v-card>
+          <v-card-title>강의 신청</v-card-title>
+          <v-card-text>
+            <div v-if="lectureInfo.lectureType === 'LECTURE'">
+              <!-- 강의 그룹 선택 (강의 타입이 LECTURE인 경우) -->
+              <v-select
+                v-model="selectedLectureGroup"
+                :items="availableLectureGroups"
+                :return-object="true"
+                label="강의 그룹 선택"
+                :rules="[v => !!v || '강의 그룹을 선택해 주세요.']"
+                item-value="index"
+                item-text="index"
+            >
+                <template v-slot:selection="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+                <template v-slot:item="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+            </v-select>
+            </div>
+  
+            <div v-else-if="lectureInfo.lectureType === 'LESSON'">
+              <!-- 강의 그룹 선택 (강의 타입이 LESSON인 경우) -->
+              <v-select
+                v-model="selectedLectureGroup"
+                :items="availableLectureGroups"
+                :return-object="true"
+                label="강의 그룹 선택"
+                :rules="[v => !!v || '강의 그룹을 선택해 주세요.']"
+                item-value="index"
+                item-text="index"
+            >
+                <template v-slot:selection="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+                <template v-slot:item="data">
+                    {{ displayLectureGroup(data.item) }}
+                </template>
+            </v-select>
+  
+              <!-- LESSON의 경우 추가로 시작일, 종료일 입력 -->
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="startDate"
+                    label="시작일"
+                    type="date"
+                    :rules="[v => !!v || '시작일을 입력해 주세요.']"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="endDate"
+                    label="종료일"
+                    type="date"
+                    :rules="[v => !!v || '종료일을 입력해 주세요.']"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="submitApplication">신청</v-btn>
+            <v-btn color="secondary" @click="closeApplyModal">취소</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 </template>
 
 <script>
@@ -186,6 +262,11 @@ export default {
   data() {
     return {
       activeTab: 'lecture-info',
+      isApplyModalOpen: false, // 모달 열림 상태
+      availableLectureGroups: [],
+      selectedLectureGroup: null,
+      startDate: null,
+      endDate: null,
       days: ['월', '화', '수', '목', '금', '토', '일'],
       hours: [
         '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -234,6 +315,9 @@ export default {
             endDate: group.endDate,
             price: group.price || 0,
             participants: group.participants || 1,
+            isAvailable: group.isAvailable,
+            remaining: group.remaining,
+            groupIndex: index + 1,
             groupTimes: group.groupTimes.map(time => ({
               day: this.convertDayToKorean(time.lectureDay), // 요일을 한글로 변환
               startTime: time.startTime,
@@ -241,6 +325,7 @@ export default {
               groupIndex: index + 1 // 인덱스를 강의 그룹 순서대로 부여
             }))
           }));
+          
 
           // 시간표에 맞는 스케줄 데이터 포맷
           const allGroupTimes = data.result.flatMap((group, index) => 
@@ -274,68 +359,123 @@ export default {
       return dayMap[day] || '요일 미상';
     },
     formatSchedule(times) {
-      const schedule = {};
-      const dayMap = {
-        MONDAY: '월',
-        TUESDAY: '화',
-        WEDNESDAY: '수',
-        THURSDAY: '목',
-        FRIDAY: '금',
-        SATURDAY: '토',
-        SUNDAY: '일'
-      };
+  const schedule = {};
+  const dayMap = {
+    MONDAY: '월',
+    TUESDAY: '화',
+    WEDNESDAY: '수',
+    THURSDAY: '목',
+    FRIDAY: '금',
+    SATURDAY: '토',
+    SUNDAY: '일'
+  };
 
-      const groupColors = {}; // 그룹 인덱스별 색상을 저장
+  const groupColors = {}; // 그룹 인덱스별 색상을 저장
 
-      times.forEach((time) => {
-        const day = dayMap[time.lectureDay]; // 요일 변환
-        const startHourIndex = this.hours.indexOf(time.startTime.split(':')[0] + ':00'); // 시작 시간의 index
-        const endHourIndex = this.hours.indexOf(time.endTime.split(':')[0] + ':00'); // 종료 시간의 index
+  times.forEach((time) => {
+    const day = dayMap[time.lectureDay]; // 요일 변환
+    const startHourIndex = this.hours.indexOf(time.startTime.split(':')[0] + ':00'); // 시작 시간의 index
+    const endHourIndex = this.hours.indexOf(time.endTime.split(':')[0] + ':00'); // 종료 시간의 index
 
-        // 그룹 인덱스로 색을 할당하고, 해당 색상이 없으면 새롭게 생성
-        if (!groupColors[time.groupIndex]) {
-          groupColors[time.groupIndex] = this.getRandomColor(); // 그룹 인덱스별로 고유 색상 할당
-        }
+    // group.isAvailable 값에 따라 색상을 결정
+    const group = this.lectureGroups[time.groupIndex - 1]; // 그룹 정보 가져오기 (인덱스 조정)
+    console.log(group)
+    let color;
 
-        const color = groupColors[time.groupIndex]; // 해당 그룹의 색상 가져오기
-
-        if (!schedule[day]) {
-          schedule[day] = Array(this.hours.length).fill(null); // 해당 요일에 스케줄 배열 초기화
-        }
-
-        // 시작 시간부터 종료 시간까지 색상 및 그룹 인덱스 설정
-        for (let hour = startHourIndex; hour < endHourIndex; hour++) {
-          schedule[day][hour] = {
-            name: '강의',
-            color: color, // 그룹별 색상 적용
-            index: time.groupIndex // 그룹 인덱스
-          };
-        }
-      });
-      return schedule;
-    },
-
-    getRandomColor() {
-      const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
-      const randomIndex = Math.floor(Math.random() * colors.length);
-      return colors[randomIndex];
-    },
-
-    async fetchTutorInfo() {
-      console.log(this.tutorId);
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
-        this.tutorInfo = response.data.result; // 강사 정보를 저장
-        console.log(this.tutorInfo);
-      } catch (error) {
-        console.error('강사 정보를 가져오는 데 실패했습니다:', error);
+    if (group.isAvailable === 'N' || group.remaining === 0) {
+      color = '#f0efef'; // 사용 불가한 경우
+    } else {
+      // 그룹 인덱스로 색을 할당하고, 해당 색상이 없으면 새롭게 생성
+      if (!groupColors[time.groupIndex]) {
+        groupColors[time.groupIndex] = this.getRandomColor(); // 그룹 인덱스별로 고유 색상 할당
       }
-    },
-    convertGender(gender) {
-        return gender === 'MAN' ? '남성' : '여성';
+      color = groupColors[time.groupIndex]; // 해당 그룹의 색상 가져오기
     }
-  }
-}
+
+    if (!schedule[day]) {
+      schedule[day] = Array(this.hours.length).fill(null); // 해당 요일에 스케줄 배열 초기화
+    }
+
+    // 시작 시간부터 종료 시간까지 색상 및 그룹 인덱스 설정
+    for (let hour = startHourIndex; hour < endHourIndex; hour++) {
+      schedule[day][hour] = {
+        name: '강의',
+        color: color, // 조건에 따른 색상 적용
+        index: time.groupIndex // 그룹 인덱스
+      };
+    }
+  });
+  return schedule;
+},
+openApplyModal() {
+    this.isApplyModalOpen = true;
+
+    // 신청 가능한 강의 그룹 필터링 (remaining이 0이거나 isAvailable이 'N'인 그룹은 제외)
+    this.availableLectureGroups = this.lectureGroups.filter(
+        (group) => group.remaining > 0 && group.isAvailable !== "N"
+    );
+},
+closeApplyModal() {
+    this.isApplyModalOpen = false;
+    this.selectedLectureGroup = null;
+    this.startDate = null;
+    this.endDate = null;
+},
+displayLectureGroup(group) {
+    // group이 유효한지 확인
+    if (!group) {
+        return '정보 없음'; // group이 없을 경우 표시할 기본 메시지
+    }
+
+    // 강의 그룹 인덱스 반환
+    return `그룹 ${group.groupIndex}`;  // groupIndex를 사용하여 반환
+},
+async submitApplication() {
+    if (this.lectureInfo.lectureType === "LESSON" && (!this.startDate || !this.endDate)) {
+    this.$toast.error("시작일과 종료일을 입력해 주세요.");
+    return;
+    }
+
+    // 강의 신청 로직 추가
+    try {
+    const requestData = {
+        lectureGroupId: this.selectedLectureGroup, // 선택된 강의 그룹 ID
+        startDate: this.startDate, // LESSON 타입일 경우 시작일
+        endDate: this.endDate, // LESSON 타입일 경우 종료일
+    };
+
+    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/apply`, requestData);
+    this.$toast.success("강의 신청이 완료되었습니다.");
+    this.closeApplyModal();
+    } catch (error) {
+    console.error("강의 신청 중 오류가 발생했습니다:", error);
+    this.$toast.error("강의 신청에 실패했습니다.");
+    }
+},
+
+getRandomColor() {
+    const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+},
+
+async fetchTutorInfo() {
+    console.log(this.tutorId);
+    try {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
+    this.tutorInfo = response.data.result; // 강사 정보를 저장
+    console.log(this.tutorInfo);
+    } catch (error) {
+    console.error('강사 정보를 가져오는 데 실패했습니다:', error);
+    }
+},
+convertGender(gender) {
+    return gender === 'MAN' ? '남성' : '여성';
+},
+formatPrice(value) {
+    if (!value) return '0';
+    return new Intl.NumberFormat('ko-KR').format(value);
+}}}
 </script>
 
 
@@ -418,5 +558,13 @@ td {
     color: #333;
     text-align: left;
 
+}
+.soldout {
+    width: 50px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #fff;
+    background-color: #666;
 }
 </style>

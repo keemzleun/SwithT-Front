@@ -238,19 +238,26 @@ export default {
 .suggestions-list {
     list-style: none;
     padding: 0;
-    margin-top: 22%;
+    margin-top: 23%;
     position: absolute; 
     background-color: white;
-    width: 40vw;
+    width: 39vw;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
     z-index: 10;
     border-radius: 28px;
     height: auto;
+    left: 29%;
 }
 .suggestions-list li {
     padding: 5px;
+    margin: 0px;
+    width: 38.9vw;
+    border-radius: 28px;
     cursor: pointer;
     text-align: left;
+}
+.suggestions-list li:hover {
+    background-color: #EEE;
 }
 .suggestions-list li:hover {
     background-color: #EEE;

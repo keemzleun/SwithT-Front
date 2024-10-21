@@ -1,25 +1,13 @@
 <template>
     <!-- Lecture Info Card 컴포넌트 -->
-    <LectureInfoCard :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
-    <!-- <v-banner >
-        <v-row class="ml-15">
-            <div class="mr-5"><strong> {{this.topNotice[0].title}}</strong></div>
-            <div>{{this.topNotice[0].contents}}</div>
-        </v-row>
-    </v-banner> -->
+    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
+
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
-            <v-icon>mdi-bullhorn-variant-outline</v-icon> <strong> [{{ notice.title }}] </strong>    {{ notice.contents }}
+            <v-icon>mdi-bullhorn-variant-outline</v-icon> <strong> [{{ notice.title }}] </strong> {{ notice.contents }}
         </div>
     </div>
     <v-container>
-
-        <!-- <v-breadcrumbs :items="breadItems" class="mt-5">
-            <template v-slot:divider>
-                <v-icon>mdi-menu-right</v-icon>
-            </template>
-</v-breadcrumbs> -->
-
         <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="dashboard">대시보드</v-tab>
@@ -59,12 +47,16 @@
                             <v-card class="pa-4 mb-3" outlined height="400px">
                                 <v-card-item>
                                     <v-card-title><strong>학습 진행률</strong></v-card-title>
-                                    <v-card-subtitle>지금까지 학습한 내용과 진도율을 확인해보세요</v-card-subtitle>
+                                    <v-card-subtitle>지금까지 학습 한 내용과 진도율을 확인해보세요</v-card-subtitle>
                                 </v-card-item>
                                 <v-card-text>
-                                    <div class="chartDoughnut">
-                                        <DoughnutChart :totalDayCount="infoData.totalDayCount"
-                                            :pastDayCount="infoData.pastDayCount" />
+                                    <div class="chartDoughnut" v-if="isDataLoaded">
+                                        <DoughnutChart :totalDayCount="infoData?.totalDayCount"
+                                            :pastDayCount="infoData?.pastDayCount" />
+                                    </div>
+                                    <div v-else>
+                                        <!-- 데이터가 로드되기 전까지는 로딩 메시지 또는 스피너를 보여줌 -->
+                                        <v-progress-circular color="primary" indeterminate></v-progress-circular>
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -111,18 +103,19 @@
 
             <!-- 과제 탭 -->
             <v-tabs-window-item value="assignment">
-                <v-card flat>
+                <v-card>
                     <v-card-text>
-                        <v-row justify="end" class="mr-4">
-                            <v-btn color="#90CDFF" @click="assignmentCreateModal = true"
-                                v-if="this.istutor"><strong>생성</strong></v-btn>
+                        <v-row justify="end" class="mr-6">
+                            <v-col cols="5" class="mr-5"><v-btn rounded color="#90CDFF"
+                                    @click="assignmentCreateModal = true"
+                                    v-if="this.istutor"><v-icon>mdi-plus</v-icon></v-btn></v-col>
                         </v-row>
 
                         <!-- 과제 목록 -->
-                        <v-row>
-                            <v-col cols="12" md="12" v-for="assignment in assignments" :key="assignment.id"
+                        <v-row justify="center">
+                            <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
                                 class="text-left">
-                                <v-card class="pa-4 mb-3" outlined>
+                                <v-card class="pa-4 mb-3" variant="outlined">
                                     <v-row>
                                         <v-col @click="viewAssignmentOpen(assignment.id)">
                                             <h3>{{ assignment.title }}</h3>
@@ -131,8 +124,15 @@
                                         </v-col>
 
                                         <v-col cols="auto">
+                                            <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)"
+                                                v-if="this.istutor">
+                                                <v-icon>mdi-pencil</v-icon>
+                                            </v-btn>
+                                            <!-- <v-icon class="me-2" size="small" @click.stop="updateAssignmentOpen(assignment.id)" v-if="notice.author">
+                                                mdi-pencil
+                                            </v-icon>
                                             <v-btn color="#90CDFF" @click="updateAssignmentOpen(assignment.id)"
-                                                v-if="this.istutor"><strong>수정</strong></v-btn>
+                                                v-if="this.istutor"><strong>수정</strong></v-btn> -->
                                         </v-col>
                                     </v-row>
                                 </v-card>
@@ -146,11 +146,12 @@
             </v-tabs-window-item>
             <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
-                <v-row justify="end" class="mt-4 mb-4 mr-12">
-                    <v-btn color="#90CDFF" @click="assignmentCreateModal = true"><strong>생성</strong></v-btn>
+                <v-row justify="end">
+                    <v-col class="mr-5" cols="5"><v-btn rounded color="#90CDFF"
+                            @click="noticeCreateModal = true"><v-icon>mdi-plus</v-icon></v-btn></v-col>
                 </v-row>
-                <v-row>
-                    <v-col>
+                <v-row justify="center">
+                    <v-col cols="8">
 
                         <v-row class="header">
                             <v-col cols="2">작성자</v-col>
@@ -161,10 +162,8 @@
                         </v-row>
                     </v-col>
                 </v-row>
-                <v-row>
-
-                    <v-col v-if="notices.length">
-
+                <v-row justify="center">
+                    <v-col cols="8" v-if="notices.length">
                         <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
                             <v-col cols="2">{{ notice.memberName }}</v-col>
                             <v-col cols="2">{{ notice.type }}</v-col>
@@ -213,10 +212,12 @@
                 <v-card flat>
                     <v-card-text>
                         <!-- 튜티 리스트 -->
-                        <v-list width="40%" class="mx-auto">
-                            <v-list-item v-for="tutee in this.tutees" :key="tutee.id"
+                        <v-list width="20%" class="mx-auto">
+                            <v-list-item v-for="tutee in this.tutees" :key="tutee.id" justify="center"
                                 class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
-                                style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; background-color: #f5f5f5; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;">
+                                style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
+                                variant="outlined">
+
                                 <v-row>
                                     <v-col>
                                         <v-list-item-avatar>
@@ -244,89 +245,82 @@
         </v-tabs-window>
 
         <!-- 과제 모달 -->
-
-        <v-dialog v-model="assignmentCreateModal" max-width="500px">
+        <v-dialog v-model="assignmentCreateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                <!-- <v-card-title class="text-h4 pa-4 d-flex justify-center">
                     과제 생성
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
-
-                <v-card-text class="pa-4 pt-0">
+                </v-card-title> -->
+                <v-divider class="mt-10 mb-2"></v-divider>
+                <v-card-text class="pa-4 pt-0 mt-5">
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <h4 class="mb-1 ml-6 mr-2"> <strong>과제 생성</strong> </h4>
+                    <!-- 제목  -->
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
+                    <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6>
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
-
-                    <input class="mb-2 ml-2 mr-2" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="assignmentContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                        class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
+                    <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
+                        placeholder="제목을 입력해주세요" label="내용"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="renewAssignment()" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitAssignmentCreate()">등록하기</v-btn>
+                        <v-btn variant="outlined" @click="renewAssignment()" class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="submitAssignmentCreate()" class="submit-btn">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-
-        <v-dialog v-model="assignmentViewModal" max-width="500px">
+        <v-dialog v-model="assignmentViewModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    과제 조회
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
+                <v-divider class="mt-10 mb-2"></v-divider>
+
+                <v-card-text class="pa-4 pt-0 mt-5">
+                    <h4 class="mb-1 ml-6 mr-2"> <strong>과제 생성</strong> </h4>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
-                    <input class="mb-2 ml-2 mr-2" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="assignmentContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                    <h4 class="mb-1 ml-8 mr-2"> 제목 </h4>
+                    <div class="mb-2 ml-8 mr-2">{{this.assignmentTitle}}</div>
+                    <h4 class="mb-1 ml-8 mr-2"> 내용 </h4>
+                    <div class="mb-2 ml-8 mr-2">{{this.assignmentContent}}</div>
+                    <h4 class="mb-1 ml-8 mr-2"> 제출 일자 </h4>
+                    <div class="mb-2 ml-8 mr-2">{{this.assignmentDate?.split('T')[0]}} {{this.assignmentDate?.split('T')[1]}}</div>
+  
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="assignmentViewModal = false" class="mr-3">확인</v-btn>
+                        <v-btn variant="outlined" @click="renewAssignment()" class="mr-3">확인</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-
-        <v-dialog v-model="assignmentUpdateModal" max-width="500px">
+        <v-dialog v-model="assignmentUpdateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    과제 수정
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+                <v-divider class="mt-10 mb-2"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
+                <v-card-text class="pa-4 pt-0 mt-5">
+                    <h4 class="mb-1 ml-6 mr-2"> <strong>과제 수정</strong> </h4>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
+                    <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
+                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6>
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 제출 일자 </h4>
-                    <input class="mb-2 ml-2 mr-2" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="assignmentContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                        class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
+                    <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
+                        placeholder="내용을 입력해주세요" label="내용"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
-                    <v-row justify="center">
-                        <v-btn variant="outlined" @click="assignmentUpdateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="deleteAssignments()" class="mr-3">삭제하기</v-btn>
-                        <v-btn variant="outlined" @click="updateAssignment()">등록하기</v-btn>
+                    <v-row justify="center" class="flex">
+
+                        <v-btn variant="outlined" class="cancel-btn mr-3" @click="renewAssignment()">취소하기</v-btn>
+                        <v-btn variant="outlined" class="delete-btn mr-3" @click="deleteAssignments()">삭제하기</v-btn>
+                        <v-btn variant="outlined" class="submit-btn" @click="updateAssignment()">등록하기</v-btn>
                     </v-row>
+
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
@@ -335,130 +329,118 @@
 
 
         <!-- 공지사항 모달-->
-        <v-dialog v-model="noticeCreateModal" max-width="500px">
+        <v-dialog v-model="noticeCreateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
+                <!-- <v-card-title class="text-h4 pa-4 d-flex justify-center">
                     게시판 작성
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+                </v-card-title> -->
+                <v-divider class="mt-10 mb-2"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
-
-                    <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
-                        hide-details></v-switch>
+                <v-card-text class="pa-4 pt-0 mt-5">
+                    <h5 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 작성</strong> </h5>
+                    <!-- 라디오 버튼 -->
+                    <!-- <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
+                        hide-details></v-switch> -->
+                    <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
+                    <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
+                        <v-radio label="공지사항으로 등록" :value="true"></v-radio>
+                        <v-radio label="게시글로 등록" :value="false"></v-radio>
+                    </v-radio-group>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                    <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
+                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-8 mr-2"></v-text-field>
+                    <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-8 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeCreateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="noticeCreate()">등록하기</v-btn>
+                        <v-btn variant="outlined" @click="noticeCreateModal = false" class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" class="submit-btn" @click="noticeCreate()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="noticeUpdateModal" max-width="500px">
+        <v-dialog v-model="noticeUpdateModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    게시판 수정
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
-
+                <v-divider class="mt-10 mb-2"></v-divider>
                 <v-card-text class="pa-4 pt-0">
+                    <h5 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 수정</strong> </h5>
 
-                    <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
-                        hide-details></v-switch>
+                    <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
+                    <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
+                        <v-radio label="공지사항으로 등록" :value="true"></v-radio>
+                        <v-radio label="게시글로 등록" :value="false"></v-radio>
+                    </v-radio-group>
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-text-field v-model="noticeTitle" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-2 mr-2"></v-text-field>
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-textarea v-model="noticeContent" label="내용" variant="outlined" rows="5"
-                        class="mb-2 ml-2 mr-2"></v-textarea>
+                    <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
+                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs" variant="outlined"
+                        class="mb-2 ml-8 mr-2"></v-text-field>
+                    <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
+                        class="mb-2 ml-8 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeUpdateModal = false" class="mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitEditNotice()">수정하기</v-btn>
+                        <v-btn variant="outlined" @click="renewNotice()" class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="submitEditNotice()" class="submit-btn">수정하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="noticeViewModal" max-width="500px">
+        <v-dialog v-model="noticeViewModal" max-width="800px">
             <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    게시판 조회
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
+                <v-divider class="mt-10 mb-2"></v-divider>
 
                 <v-card-text class="pa-4 pt-0">
+                    <h4 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 조회</strong> </h4>
 
                     <!-- 제목  -->
-                    <h4 class="mb-1 ml-2 mr-2"> 제목 </h4>
-                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
+                    <h4 class="mb-1 ml-7 mr-2"> 제목 </h4>
+                    <v-row class="mb-4 ml-7 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
 
-                    <h4 class="mb-1 ml-2 mr-2"> 내용 </h4>
-                    <v-row class="mb-4 ml-5 mr-2 mt-2">{{ this.noticeContent }}</v-row>
+                    <h4 class="mb-1 ml-7 mr-2"> 내용 </h4>
+                    <v-row class="mb-4 ml-7 mr-2 mt-2">{{ this.noticeContent }}</v-row>
+                    <v-divider class="mt-10 mb-2"></v-divider>
 
                     <!-- 댓글 리스트 -->
-                    <h4 class="mb-2">댓글</h4>
-                    <v-row v-if="comments.length">
-                        <v-col v-for="comment in comments" :key="comment.id">
-                            <v-card class="pa-3 mb-2">
-                                <div>
+                    <h4 class="mt-6 mb-1 ml-6 mr-2">댓글</h4>
+                    <v-row v-for="comment in comments" :key="comment.id">
+                        <!-- <v-col v-for="comment in comments" :key="comment.id"> -->
+                            <!-- <v-card class="pa-3 mb-2"> -->
+                                <!-- <v-row> -->
+                                <div class="mb-4 ml-7 mr-2 mt-2 px-3">
                                     <strong>{{ comment.memberName }}</strong>
-                                    <span>{{ comment.contents }}</span>
+                                    <span class="ml-2">{{ comment.contents }}</span>
                                 </div>
-                                <v-btn small @click="editComment(comment)">수정</v-btn>
-                                <v-btn small @click="deleteComment(comment)">삭제</v-btn>
-                            </v-card>
-                        </v-col>
+                                <div class="align-center mt-1">
+                                <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
+                                <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
+                            </div>
+                            <!-- </v-row> -->
+                            <!-- </v-card> -->
+                        <!-- </v-col> -->
                     </v-row>
 
                     <!-- 댓글 입력 폼 -->
-                    <h4 class="mb-2">댓글 작성</h4>
-                    <v-textarea v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
-                    <v-btn @click="submitComment">댓글 등록</v-btn>
+                    <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
+                    <h4 class="mt-6 mb-1 ml-6 mr-2" v-else >댓글 작성 </h4>
+                    <v-textarea class="mb-1 ml-6 mr-2" v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
+                    <v-btn class="ml-6" @click="submitComment">댓글 등록</v-btn>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeViewModal = false" class="mr-3">확인</v-btn>
+                        <v-btn variant="outlined" @click="renewNotice()" class="mr-3">확인</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="mapModal" max-width="500px">
-            <v-card>
-                <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    주소 확인
-                </v-card-title>
-                <v-divider class="mb-4" style="height: 2px; background-color: black;"></v-divider>
 
-                <v-card-text class="pa-4 pt-0">
-                    <div>
-                        <div id="map" style="width:100%;height:350px;"></div>
-                    </div>
-                </v-card-text>
-                <v-card-actions class="pa-4">
-                    <v-row justify="center">
-                        <v-btn variant="outlined" @click="mapModal = false" class="mr-3">확인</v-btn>
-                    </v-row>
-                </v-card-actions>
-                <v-divider class="mt-2 mb-10"></v-divider>
-
-            </v-card>
-        </v-dialog>
     </v-container>
 </template>
 
@@ -547,6 +529,8 @@ export default {
             isKakaoScriptLoaded: false,
             mapModal: false,
             urgentAssignment: [],
+            isDataLoaded: false,
+            isCommentEdit:false,
         };
     },
     mounted() {
@@ -556,30 +540,27 @@ export default {
         const route = useRoute();
         this.lectureGroupId = route.params.lectureGroupId;
         const infoGetResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-home/${this.lectureGroupId}`)
-        console.log(infoGetResponse);
         const data = infoGetResponse?.data?.result;
+        console.log("ckxm", data)
         this.infoData.category = this.changeCategory(data.category);
         this.isLecture = data.lectureType === "LECTURE" ? true : false;
-        console.log("강의야?" + this.isLecture)
         this.breadItems[0].title = this.isLecture ? "강의" : "과외"
         this.infoData.chatRoomId = data.chatRoomId;
         this.infoData.contents = data.contents;
         this.infoData.image = data.image;
-        this.infoData.latitude = data.latitude;
         this.infoData.limitPeople = data.limitPeople;
-        this.infoData.longtitude = data.longtitude;
         this.infoData.memberName = data.memberName;
         this.infoData.startDate = data.startDate;
         this.infoData.title = data.title;
         this.infoData.address = data.address;
-        this.infoData.totalDayCount = data.totalDayCount,
-            this.infoData.pastDayCount = data.pastDayCount,
-            this.breadItems[1].title = this.infoData.title
+        this.infoData.totalDayCount = data.totalDayCount;
+        this.infoData.pastDayCount = data.pastDayCount;
+        this.isDataLoaded = true;
+        this.breadItems[1].title = this.infoData.title;
         this.infoData.lectureGroupTimes = data.lectureGroupTimes;
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
             return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
         }, '');
-        console.log("헤이헹히에히에히에힝히에힝" + JSON.stringify(this.infoData))
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
         let params = {
@@ -589,10 +570,8 @@ export default {
         const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
         this.notices = noticeResponse?.data?.result?.content;
         this.noticePages = noticeResponse?.data?.result?.totalPages;
-        console.log(this.notices)
 
         const topNoticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list?page=0&type=notice`)
-        console.log("왜 이렇게 나와?" + JSON.stringify(topNoticeResponse))
         this.topNotice = topNoticeResponse?.data?.result?.content;
 
         const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
@@ -601,14 +580,11 @@ export default {
         this.assignments = assignmentResponse?.data?.result?.content;
         this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
 
-        console.log(this.assignments);
         const memberInfo = localStorage.getItem('memberInfo');
         if (memberInfo && JSON.parse(memberInfo).name === this.infoData.memberName) {
             this.istutor = true;
         }
         if (this.infoData.address != "") this.isShowMap = true;
-        console.log("map" + this.isShowMap)
-        this.loadKakaoMapScript();
 
     },
     methods: {
@@ -681,9 +657,9 @@ export default {
             this.assignmentPages = response?.data?.result?.totalPages;
         },
         async noticeView(item) {
+            this.renewNotice();
             this.noticeViewModal = true;
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
-            console.log(response)
             this.noticeTitle = response?.data?.result?.title;
             this.noticeContent = response?.data?.result?.contents;
             this.noticeId = item.id;
@@ -693,7 +669,6 @@ export default {
         async fetchComments(noticeId) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list`)
             this.comments = response?.data?.result?.content || [];
-            console.log("comment" + JSON.stringify(this.comments))
         },
         async submitComment() {
             const body = {
@@ -709,9 +684,11 @@ export default {
             }
 
             this.newComment = '';
+            this.isCommentEdit = false;
             await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
         },
         async editComment(comment) {
+            this.isCommentEdit = true;
             this.commentId = comment.id;
             this.newComment = comment.contents;
         },
@@ -721,9 +698,12 @@ export default {
             console.log(response)
         },
         renewNotice() {
+            this.isNotice = false;
             this.noticeTitle = "";
             this.noticeContent = "";
-            this.isNotice = false;
+            this.noticeCreateModal = false;
+            this.noticeUpdateModal = false;
+            this.noticeViewModal = false;
         },
         async noticeCreate() {
             let type = null;
@@ -743,6 +723,7 @@ export default {
         renewAssignment() {
             this.assignmentCreateModal = false;
             this.assignmentUpdateModal = false;
+            this.assignmentViewModal = false;
             this.assignmentTitle = "";
             this.assignmentDate = null;
             this.assignmentContent = "";
@@ -770,22 +751,22 @@ export default {
             }
         },
         async viewAssignmentOpen(id) {
+            this.renewAssignment();
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentViewModal = true;
             this.assignmentTitle = getResponse?.data?.result?.title;
             this.assignmentContent = getResponse?.data?.result?.contents;
             this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
             this.assignmentId = getResponse?.data?.result?.id;
-            console.log(getResponse)
         },
         async updateAssignmentOpen(id) {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentUpdateModal = true;
+            
             this.assignmentTitle = getResponse?.data?.result?.title;
             this.assignmentContent = getResponse?.data?.result?.contents;
             this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
             this.assignmentId = getResponse?.data?.result?.id;
-            console.log(getResponse)
         },
         async updateAssignment() {
             try {
@@ -804,11 +785,10 @@ export default {
                     `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/update`,
                     body
                 );
-                this.renewAssignment();
                 // 응답이 성공적이면 새로고침
                 if (response && response.status === 200) {
                     console.log('Update successful:', response);
-                    this.assignmentUpdateModal = false;
+                    this.renewAssignment();
                     await this.fetchAssignments();
                 } else {
                     console.error('Update failed:', response);
@@ -825,6 +805,7 @@ export default {
         async deleteAssignments() {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
             console.log(response);
+            this.renewAssignment();
             window.location.reload()
         },
 
@@ -865,13 +846,15 @@ export default {
             return `item.actions`;
         },
         async editItem(item) {
-            this.renewNotice();
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
             console.log(getResponse)
             this.noticeTitle = getResponse?.data?.result?.title;
             this.noticeContent = getResponse?.data?.result?.contents;
+            if(getResponse?.data?.result?.type === "POST") this.isNotice = false;
+            else this.isNotice = true;
             this.noticeUpdateModal = true;
             this.noticeId = item.id;
+
         },
         async submitEditNotice() {
             let type = null;
@@ -884,12 +867,14 @@ export default {
             }
             const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${this.noticeId}`, body)
             console.log(response)
-            this.noticeUpdateModal = false;
+
+            this.renewNotice();
 
         },
         async deleteItem(item) {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}/delete`)
             console.log(response)
+            this.renewNotice();
         },
 
     }
@@ -913,7 +898,6 @@ export default {
 
 .tutee-list-item {
     border-radius: 20px;
-    background-color: #f5f5f5;
     margin-bottom: 10px;
     padding: 10px;
     display: flex;
@@ -939,6 +923,7 @@ export default {
 
 .chartDoughnut {
     max-width: 300px;
+    min-height: 300px;
     /* 차트 크기 조정 */
     margin: 0 auto;
 }
@@ -949,7 +934,28 @@ export default {
     align-items: center;
     justify-content: center;
     background-color: black;
-    font-size:20px;
-    color:white;
+    font-size: 20px;
+    color: white;
+}
+
+.cancel-btn {
+    color: black;
+    border-color: #e0e0e0;
+    width: 30%;
+    height: 40px;
+}
+
+.delete-btn {
+    color: red;
+    border-color: red;
+    width: 30%;
+    height: 40px;
+}
+
+.submit-btn {
+    background-color: #0066ff;
+    color: white;
+    width: 30%;
+    height: 40px;
 }
 </style>

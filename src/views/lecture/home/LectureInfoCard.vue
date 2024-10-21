@@ -133,19 +133,29 @@ export default {
             lectureGroupId: 0
         };
     },
-    async mounted() {
+    mounted() {
         this.loadDaumPostcodeScript();
         this.loadKakaoMapScript();
+        this.lectureType = this.formattedLectureType();
+        this.category = this.formattedCategory();
     },
     created() {
         const route = useRoute();
         this.lectureGroupId = route.params.lectureGroupId;
-        this.lectureType = this.formattedLectureType();
-        this.category = this.formattedCategory();
         this.isLoading = false;
         this.loadKakaoMapScript();
         this.address = this.infoData.address;
 
+    },
+    watch: {
+        infoData: {
+            handler() {
+                this.lectureType = this.formattedLectureType();
+                this.category = this.formattedCategory();
+            },
+            immediate: true,
+            deep: true
+        }
     },
     methods: {
         renewInfo() {
@@ -153,7 +163,6 @@ export default {
             this.infoModal = false;
         },
         async deleteGroup() {
-            console.log("delete")
             try {
                 await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/delete/lecture-group/${this.lectureGroupId}`)
             }
@@ -162,7 +171,6 @@ export default {
             }
         },
         async updateInfo() {
-            console.log(this.address, this.lectureGroupId)
             const body = {
                 address: this.address,
             };
@@ -196,6 +204,7 @@ export default {
         formattedLectureType() {
             if (this.infoData?.lectureGroupTimes && this.infoData.lectureGroupTimes.length > 0) {
                 const lectureType = this.infoData.lectureGroupTimes[0].lectureType;
+                console.log("lectureType" + lectureType)
                 switch (lectureType) {
                     case 'LECTURE':
                         return '강의';

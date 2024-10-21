@@ -172,7 +172,7 @@
                           </tr>
                         </tbody>
                     </table>
-                    <v-btn @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">강의 그룹 선택하기</v-btn>
+                    <v-btn @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
                 </aside>
             </v-col>
         </v-row>
@@ -181,38 +181,68 @@
         </v-snackbar>
     </v-container>
 
-    <!-- 강의 그룹 선택 모달창 -->
     <v-dialog v-model="isApplyModalOpen" max-width="600px">
-        <v-card>
-            <v-card-title>
-                <span class="headline">수강 신청</span>
-            </v-card-title>
+        <v-card style="padding: 40px 20px 50px; border-radius: 30px;">
+            <div style="font-size: 24px; font-weight: 700; margin: auto;">강의 신청</div>
             <v-card-text>
-                <div v-for="group in lectureGroups" :key="group.lectureGroupId" @click="selectLectureGroup(group)" 
-                     :class="{'selected-group': selectedLectureGroup === group.lectureGroupId}" 
-                     style="cursor: pointer; border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+                <div v-for="group in lectureGroups" 
+                    :key="group.lectureGroupId" 
+                    @click="checkAndSelectGroup(group)"  
+                    :class="[
+                        'custom-option', 
+                        { 
+                            'selected': selectedLectureGroup && selectedLectureGroup.lectureGroupId === group.lectureGroupId, 
+                            'disabled-group': group.isAvailable === 'N' || group.remaining === 0 
+                        }]"
+                    :style="{
+                        backgroundColor: group.isAvailable === 'N' || group.remaining === 0 ? '#f0efef' : (selectedLectureGroup && selectedLectureGroup.lectureGroupId === group.lectureGroupId ? '#e7f0ff' : ''),
+                        borderColor: selectedLectureGroup && selectedLectureGroup.lectureGroupId === group.lectureGroupId ? '#007bff' : '#ccc'
+                    }" 
+                    style="margin-top: 10px;">
+                    
                     <div>
-                        <strong>강의 그룹 {{ group.groupIndex }}</strong>
-                    </div>
-                    <div>강의료: {{ formatPrice(group.price) }}원</div>
-                    <div>
-                        <span style="font-weight: bold; color: #6C97FD">{{ group.groupTimes[0].day }}</span>
-                        {{ formatTime(group.groupTimes[0].startTime) }} ~ {{ formatTime(group.groupTimes[0].endTime) }}
+                        <span v-if="group.isAvailable === 'N' || group.remaining === 0" class="soldout">
+                            마감
+                        </span>
+                        <span style="color: #000; font-weight: 700; margin: 10px">강의 그룹 {{ group.groupIndex }}</span>
                     </div>
                 </div>
     
-                <div v-if="lectureInfo?.lectureType === 'LESSON'">
-                    <v-text-field v-model="startDate" label="시작 날짜" type="date"></v-text-field>
-                    <v-text-field v-model="endDate" label="종료 날짜" type="date"></v-text-field>
-                    <v-text-field v-model="location" label="강의 위치"></v-text-field>
-                </div>
+                <!-- 강의 그룹 선택 시 추가 정보 입력 폼 -->
+                <transition name="fade">
+                    <div v-if="selectedLectureGroup" style="margin-top: 20px;">
+                        <div v-if="lectureInfo?.lectureType === 'LESSON'" >
+                            <hr style="margin: 30px 0"/>
+                            <div style="font-size: 18px; font-weight: 700; color: #5d8dfc; margin: 10px 0;">추가 정보 입력</div>
+                            <v-row>
+                                <v-col>
+                                    <label for="startDate" class="form-label">시작일</label>
+                                    <input v-model="startDate" id="startDate" class="form-control" type="date" />
+                                </v-col>
+                                <v-col>
+                                    <label for="endDate" class="form-label">종료일</label>
+                                    <input v-model="endDate" class="form-control" type="date" />
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col>
+                                    <label for="location" class="form-label">강의 위치</label>
+                                    <input v-model="location" id="location" class="form-control" type="text" />
+                                </v-col>
+                            </v-row>
+                        </div>
+                    </div>
+                </transition>
             </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" @click="submitApplication">신청하기</v-btn>
-                <v-btn @click="isApplyModalOpen = false">취소</v-btn>
+            <v-card-actions style="justify-content: flex-end;">
+                <transition name="fade">
+                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication">신청하기</v-btn>
+                </transition>
+                <v-btn @click="closeApplyModal">취소</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
+    
     
 </template>
 
@@ -479,7 +509,16 @@ async submitApplication() {
             this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" }; // Snackbar 사용
         }
     }
-}
+},
+checkAndSelectGroup(group) {
+        console.log('강의 그룹 상태:', group.isAvailable, '잔여석:', group.remaining);
+        
+        if (group.isAvailable !== 'N' && group.remaining > 0) {
+            this.selectLectureGroup(group);
+        } else {
+            console.log('선택할 수 없는 강의 그룹입니다.');
+        }
+    }
 
 }}
 </script>
@@ -565,6 +604,8 @@ td {
 
 }
 .soldout {
+    display: inline-block;
+    text-align: center;
     width: 50px;
     border-radius: 5px;
     font-weight: bold;
@@ -572,5 +613,30 @@ td {
     color: #fff;
     background-color: #666;
 }
+.custom-option {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.custom-option.selected {
+    border-color: #007bff !important; /* 선택된 경우 테두리 색상 */
+    background-color: #e7f0ff !important; /* 선택된 경우 배경 색상 */
+    transform: scale(1.01) !important; /* 선택된 경우 살짝 확대 */
+}
+
+.disabled-group {
+    opacity: 0.5; /* 비활성화된 그룹에 대한 스타일 */
+    pointer-events: none; /* 클릭 비활성화 */
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+    opacity: 0;
+}
+
 
 </style>

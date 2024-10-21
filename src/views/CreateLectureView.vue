@@ -291,6 +291,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      isLogin: false,
       address: null,
       startDate: null,
       endDate: null,

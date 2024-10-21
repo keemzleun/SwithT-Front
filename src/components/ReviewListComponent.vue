@@ -1,5 +1,4 @@
 <template>
-  <v-container class="mt-16" style="max-width: 1000px">
 
     <v-row justify="center" class="mb-1">
       <v-col cols="4" class="text-center mt-6">
@@ -207,7 +206,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-  </v-container>
 </template>
 
 <script>

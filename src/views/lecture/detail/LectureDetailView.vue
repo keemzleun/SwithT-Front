@@ -140,7 +140,7 @@
                              </v-col>
                         </v-tabs-window-item>
                         <v-tabs-window-item value="tutor-review">
-                          <ReviewListComponent></ReviewListComponent>
+                          <ReviewListComponent :tutorId="tutorId" />
                             <!-- 리뷰 내용 -->
                         </v-tabs-window-item>
                     </v-tabs-window>

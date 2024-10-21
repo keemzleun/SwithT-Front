@@ -622,6 +622,7 @@ export default {
 <style scoped>
 .v-container {
   margin-top: 60px;
+  width: 70vw;
 }
 
 .section {

@@ -529,8 +529,7 @@ checkAndSelectGroup(group) {
 
 <style scoped>
 .v-container {
-    position: relative;
-    
+    width: 70vw;
 }
 .contents-section {
     /*display: flex;*/

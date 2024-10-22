@@ -79,12 +79,16 @@
           <label>강의 주소</label>
         </v-col>
         <v-col cols="1">
-          <v-btn style="border: 1px solid #ccc;" variant="outlined" class="ml-3"
+          <v-btn style="border: 1px solid #ccc; padding-left:5px;" variant="outlined" class="ml-3"
             @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
         </v-col>
 
-        <v-col cols="8">
-          <div class="text-left">{{ this.address }}</div>
+        <v-col cols="8" class="align-center">
+          <v-row class="align-center">
+            <div class="text-left mr-2 align-center">{{ this.address }}</div>
+          <input  type="text" v-model="detailAddress" placeholder="상세주소를 입력해주세요"  class="form-control detail-width" >
+          </v-row>
+          
           <!-- <input v-model="address" class="form-control" placeholder="강의 주소를 입력해주세요" type="text" /> -->
         </v-col>
       </v-row>
@@ -252,14 +256,14 @@
               강의 시간 추가
             </span>
           </div>
-          <v-row class="justify-end" style="padding: 0 10px;">
+          <!-- <v-row class="justify-end" style="padding: 0 10px;">
             <div @click="submitLectureGroup" class="submit-group">그룹 생성</div>
-          </v-row>
+          </v-row> -->
         </v-col>
       </v-row>
       <v-row class="justify-center" style="padding: 0 10px">
         <div @click="submitLectureGroup" class="create-lecture">그룹 수정</div>
-        <div @click="deleteGroup()" class="delete-lecture">그룹 삭제</div>
+        <div @click="deleteGroup" class="delete-lecture">그룹 삭제</div>
       </v-row>
 
       <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="5000">
@@ -286,6 +290,7 @@ export default {
     return {
       lectureGroupId: 0,
       address: null,
+      detailAddress:"",
       startDate: null,
       endDate: null,
       userName: null,
@@ -342,6 +347,7 @@ export default {
     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-home/${this.lectureGroupId}`)
     console.log(response)
     this.address = response.data.result.address;
+    this.detailAddress=response.data.result.detailAddress;
     this.startDate = response.data.result.startDate;
     this.endDate = response.data.result.endDate;
     this.currentLecture.fee = response.data.result.price;
@@ -450,12 +456,12 @@ export default {
         name: '',
         fee: 0,
         capacity: 1,
-        timeSlots: [{ day: '', startTime: '', endTime: '' }]
+        timeSlots: [{ lectureDay: '', startTime: '', endTime: '' }]
       };
     },
     addTimeSlot() {
       console.log(this.currentLecture.timeSlots)
-      this.currentLecture.timeSlots.push({ day: '', startTime: '', endTime: '' });
+      this.currentLecture.timeSlots.push({ lectureDay: '', startTime: '', endTime: '' });
 
     },
     getRandomColor() {
@@ -482,13 +488,14 @@ export default {
       return false;
     },
     async deleteGroup() {
-            try {
-                await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/delete/lecture-group/${this.lectureGroupId}`)
-            }
-            catch (e) {
-                alert(e?.response?.data?.error_message)
-            }
-        },
+      try {
+        await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/delete/lecture-group/${this.lectureGroupId}`)
+        this.$router.push(`/tutor-lecture-list`);
+      }
+      catch (e) {
+        alert(e?.response?.data?.error_message)
+      }
+    },
     async submitLectureGroup() {
       //모집 인원이 0인지 확인
       if (this.currentLecture.capacity <= 0) {
@@ -497,7 +504,7 @@ export default {
       }
       // 강의 시간이 올바르게 입력되었는지 확인
       for (const timeSlot of this.currentLecture.timeSlots) {
-        console.log("timeslot",timeSlot)
+        console.log("timeslot", timeSlot)
         if (!timeSlot.lectureDay || !timeSlot.startTime || !timeSlot.endTime) {
           alert('강의 시간, 요일, 시작 시간 및 종료 시간을 모두 입력해야 합니다.');
           return; // 조건에 맞지 않으면 함수 종료
@@ -508,9 +515,10 @@ export default {
       let hasOverlap = false; // 겹치는 강의 체크
 
       for (const timeSlot of this.currentLecture.timeSlots) {
+        console.log("타임스랏", timeSlot)
         const startHour = this.hours.indexOf(timeSlot.startTime);
         const endHour = this.hours.indexOf(timeSlot.endTime);
-        const day = timeSlot.day;
+        const day = timeSlot.lectureDay;
 
         // 겹치는 시간 확인
         if (this.isOverlapping(day, startHour, endHour)) {
@@ -528,7 +536,7 @@ export default {
       for (const timeSlot of this.currentLecture.timeSlots) {
         const startHour = this.hours.indexOf(timeSlot.startTime);
         const endHour = this.hours.indexOf(timeSlot.endTime);
-        const day = timeSlot.day;
+        const day = timeSlot.lectureDay;
 
         if (!this.schedule[day]) {
           this.schedule[day] = {};
@@ -543,15 +551,18 @@ export default {
       }
       const body = {
         address: this.address,
+        detailAddress:this.detailAddress,
         price: (this.currentLecture.fee && this.currentLecture.fee.replace(/,/g, '')) || '0',
         limitPeople: this.currentLecture.capacity,
         startDate: this.startDate,
         endDate: this.endDate,
-        groupTimeReqDtos:this.currentLecture.timeSlots
+        groupTimeReqDtos: this.currentLecture.timeSlots
       }
       const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/lecture-group/${this.lectureGroupId}`, body)
-      
+
       console.log(response)
+      this.$router.push(`/lecture-home/${this.lectureGroupId}`);
+
       // this.lectureGroups.push({ ...this.currentLecture }); // 강의 목록에 추가
       // this.showForm = false; // 폼 닫기
     },
@@ -660,7 +671,10 @@ export default {
       // 선택된 강의 그룹을 제거합니다.
     },
     removeTimeSlot(index) {
+      console.log("삭제 전" + JSON.stringify(this.currentLecture.timeSlots))
       this.currentLecture.timeSlots.splice(index, 1);
+      console.log("삭제 후" + JSON.stringify(this.currentLecture.timeSlots))
+
     },
   },
 
@@ -791,6 +805,10 @@ td {
   width: 100px;
   /* 원하는 너비로 조정 */
 }
+.detail-width {
+  width: 400px;
+  /* 원하는 너비로 조정 */
+}
 
 .submit-group {
   background-color: #78CB67;
@@ -817,8 +835,9 @@ td {
   border-radius: 10px;
   line-height: 50px;
   margin-top: 120px;
-  margin-right:10px;
+  margin-right: 10px;
 }
+
 .delete-lecture {
   background-color: #f5666d;
   color: #f5f5f5;
@@ -830,10 +849,13 @@ td {
   line-height: 50px;
   margin-top: 120px;
 }
+
 .create-lecture:hover {
   cursor: pointer;
 }
-
+.delete-lecture:hover {
+  cursor: pointer;
+}
 .minus-btn:hover {
   cursor: pointer;
 }

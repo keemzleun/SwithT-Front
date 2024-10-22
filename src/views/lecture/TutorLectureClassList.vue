@@ -31,11 +31,19 @@
                                         </div>
                                         <br>
                                         <div class="lecture-group-info">
-                                            튜티  {{lesson.memberName}}
-                                            <br>
-                                            기간  2024-11-11 ~ 2024-12-12
-                                            <br />
-                                            가격  1,000,000원
+                                            <v-row >
+                                                <v-col cols="1" class="lecture-group-info-col">튜티</v-col>
+                                                <v-col class="lecture-group-info-col">{{lesson.memberName}}</v-col>
+                                            </v-row>
+                                            <v-row>
+                                                <v-col cols="1" class="lecture-group-info-col">기간</v-col>
+                                                <v-col class="lecture-group-info-col">{{lesson.startDate}} ~ {{lesson.endDate}}</v-col>
+                                            </v-row>
+                                            <v-row>
+                                                <v-col cols="auto" class="lecture-group-info-col">강의료</v-col>
+                                                <v-col class="lecture-group-info-col">{{formatPrice(lesson.price)}}</v-col>
+                                            </v-row>
+                                              
                                         </div>
                                     </v-col>
                                     <v-col cols="1" >
@@ -54,6 +62,13 @@
                                     <v-col cols="10" class="text-left card-text-class">
                                         <div class="lecture-group-title">
                                             {{lesson.title}}
+                                        </div>
+                                        <br>
+                                        <div class="lecture-group-info">
+                                            <v-row>
+                                                <v-col cols="auto" class="lecture-group-info-col">강의료</v-col>
+                                                <v-col class="lecture-group-info-col">{{formatPrice(lesson.price)}}</v-col>
+                                            </v-row>
                                         </div>
                                     </v-col>
                                     <v-col cols="1" >
@@ -78,10 +93,23 @@
                                             {{lesson.title}}
                                         </div>
                                         <br>
+                                        
                                         <div class="lecture-group-info">
-                                            기간  2024-11-11 ~ 2024-12-12
-                                            <br />
-                                            가격  1,000,000원
+                                            <v-row >
+                                                <v-col cols="2" class="lecture-group-info-col">모집인원</v-col>
+                                                <v-col class="lecture-group-info-col">{{lesson.limitPeople}}</v-col>
+                                            </v-row>
+                                            <v-row>
+                                                <v-col cols="2" class="lecture-group-info-col">기간</v-col>
+                                                <v-col class="lecture-group-info-col">{{lesson.startDate}} ~ {{lesson.endDate}}</v-col>
+                                            </v-row>
+                                            
+                                            
+                                            <v-row>
+                                                <v-col cols="2" class="lecture-group-info-col">강의료</v-col>
+                                                <v-col class="lecture-group-info-col">{{formatPrice(lesson.price)}}</v-col>
+                                            </v-row>
+                                              
                                         </div>
                                     </v-col>
                                     <v-col cols="1" >
@@ -173,9 +201,9 @@ export default {
             this.showLessonClassList();
 
         }
+    
 
         
-
     },
 
     methods: {
@@ -231,7 +259,13 @@ export default {
 
        clickLectureHome(lectureGroupId){
         this.$router.push(`/lecture-home/${lectureGroupId}`);
-       }
+       },
+
+       formatPrice(value) {
+            if (!value)  return '재능기부';
+            
+            return new Intl.NumberFormat('ko-KR').format(value)+'원';
+        }
 
 
     }
@@ -266,5 +300,10 @@ export default {
 
 .card-text-class{
     margin-left: 20px;
+}
+
+.lecture-group-info-col{
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 </style>

@@ -173,7 +173,7 @@
                           </tr>
                         </tbody>
                     </table>
-                    <v-btn @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
+                    <v-btn v-if="isLogin === true" @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
                 </aside>
             </v-col>
         </v-row>
@@ -183,7 +183,7 @@
     </v-container>
 
     <v-dialog v-model="isApplyModalOpen" max-width="600px">
-        <v-card style="padding: 40px 20px 50px; border-radius: 30px;">
+        <v-card style="padding: 40px 20px 50px; border-radius: 10px;">
             <div style="font-size: 24px; font-weight: 700; margin: auto;">강의 신청</div>
             <v-card-text>
                 <div v-for="group in lectureGroups" 
@@ -259,6 +259,7 @@ export default {
   },
   data() {
     return {
+    isLogin: false,
       activeTab: 'lecture-info',
       isApplyModalOpen: false, // 모달 열림 상태
       availableLectureGroups: [],
@@ -289,6 +290,10 @@ export default {
   },
   created() {
     this.fetchLectureGroupInfo();
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.isLogin = true;
+    }
   },
   async mounted() {
     await this.fetchLectureDetail(); // 강의 세부 정보를 먼저 가져옵니다.
@@ -475,15 +480,14 @@ async submitApplication() {
 
             // location.reload(); // 페이지 새로 고침
         } catch (error) {
+            alert(error.response.data.error_message);
             console.error("강의 신청 중 오류가 발생했습니다:", error);
             this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" };
         }
         return; 
     }
-
     // LESSON 타입 처리
     else if (this.lectureInfo.lectureType === "LESSON") {
-
 
         // 필수 입력 값 체크
         if (!this.startDate || !this.endDate || !this.location) {
@@ -508,6 +512,7 @@ async submitApplication() {
             // this.closeApplyModal();
             // location.reload(); // 페이지 새로 고침
         } catch (error) {
+            alert(error.response.data.error_message);
             console.error("강의 신청 중 오류가 발생했습니다:", error);
             this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" }; // Snackbar 사용
         }
@@ -528,6 +533,7 @@ checkAndSelectGroup(group) {
 
 
 <style scoped>
+
 .v-container {
     width: 70vw;
 }
@@ -633,7 +639,7 @@ td {
     pointer-events: none; /* 클릭 비활성화 */
 }
 .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
     opacity: 0;

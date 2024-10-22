@@ -481,12 +481,12 @@ export default {
                 chatRoomId: 0,
                 contents: "",
                 image: "",
-                // latitude: "",
                 limitPeople: null,
                 address: "",
-                // longtitude: "",
+                price:0,
                 memberName: "",
                 startDate: "",
+                endData:"",
                 title: "",
                 lectureGroupTimes: [],
                 totalDayCount: 0,
@@ -556,8 +556,10 @@ export default {
         this.infoData.contents = data.contents;
         this.infoData.image = data.image;
         this.infoData.limitPeople = data.limitPeople;
+        this.infoData.price = data.price;
         this.infoData.memberName = data.memberName;
         this.infoData.startDate = data.startDate;
+        this.infoData.endDate = data.endDate;
         this.infoData.title = data.title;
         this.infoData.address = data.address;
         this.infoData.totalDayCount = data.totalDayCount;

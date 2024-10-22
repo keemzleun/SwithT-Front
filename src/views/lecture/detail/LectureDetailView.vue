@@ -480,15 +480,14 @@ async submitApplication() {
 
             // location.reload(); // 페이지 새로 고침
         } catch (error) {
+            alert(error.response.data.error_message);
             console.error("강의 신청 중 오류가 발생했습니다:", error);
             this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" };
         }
         return; 
     }
-
     // LESSON 타입 처리
     else if (this.lectureInfo.lectureType === "LESSON") {
-
 
         // 필수 입력 값 체크
         if (!this.startDate || !this.endDate || !this.location) {
@@ -513,6 +512,7 @@ async submitApplication() {
             // this.closeApplyModal();
             // location.reload(); // 페이지 새로 고침
         } catch (error) {
+            alert(error.response.data.error_message);
             console.error("강의 신청 중 오류가 발생했습니다:", error);
             this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" }; // Snackbar 사용
         }
@@ -638,7 +638,7 @@ td {
     pointer-events: none; /* 클릭 비활성화 */
 }
 .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
     opacity: 0;

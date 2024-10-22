@@ -2,25 +2,29 @@
     <LectureDetailInfoComponent 
         :lectureId=this.lectureId
         />
-    <v-container width="60%"  style="margin-top: 60px;">
-        <h4 style="font-weight:bold">{{this.title}}</h4>
-        <hr><br>
-        <v-row v-for="apply in lessonApplyList" :key="apply.id">
+    <v-container width="50%"  style="margin-top: 60px;">
+        <h4  class="div-title">{{this.title}}  <br>신청 리스트  </h4>
+        <br>
+        <v-row v-for="apply in lessonApplyList" :key="apply.id" >
             <v-col>
                 <v-card class="custom-border">
                     <v-card-text class="d-flex justify-space-between align-center">
                         <div>
-                            {{ apply.tuteeName }}
+                            <v-avatar class="profile-image" style="height: 50px; width: 50px; ">
+                                <v-img :src="apply.tuteeProfileImage" alt="튜티 프로필"/>
+                              </v-avatar>
+                            
+                            <span style="font-size: 20px; margin:20px;">{{ apply.tuteeName }}</span>
                             <v-icon @click="clickChatRoom(apply.chatRoomId, apply.memberId)">mdi-message-outline</v-icon>
                         </div>
 
 
                         <div>
-                            <v-btn color="#FFC978" class="ml-3 font-weight-class" v-if="apply.status === 'WAITING'">결제
-                                대기중</v-btn>
-                            <v-btn color="#FFF490" class="ml-3 font-weight-class" v-else
+                            <span class="ml-3 font-weight-class" style="color: blue; font-weight:bold; font-size: 18px;" v-if="apply.status === 'WAITING'">결제 대기중</span>
+                            
+                            <v-btn color="#3232FF" class="ml-3 font-weight-class" v-else
                                 @click="clickApplyRejectBtn('apply', apply.applyId, apply.tuteeName)">수락</v-btn>
-                            <v-btn color="#DBD599" class="ml-3 font-weight-class"
+                            <v-btn color="#f03e3e" class="ml-3 font-weight-class"
                                 @click="clickApplyRejectBtn('reject', apply.applyId, apply.tuteeName)">거절</v-btn>
                         </div>
 
@@ -36,9 +40,18 @@
         v-model="yesOrNoModal" 
         @confirmed="handleYesBtn"
         @update:dialog="yesOrNoModal = $event"
+        :icon=this.icon
         :title=this.modalTitle
         :contents=this.modalContents
         yesBtnName="확인"
+        />
+
+        <AlertModal
+        v-model="alertModal" 
+        @update:dialog="alertModal = $event"
+        icon=mdi-alert-circle-outline
+        :title=this.alertModalTtile
+        :contents=this.alertModalContents
         />
 
     </v-container>
@@ -47,11 +60,13 @@
 <script>
 import YesOrNoModal from '@/components/YesOrNoModal.vue';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
+import AlertModal from '@/components/AlertModal.vue';
 import axios from 'axios';
 export default {
     components:{
         YesOrNoModal,
         LectureDetailInfoComponent,
+        AlertModal,
     },
 
     data() {
@@ -69,6 +84,10 @@ export default {
             yesOrNoModal: false,
             modalTitle: 'kk',
             modalContents: 'kk',
+
+            alertModal: false,
+            alertModalTtile: '',
+            alertModalContents: '',
 
         };
 
@@ -104,10 +123,11 @@ export default {
             if(applyOrReject == 'apply'){
                 this.modalTitle = '결제 요청';
                 this.modalContents = tuteeName+'님께 결제요청을 보내시겠습니까?';
+                this.icon = "mdi-credit-card-fast-outline";
             }else{
                 this.modalTitle = '신청 거절';
                 this.modalContents = tuteeName+'님의 신청을 거절하시겠습니까?';
-                this.yesOrNoModal = true;
+                this.icon = "mdi-alert-circle-outline";
             }
             this.selectedApplyId = applyId;
             this.yesOrNoModal = true;
@@ -121,7 +141,7 @@ export default {
             }else{
                 this.clickApplyReject(this.selectedApplyId);
             }
-            window.location.reload();
+            
             this.yesOrNoModal = false;
 
         },
@@ -130,19 +150,22 @@ export default {
             try {
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-payment-request/${applyId}`);
                 console.log(response.data.result);
+                window.location.reload();
             } catch (e) {
-                alert(e.response.data.error_message+"\n한번에 한 튜티에게 결제 요청을 보낼 수 있습니다.");
+                this.alertModalTtile = "결제 요청 실패";
+                this.alertModalContents =  "한번에 한 튜티에게 결제 요청을 보낼 수 있습니다.";
+                this.alertModal = true;
+
             }
         },
 
         async clickApplyReject(applyId) {
-            this.yesOrNoModal = true;
-
             try {
                 const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-apply-reject/${applyId}`);
                 console.log(response.data.result);
+                window.location.reload();
             } catch (e) {
-                console.log(e.response.data.error_message);
+                console.log(e.response.data);
                 alert("신청 취소에 실패했습니다.");
             }
 
@@ -169,7 +192,7 @@ export default {
 </script>
 <style scoped>
 .custom-border {
-    border: 2px solid #cccccc;
+    border: 2px solid #cbd1ff;
     border-radius: 8px;
     box-shadow: none !important;
 }
@@ -191,5 +214,13 @@ div,
   }
 .submit-group:hover {
     cursor: pointer;
+}
+
+.div-title{
+    font-weight:bold;
+    height: 100px;
+    border: 2px solid #cbd1ff;
+    border-radius: 8px;
+    align-content: center;
 }
 </style>

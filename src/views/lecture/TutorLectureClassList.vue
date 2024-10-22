@@ -201,9 +201,9 @@ export default {
             this.showLessonClassList();
 
         }
+    
 
         
-
     },
 
     methods: {
@@ -260,6 +260,7 @@ export default {
        clickLectureHome(lectureGroupId){
         this.$router.push(`/lecture-home/${lectureGroupId}`);
        },
+
        formatPrice(value) {
             if (!value)  return '재능기부';
             

@@ -480,16 +480,13 @@ formatPrice(value) {
 
 
 <style scoped>
-.v-container {
-    position: relative;
-    
+.v-container{
+  width: 70vw;
 }
-
 .contents-section {
     /*display: flex;*/
     justify-content: space-between;
     gap: 20px;
-    height: 1000px;
 }
 
 .float-info {

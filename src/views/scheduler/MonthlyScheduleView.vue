@@ -302,16 +302,13 @@ export default {
         schedulerDate: info.event.startStr.split('T')[0],
         schedulerTime: info.event.startStr.split('T')[1],
         content: info.event.extendedProps.description,
-        alertYn: info.event.extendedProps.alertYn // alertYn 값 추가
+        alertYn: info.event.extendedProps.alertYn || false // alertYn 값 추가
       };
-
-      console.log("hihihihi", info.event.extendedProps)
 
       // 알림 여부를 확인한 후, 알림이 설정된 경우에만 API 요청을 보냄
       if (this.selectedEvent.alertYn === 'Y') {
         try {
           const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/get-alert/${scheduleId}`);
-          console.log("response data", response.data)
           if (response.data && response.data.result) {
             // 받은 알림 정보를 alertInfo에 저장
             this.alertInfo = {
@@ -321,19 +318,19 @@ export default {
               schedulerId: response.data.result.schedulerId // 스케줄 ID
             };
           } else {
-            this.alertInfo = null;
+            this.alertInfo = { reserveDay: null, reserveTime: null };  // 기본값으로 설정
           }
         } catch (error) {
-          this.alertInfo = null;
+          this.alertInfo = { reserveDay: null, reserveTime: null };  // 에러 발생 시 기본값 설정
           console.error('알림 정보를 가져오는 중 오류가 발생했습니다:', error);
         }
       } else {
-        this.alertInfo = null;
+        this.alertInfo = { reserveDay: null, reserveTime: null };  // 알림이 없을 경우 기본값 설정
       }
 
       this.isModalVisible = true;
     },
-
+    
     // 일정 데이터가 모달에서 넘어왔을 때 처리
     async handleScheduleSubmitted(scheduleData) {
       try {

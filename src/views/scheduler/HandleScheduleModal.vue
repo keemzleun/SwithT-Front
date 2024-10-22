@@ -63,6 +63,7 @@
 
 <script>
 import dayjs from 'dayjs';
+
 export default {
   props: {
     selectedDate: {
@@ -72,6 +73,10 @@ export default {
     selectedSchedule: {
       type: Object,
       default: null
+    },
+    alertInfo: {
+      type: Object,
+      default: () => ({ reserveDay: '', reserveTime: '' }) // 기본값 설정
     }
   },
   data() {
@@ -81,10 +86,9 @@ export default {
       schedulerDate: this.selectedSchedule ? this.selectedSchedule.schedulerDate : this.selectedDate,
       schedulerTime: this.selectedSchedule ? this.formatTime(this.selectedSchedule.schedulerTime) : '',
       content: this.selectedSchedule ? this.selectedSchedule.content : '',
-      alertYn: false, // 알림 여부 기본값 설정
+      alertYn: this.selectedSchedule ? this.selectedSchedule.alertYn === 'Y' : false, // 기본 알림 여부 설정
       alertTime: '',
       customAlertTime: '',
-      alertInfo: null, // 알림 정보 객체
       isAlertEditable: false // 알림 수정 모드 여부
     };
   },
@@ -111,17 +115,28 @@ export default {
         content: this.content,
       };
 
-      this.$emit('scheduleSaved', scheduleData);
+      this.$emit('scheduleSaved', scheduleData); // 부모 컴포넌트에 저장된 일정 전송
     },
     onAlertYnChange() {
       if (!this.alertYn) {
         this.isAlertEditable = false;
-        this.alertInfo = null;
         this.alertTime = '';
         this.customAlertTime = '';
       } else {
         this.isAlertEditable = true;
       }
+    },
+    calculateAlertTimeInMinutes() {
+      if (this.alertTime === '1시간 전') {
+        return 60;
+      } else if (this.alertTime === '10분 전') {
+        return 10;
+      } else if (this.customAlertTime) {
+        const [customHour, customMinute] = this.customAlertTime.split(':');
+        const [scheduleHour, scheduleMinute] = this.schedulerTime.split(':');
+        return (scheduleHour - customHour) * 60 + (scheduleMinute - customMinute);
+      }
+      return 0;
     },
     async saveAlertSettings() {
       const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
@@ -134,39 +149,33 @@ export default {
         reserveDay: this.schedulerDate
       };
 
-      this.$emit('saveAlert', alertData);
+      this.$emit('saveAlert', alertData); // 부모 컴포넌트에 알림 데이터 전송
     },
     async cancelAlert() {
       const alertData = { alertId: this.alertInfo?.id };
       if (alertData.alertId) {
-        this.$emit('cancelAlert', alertData);
+        this.$emit('cancelAlert', alertData); // 부모 컴포넌트에 알림 취소 요청 전송
       }
     },
     close() {
-      this.$emit('close');
+      this.$emit('close'); // 모달 닫기 이벤트 발생
       this.isEditable = false;
       this.isAlertEditable = false;
     },
     async fetchAlertInfo() {
-      console.log("Selected Schedule inside fetchAlertInfo:", this.selectedSchedule); // 로그 추가
-      // selectedSchedule의 alertYn 값이 'Y'인지 확인하는 조건 추가
+      console.log("Selected Schedule inside fetchAlertInfo:", this.selectedSchedule);
       if (this.selectedSchedule && (this.selectedSchedule.alertYn === 'Y' || this.selectedSchedule.alertYn === true)) {
         this.alertYn = true;
         console.log("schedulerDate!!!!", this.selectedSchedule);
-        this.alertInfo = {
-          reserveDay: this.selectedSchedule.reserveDay,
-          reserveTime: this.selectedSchedule.reserveTime
-        };
-        console.log("Alert Info set:", this.alertInfo); // 로그 추가
       } else {
-        console.log("No Alert Info Found: alertYn is", this.selectedSchedule.alertYn); // alertYn 값을 확인
+        console.log("No Alert Info Found: alertYn is", this.selectedSchedule.alertYn);
       }
     }
   },
   mounted() {
-    console.log("Mounted Hook Called"); // 로그 추가
+    console.log("Mounted Hook Called");
     if (this.selectedSchedule) {
-      console.log("Selected Schedule on Mount:", this.selectedSchedule); // 로그 추가
+      console.log("Selected Schedule on Mount:", this.selectedSchedule);
       this.fetchAlertInfo();
     }
   }

@@ -1,51 +1,84 @@
 <template>
-    <v-container>
+    <v-container justify="center">
         <v-row justify="center">
             <v-col class="main-title" cols="12" align="center" style="font-size: 28px; font-weight: 700">
                 <p>신청 내역</p>
             </v-col>
         </v-row>
 
-        <v-row>
-            <v-col>
-                <v-row class="header">
-                    <v-col cols="1">순서</v-col>
-                    <v-col cols="2">상태</v-col>
-                    <v-col cols="3">강의명</v-col>
-                    <v-col cols="3">신청날짜</v-col>
-                    <v-col cols="3">결과 처리</v-col>
+        <v-row justify="center">
+            <v-col cols="12" style="max-width: 1300px;">
+                <v-row class="header" style="padding: 0 10px;">
+                    <v-col cols="2" class="text-center">순서</v-col>
+                    <v-col cols="2" class="text-center">상태</v-col>
+                    <v-col cols="3" class="text-center">강의명</v-col>
+                    <v-col cols="2" class="text-center">신청날짜</v-col>
+                    <v-col cols="2" class="text-center ml-5">결과 처리</v-col>
                 </v-row>
             </v-col>
         </v-row>
-        <v-row>
-            <v-col v-if="allLectures.length">
-                <v-row v-for="(lecture, index) in allLectures" :key="lecture.applyId" class="item">
-                    <v-col cols="1">{{ index + 1 }}</v-col>
-                    <v-col cols="2">
+
+        <v-row justify="center">
+            <v-col v-if="allLectures.length" cols="12" style="max-width: 1300px;">
+                <v-row 
+                  v-for="(lecture, index) in allLectures" 
+                  :key="lecture.applyId" 
+                  class="item"
+                  style="padding: 5px 10px;"
+                >
+                    <v-col cols="2" class="text-center">{{ index + 1 + page * size }}</v-col> <!-- 순서에 페이지 값 반영 -->
+                    <v-col cols="2" class="text-center">
                         <span :class="getStatusClass(lecture.status)" style="font-weight: bold;">{{ getStatusText(lecture.status) }}</span>
                     </v-col>
-                    <v-col cols="3" class="lecture-title" @click="goToLectureDetail(lecture.id)">
+                    <v-col cols="3" class="text-center lecture-title" @click="goToLectureDetail(lecture.id)">
                         {{ lecture.title }}
                     </v-col>
-                    <!-- <v-col cols="3" class="lecture-title">{{ lecture.title }}</v-col> -->
-                    <v-col cols="3">{{ formatDate(lecture.createdTime) }}</v-col>
-                    <v-col cols="3">
-                        <!-- 승인 버튼 -->
+                    <v-col cols="2" class="text-center">{{ formatDate(lecture.createdTime) }}</v-col>
+                    <v-col cols="2" class="text-center ml-5">
                         <v-btn color="#82D691" @click="updateLectureStatus(lecture.id, 'ADMIT')"><strong>승인</strong></v-btn>
-                        <!-- 거절 버튼 -->
                         <v-btn color="#6C97FD" class="ml-2" @click="updateLectureStatus(lecture.id, 'REJECT')"><strong>거절</strong></v-btn>
-                      </v-col>
+                    </v-col>
                 </v-row>
-                <div v-if="isLoading" class="text-center">
-                    <v-progress-circular indeterminate color="primary"></v-progress-circular>
-                </div>
             </v-col>
             <v-col v-else>
-                <div style="margin: 20px 0"> 개설 요청된 강의가 없습니다.</div>
+                <div style="margin: 20px 0; text-align: center;"> 개설 요청된 강의가 없습니다.</div>
+            </v-col>
+        </v-row>
+
+        <v-row justify="center" class="mr-2">
+            <v-col cols="auto">
+                <!-- 이전 페이지로 이동하는 클릭 가능한 텍스트 -->
+                <span 
+                    @click="goToPreviousPage" 
+                    :class="{ 'disabled-text': page === 0 }"
+                    style="cursor: pointer; color: #000000;" 
+                    v-if="page !== 0"
+                >
+                    이전
+                </span>
+                <span v-else style="color: #B0BEC5;">이전</span> <!-- 비활성화된 경우 -->
+            </v-col>
+            
+            <v-col cols="auto">
+                <span>{{ page + 1 }} / {{ totalPages }}</span> <!-- 현재 페이지 및 전체 페이지 표시 -->
+            </v-col>
+            
+            <v-col cols="auto">
+                <!-- 다음 페이지로 이동하는 클릭 가능한 텍스트 -->
+                <span 
+                    @click="goToNextPage" 
+                    :class="{ 'disabled-text': page + 1 >= totalPages }" 
+                    style="cursor: pointer; color: #000000;" 
+                    v-if="page + 1 < totalPages"
+                >
+                    다음
+                </span>
+                <span v-else style="color: #B0BEC5;">다음</span> <!-- 비활성화된 경우 -->
             </v-col>
         </v-row>
     </v-container>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -56,37 +89,31 @@ export default {
             allLectures: [],   // 모든 강의 목록
             page: 0,           // 현재 페이지
             size: 10,          // 페이지 당 불러올 강의 수
+            totalPages: 0,     // 전체 페이지 수
             isLoading: false,  // 로딩 상태
-            hasMoreData: true, // 추가 데이터를 불러올 수 있는지 여부
         };
     },
     methods: {
-            // 강의 상태 변경 메서드
-    async updateLectureStatus(id, newStatus) {
-      try {
-        const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/member-service/lectures/${id}/status`, null, {
-          params: {
-            newStatus: newStatus,
-          },
-        });
-
-        if (response.status === 200) {
-          alert("상태 변경 완료");  // 성공 메시지 출력
-          window.location.reload();
-          this.fetchLectures();  // 상태 변경 후 강의 목록을 다시 불러옴
-        }
-      } catch (error) {
-        console.error("상태 변경 실패:", error);
-      }
-    },
+        // 강의 상태 변경 메서드
+        async updateLectureStatus(id, newStatus) {
+            try {
+                const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/member-service/lectures/${id}/status`, null, {
+                    params: { newStatus: newStatus },
+                });
+                if (response.status === 200) {
+                    alert("상태 변경 완료");
+                    this.fetchLectures();  // 상태 변경 후 강의 목록을 다시 불러옴
+                }
+            } catch (error) {
+                console.error("상태 변경:", error);
+            }
+        },
         goToLectureDetail(id) {
-      this.$router.push(`/lecture/${id}`);
-    },
+            this.$router.push(`/lecture/${id}`);
+        },
         // 강의 목록을 서버에서 불러오는 메서드
         async fetchLectures() {
-            if (this.isLoading || !this.hasMoreData) return;  // 이미 로딩 중이거나 더 이상 데이터가 없을 때 중복 요청 방지
             this.isLoading = true;
-            
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/list-of-lecture`, {
                     params: {
@@ -96,26 +123,26 @@ export default {
                     },
                 });
 
-                
-
-                const lectures = response.data.result.content;
-               
-                // 페이지에 데이터가 있으면 추가
-                if (lectures.length) {
-                    this.allLectures.push(...lectures);
-                    this.page += 1;  // 페이지 증가
-                } else {
-                    this.hasMoreData = false;  // 더 이상 데이터가 없음
-                }
-
-                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                console.log(this.allLectures);
-
-
+                this.allLectures = response.data.result.content;
+                this.totalPages = response.data.result.totalPages; // 전체 페이지 수 업데이트
             } catch (error) {
                 console.error("Failed to fetch lectures:", error);
             } finally {
-                this.isLoading = false;  // 로딩 완료
+                this.isLoading = false;
+            }
+        },
+        // 페이지네이션 - 이전 페이지로 이동
+        goToPreviousPage() {
+            if (this.page > 0) {
+                this.page--;
+                this.fetchLectures();
+            }
+        },
+        // 페이지네이션 - 다음 페이지로 이동
+        goToNextPage() {
+            if (this.page + 1 < this.totalPages) {
+                this.page++;
+                this.fetchLectures();
             }
         },
         // 날짜 포맷팅
@@ -146,21 +173,9 @@ export default {
                     return '상태 불명';
             }
         },
-        // 무한 스크롤 이벤트 처리
-        onScroll() {
-            const scrollPosition = window.innerHeight + window.scrollY;
-            const threshold = document.documentElement.offsetHeight - 200;
-            if (scrollPosition >= threshold) {
-                this.fetchLectures();  // 페이지 끝에 도달하면 새로운 데이터 로드
-            }
-        }
     },
     created() {
         this.fetchLectures();  // 컴포넌트가 생성될 때 첫 번째 데이터를 불러옴
-        window.addEventListener('scroll', this.onScroll);  // 스크롤 이벤트 리스너 추가
-    },
-    beforeDestroy() {
-        window.removeEventListener('scroll', this.onScroll);  // 컴포넌트가 소멸될 때 스크롤 이벤트 리스너 제거
     }
 };
 </script>
@@ -186,11 +201,5 @@ export default {
 }
 .status-rejected {
     color: red;
-}
-.status-waiting {
-    color: blue;
-}
-.status-terminate {
-    color: gray;
 }
 </style>

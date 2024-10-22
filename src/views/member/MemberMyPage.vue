@@ -4,9 +4,10 @@
     style="margin-top: 105px;"
     >
       <div class="row">
+        
         <div class="col-md-4">
           <div class="card">
-            <div class="card-body text-center" :style="{ minHeight: '567px' }">
+            <div class="card-body text-center" :style="{ minHeight: cardMinHeight }">
               <img
                 :src=" memberInfo.profileImage || 'https://via.placeholder.com/150'"
                 class="rounded-circle mb-3"
@@ -229,6 +230,16 @@
         isEditing: false, // 수정 모드 상태 추가
       };
     },
+    computed: {
+    cardMinHeight() {
+      if (this.role === 'TUTOR') {
+        return '566px';
+      } else if (this.role === 'TUTEE') {
+        return '470px';
+      }
+      return '470px';
+    }
+  },
     async created() {
       const response = await axios.get(
         `${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`

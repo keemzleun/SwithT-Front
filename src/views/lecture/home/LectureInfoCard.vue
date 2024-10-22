@@ -18,7 +18,8 @@
                 <v-row class="d-flex align-center justify-start">
                     <div class="title mr-2">{{ infoData.title }}</div>
 
-                    <v-icon v-if="isTutor" @click="infoModal = true">mdi-pencil</v-icon>
+                    <v-icon v-if="isTutor" @click="groupEditClick()">mdi-pencil</v-icon>
+                    <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn>
                 </v-row>
 
                 <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()">mdi-chat</v-icon>
@@ -65,26 +66,49 @@
             <v-card-text class="pa-4 pt-0 mt-5">
                 <h4 class="mb-1 ml-6 mr-2"> <strong>강의 그룹 수정 및 삭제</strong> </h4>
                 <!-- 제목  -->
-                <v-row class="d-flex align-center justify-start">
-                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>주소</strong> </h6>
+                <v-row></v-row>
+                <v-divider></v-divider>
+                <v-row class="d-flex align-center justify-start ml-7 mt-5">
+                    <h6 class="d-flex align-center mt-6 mb-1 ml-6 mr-2"> <strong>주소</strong> </h6>
                     <v-btn variant="outlined" @click="updateAddress()" class="align-center mt-3">수정</v-btn>
                 </v-row>
 
-                <div class="mb-2 ml-6 mr-6 mt-6"> {{ address }}</div>
+                <div class="mb-2 ml-15 mr-6 mt-6"> {{ address }}</div>
 
+                <v-row class="d-flex align-center justify-start ml-7 mt-5">
+                    <h6 class="d-flex align-center mt-6 mb-1 ml-6 mr-2"> <strong>가격</strong> </h6>
+                    <v-text-field variant="outlined" v-model="price" class="d-flex align-center"></v-text-field>
+                </v-row>
+
+                <v-row class="d-flex align-center justify-start ml-7 mt-5">
+                    <h6 class="d-flex align-center mt-6 mb-1 ml-6 mr-2"> <strong>인원수</strong> </h6>
+                    <v-text-field variant="outlined" v-model="limitPeople" class="d-flex align-center"></v-text-field>
+                </v-row>
+
+                <v-row class="d-flex align-center justify-start ml-7 mt-5">
+                    <h6 class="d-flex align-center mt-6 mb-1 ml-6 mr-2"> <strong>시작 일자</strong> </h6>
+                    <input class="d-flex align-center mb-2 ml-6 mr-6 mt-3" v-model="startDate" type="date" outlined>
+                </v-row>
+
+                <v-row class="d-flex align-center justify-start ml-7 mt-5">
+                    <h6 class="d-flex align-center mt-6 mb-1 ml-6 mr-2"> <strong>종료 일자</strong> </h6>
+                    <input class="d-flex align-center mb-2 ml-6 mr-6 mt-3" v-model="endDate" type="date" outlined>
+                </v-row>
+
+                        <h6 class="d-flex align-center mt-6 mb-1 ml-13 mr-2"><strong>강의 일정 :</strong> </h6>
+                        <div v-html="lectureSchedules" class="d-flex align-center mt-6 mb-1 ml-13 mr-2 detailInfo"></div>
 
             </v-card-text>
+
             <v-card-actions class="pa-4">
                 <v-row justify="center" class="flex">
-
                     <v-btn variant="outlined" class="cancel-btn mr-3" @click="renewInfo()">취소하기</v-btn>
                     <v-btn variant="outlined" class="delete-btn mr-3" @click="deleteGroup()">삭제하기</v-btn>
                     <v-btn variant="outlined" class="submit-btn" @click="updateInfo()">등록하기</v-btn>
                 </v-row>
-
             </v-card-actions>
-            <v-divider class="mt-2 mb-10"></v-divider>
 
+            <v-divider class="mt-2 mb-10"></v-divider>
         </v-card>
     </v-dialog>
     <!-- <v-card class="custom-card">
@@ -125,12 +149,23 @@ export default {
     data() {
         return {
             mapModal: false,
+            price: 0,
+            limitPeople: 0,
+            startDate: "",
+            endDate: "",
             isLoading: true,
             lectureType: "",
             category: "",
             infoModal: false,
             address: "",
-            lectureGroupId: 0
+            lectureGroupId: 0,
+            days: ['월', '화', '수', '목', '금', '토', '일'],
+            hours: [
+                '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+                '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+                '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
+            ],
+            groupTimes: []
         };
     },
     mounted() {
@@ -138,6 +173,9 @@ export default {
         this.loadKakaoMapScript();
         this.lectureType = this.formattedLectureType();
         this.category = this.formattedCategory();
+        this.price = this.infoData.price
+        this.limitPeople = this.infoData.limitPeople
+
     },
     created() {
         const route = useRoute();
@@ -145,13 +183,20 @@ export default {
         this.isLoading = false;
         this.loadKakaoMapScript();
         this.address = this.infoData.address;
-
+        this.startDate = this.infoData.startDate;
+        this.endDate = this.infoData.endDate;
     },
     watch: {
         infoData: {
             handler() {
                 this.lectureType = this.formattedLectureType();
                 this.category = this.formattedCategory();
+                this.startDate = this.infoData.startDate;
+                this.endDate = this.infoData.endDate;
+                this.address = this.infoData.address;
+                this.price = this.infoData.price
+                this.limitPeople = this.infoData.limitPeople
+                this.groupTimes = this.infoData.lectureGroupTimes
             },
             immediate: true,
             deep: true
@@ -173,6 +218,10 @@ export default {
         async updateInfo() {
             const body = {
                 address: this.address,
+                price: this.price,
+                limitPeople: this.limitPeople,
+                startDate: this.startDate,
+                endDate: this.endDate,
             };
             try {
                 await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/lecture-group/${this.lectureGroupId}`, body)
@@ -180,6 +229,9 @@ export default {
                 alert(e?.response?.data?.error_message)
             }
 
+        },
+        groupEditClick(){
+            this.$router.push(`/lecture-group/${this.lectureGroupId}`);
         },
         clickChatRoom() {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
@@ -200,6 +252,24 @@ export default {
                     default:
                         return this.infoData?.category;
                 }
+            }
+        },
+        changeDay(day) {
+            switch (day) {
+                case 'MONDAY':
+                    return '월요일';
+                case 'TUESDAY':
+                    return '화요일';
+                case 'WEDNESDAY':
+                    return '수요일';
+                case 'THURSDAY':
+                    return '목요일';
+                case 'FRIDAY':
+                    return '금요일';
+                case 'SATURDAY':
+                    return '토요일';
+                case 'SUNDAY':
+                    return '일요일';
             }
         },
         formattedLectureType() {

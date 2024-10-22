@@ -27,11 +27,10 @@
                     <v-col v-if="paymentLectures.length">
                         <v-row v-for="(lecture, index) in paymentLectures" :key="lecture.applyId" class="item">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="6" class="lecture-title">{{ lecture.title }}</v-col>
+                            <v-col cols="6" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
                             <v-col cols="3">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2">
                                 <span :class="getStatusClass(lecture.status)"
-                                      @click="lecture.status === 'WAITING' ? (initiatePayment(),handlePaymentRequest(lecture.applyId)) : null"
                                       :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
                                     {{ getStatusText(lecture.status) }}
                                 </span>
@@ -56,14 +55,13 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col v-if="allLectures.length" >
+                    <v-col v-if="allLectures.length">
                         <v-row v-for="(lecture, index) in allLectures" :key="lecture.applyId" class="item">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="6" class="lecture-title">{{ lecture.title }}</v-col>
+                            <v-col cols="6" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
                             <v-col cols="3">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2" style="font-weight: 700">
                                 <span :class="getStatusClass(lecture.status)"
-                                      @click="lecture.status === 'WAITING' ? (initiatePayment(),handlePaymentRequest(lecture.applyId)) : null"
                                       :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
                                     {{ getStatusText(lecture.status) }}
                                 </span>
@@ -76,26 +74,43 @@
                 </v-row>
             </v-tabs-window-item>
         </v-tabs-window>
+
+        <!-- YesOrNoModal -->
+        <YesOrNoModal
+            v-model:dialog="showPaymentModal"
+            :title="paymentModalTitle"
+            :contents="paymentModalContents"
+            yesBtnName="결제"
+            @confirmed="proceedPayment"
+        />
     </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import YesOrNoModal from "@/components/YesOrNoModal.vue"; // 모달을 불러오기
 import { jwtDecode } from 'jwt-decode'
 
 export default {
+    components: {
+        YesOrNoModal
+    },
     data() {
         return {
             activeTab: 'payment', // 기본 활성 탭 인덱스
             paymentLectures: [], // 결제 요청 강의 목록
             allLectures: [], // 전체 강의 목록
+            showPaymentModal: false, // 모달 표시 여부
+            selectedLecture: null, // 선택된 강의
+            paymentModalTitle: '',
+            paymentModalContents: ''
         };
     },
-    watch:{
-        tab(newTab){
-            if(newTab === 'payment'){
+    watch: {
+        activeTab(newTab) {
+            if(newTab === 'payment') {
                 this.fetchPaymentLectures();
-            }else if(newTab === 'all'){
+            } else if(newTab === 'all') {
                 this.fetchAllLectures();
             }
         }
@@ -104,7 +119,7 @@ export default {
         async fetchPaymentLectures() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list?status=WAITING`);
-                this.paymentLectures = response.data.result.content; // 데이터가 없을 경우를 대비
+                this.paymentLectures = response.data.result.content;
             } catch (error) {
                 console.error("Failed to fetch payment lectures:", error);
             }
@@ -112,7 +127,7 @@ export default {
         async fetchAllLectures() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list?status=`);
-                this.allLectures = response.data.result.content; // 데이터가 없을 경우를 대비
+                this.allLectures = response.data.result.content;
             } catch (error) {
                 console.error("Failed to fetch all lectures:", error);
             }
@@ -154,23 +169,39 @@ export default {
                     return '상태 불명';
             }
         },
+        confirmPayment(lecture) {
+            this.selectedLecture = lecture;
+            this.paymentModalTitle = `${lecture.title} 결제하시겠습니까?`;
+            this.paymentModalContents = "결제를 진행하려면 결제 버튼을 클릭하세요.";
+            this.showPaymentModal = true; // 결제 확인 모달을 엶
+        },
+        async proceedPayment() {
+            this.showPaymentModal = false; // 모달 닫기
+            try {
+                await this.handlePaymentRequest(this.selectedLecture.applyId); // 결제 데이터를 가져옴
+                this.initiatePayment(); // 결제 진행
+            } catch (error) {
+                console.error('결제 요청 중 오류 발생:', error);
+            }
+        },
         async handlePaymentRequest(applyId) {
             try {
-                const lectureApplyId = Number(applyId)
-                this.applyId = lectureApplyId 
+                const lectureApplyId = Number(applyId);
+                this.applyId = lectureApplyId;
 
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/group/${lectureApplyId }`)
-                this.title = response.data.result.lectureName
-                this.price = response.data.result.price
-                console.log('결제 요청 처리 결과:', response.data)
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/group/${lectureApplyId}`);
+                this.title = response.data.result.lectureName;
+                this.price = response.data.result.price;
+
+                console.log('결제 요청 데이터 불러오기 성공:', response.data);
             } catch (error) {
-                console.error('결제 요청 처리 중 오류 발생:', error)
+                console.error('결제 요청 데이터 불러오기 중 오류 발생:', error);
+                throw error; // 결제 데이터 가져오기 실패 시 결제를 진행하지 않음
             }
         },
         initiatePayment() {
-            const IMP = window.IMP  // 아임포트 전역 객체
-            IMP.init("imp00575764") // 아임포트 상점 고유코드로 초기화
-            console.log(jwtDecode(localStorage.getItem('token')).email)
+            const IMP = window.IMP;  // 아임포트 전역 객체
+            IMP.init("imp00575764"); // 아임포트 상점 고유코드로 초기화
 
             const paymentData = {
                 pg: "html5_inicis", // 결제 PG사
@@ -181,28 +212,35 @@ export default {
                 buyer_email: jwtDecode(localStorage.getItem('token')).email,
                 buyer_name: jwtDecode(localStorage.getItem('token')).name,
                 buyer_tel: "",
-            }
-            console.log("payment DATA: "+paymentData)
-            IMP.request_pay(paymentData, this.processPayment) // 결제 요청
+            };
+
+            IMP.request_pay(paymentData, this.processPayment); // 결제 요청
         },
-        async processPayment(rsp){
-            try{
-                this.memberId = localStorage.getItem('id')
-                if(rsp.success) {
+        async processPayment(rsp) {
+            try {
+                this.memberId = localStorage.getItem('id');
+                if (rsp.success) {
                     const data = {
                         impUid: rsp.imp_uid, // 아임포트 거래 고유번호
                         title: this.title,
                         price: this.price,
                         memberId: this.memberId,
                         id: this.applyId
-                    }
-                    console.log(data)
-                    const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/complete`, data)
-                    alert(response.data.responseMessage)
+                    };
+                    console.log(data);
+
+                    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/complete`, data);
+                    alert("결제가 완료되었습니다!");
+
+                    this.removePaymentAlert(this.applyId); // 결제 완료 후 알림 제거
                 }
-            } catch(error){
-                console.log("what's the matter?: "+error)
+            } catch (error) {
+                console.log("결제 처리 중 오류 발생:", error);
             }
+        },
+        removePaymentAlert(applyId) {
+            this.paymentLectures = this.paymentLectures.filter(lecture => lecture.applyId !== applyId);
+            localStorage.setItem('paymentLectures', JSON.stringify(this.paymentLectures)); // localStorage 업데이트
         },
     },
     created() {

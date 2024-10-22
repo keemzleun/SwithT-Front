@@ -2,13 +2,6 @@
   <div class="calendar-wrapper">
     <!-- 작은 캘린더 -->
     <div class="sidebar">
-      <div class="mini-calendar-container">
-        <FullCalendar
-          ref="miniCalendar"
-          :options="miniCalendarOptions"
-        />
-      </div>
-
       <!-- 오늘의 일정 -->
       <div class="today-schedule">
         <h3>오늘의 일정</h3>
@@ -16,7 +9,7 @@
           <li v-for="event in sortedTodayEvents" :key="event.id">{{ event.title }} - {{ formatTime(event.start) }}</li>
         </ul>
       </div>
-      
+
       <!-- 이번 주 알림 일정 -->
       <div class="week-alert-schedule">
         <h3>주간 알림 일정</h3>
@@ -38,16 +31,14 @@
 
     <!-- 메인 캘린더 -->
     <v-container class="calendar-container">
-      <FullCalendar ref="fullCalendar" :options="calendarOptions" class="full-calender"/>
+      <FullCalendar ref="fullCalendar" :options="calendarOptions" class="full-calender" />
       <HandleScheduleModal
         v-if="isModalVisible"
         :selectedDate="selectedDate"
         :selectedSchedule="selectedEvent"
         :alertInfo="alertInfo"
         @close="isModalVisible = false"
-        @scheduleSaved="handleScheduleSaved"
-        @alertSettingsSaved="handleAlertSettingsSaved"
-        @alertCanceled="handleAlertCanceled"
+        @scheduleSaved="handleScheduleSubmitted"
         @scheduleDeleted="handleScheduleDeleted"
       />
     </v-container>
@@ -184,7 +175,6 @@ export default {
         }));
 
         this.$refs.fullCalendar.getApi().addEventSource(holidays); // 메인 캘린더에 추가
-        // this.$refs.miniCalendar.getApi().addEventSource(holidays); // 작은 캘린더에 공휴일 추가
       } catch (error) {
         console.error('공휴일 정보를 가져오는 중 오류가 발생했습니다.', error);
       }
@@ -221,12 +211,14 @@ export default {
             end,
             description: schedule.content,
             classNames: [customClass],
-            extendedProps: { groupId },
+            extendedProps: { 
+              groupId,
+              alertYn: schedule.alertYn
+            },
           };
         }).filter(event => event !== null);
 
         this.$refs.fullCalendar.getApi().addEventSource(events); // 메인 캘린더
-        // this.$refs.miniCalendar.getApi().addEventSource(events); // 작은 캘린더에 일정 추가
       } catch (error) {
         console.error('스케줄을 가져오는 중 오류가 발생했습니다.', error);
       }
@@ -242,7 +234,6 @@ export default {
 
         const today = new Date();
         today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간을 00:00:00으로 설정 (로컬 타임존 기준)
-        console.log("오늘 날짜: " + today);
 
         const allEvents = this.$refs.fullCalendar.getApi().getEvents();
 
@@ -251,8 +242,6 @@ export default {
           eventDate.setHours(0, 0, 0, 0); // 이벤트 날짜도 00:00:00으로 설정 (로컬 타임존 기준)
           return eventDate.getTime() === today.getTime(); // 날짜를 비교하여 일치하는 이벤트만 필터링
         });
-
-        console.log("오늘 일정: ", this.todayEvents); // 필터링된 오늘의 이벤트 로그 출력
       });
     },
 
@@ -265,7 +254,7 @@ export default {
         return eventTime >= startOfWeek && eventTime <= endOfWeek && event.classNames.includes('alert-event');
       });
     },
-    
+
     // 이벤트가 캘린더에 렌더링된 후 실행되는 메서드
     handleEventDidMount(info) {
       const eventElement = info.el;
@@ -306,7 +295,6 @@ export default {
     async handleEventClick(info) {
       // 스케줄 ID 확인
       const scheduleId = info.event.id;
-
       // 클릭한 이벤트 정보를 모달에 전달
       this.selectedEvent = {
         id: scheduleId,
@@ -317,11 +305,13 @@ export default {
         alertYn: info.event.extendedProps.alertYn // alertYn 값 추가
       };
 
+      console.log("hihihihi", info.event.extendedProps)
+
       // 알림 여부를 확인한 후, 알림이 설정된 경우에만 API 요청을 보냄
       if (this.selectedEvent.alertYn === 'Y') {
         try {
           const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/get-alert/${scheduleId}`);
-
+          console.log("response data", response.data)
           if (response.data && response.data.result) {
             // 받은 알림 정보를 alertInfo에 저장
             this.alertInfo = {
@@ -344,77 +334,33 @@ export default {
       this.isModalVisible = true;
     },
 
-    // 새 일정 등록 또는 수정된 일정 저장 후 처리
-    async handleScheduleSaved(savedSchedule) {
+    // 일정 데이터가 모달에서 넘어왔을 때 처리
+    async handleScheduleSubmitted(scheduleData) {
       try {
         if (this.selectedEvent) {
-          await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${this.selectedEvent.id}/update`, savedSchedule);
-          const eventApi = this.$refs.fullCalendar.getApi().getEventById(this.selectedEvent.id);
-          if (eventApi) {
-            eventApi.remove();
-          }
-
-          const updatedEvent = {
-            id: this.selectedEvent.id,
-            title: savedSchedule.title,
-            start: `${savedSchedule.schedulerDate}T${savedSchedule.schedulerTime}`,
-            end: `${savedSchedule.schedulerDate}T${savedSchedule.schedulerTime}`,
-            description: savedSchedule.content,
-            allDay: false,
-          };
-          this.$refs.fullCalendar.getApi().addEvent(updatedEvent);
+          // 일정 수정 처리
+          await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${this.selectedEvent.id}/update`, scheduleData);
         } else {
-          const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/make`, savedSchedule);
-
-          const newEvent = {
-            id: response.data.id,
-            title: savedSchedule.title,
-            start: `${savedSchedule.schedulerDate}T${savedSchedule.schedulerTime}`,
-            end: `${savedSchedule.schedulerDate}T${savedSchedule.schedulerTime}`,
-            description: savedSchedule.content,
-            allDay: false,
-          };
-          this.$refs.fullCalendar.getApi().addEvent(newEvent);
+          // 새 일정 등록 처리
+          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/make`, scheduleData);
         }
 
         this.isModalVisible = false;
+        await this.refreshCalendarEvents(); // 일정 새로고침
+        console.log("Schedule saved and calendar refreshed.");
       } catch (error) {
-        console.error('일정 저장 중 오류가 발생했습니다.', error);
-      }
-    },
-
-    // 알림 설정만 처리
-    async handleAlertSettingsSaved(alertData) {
-      try {
-        if (alertData.scheduleId) {
-          await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/update-alert`, alertData);
-          await this.refreshCalendarEvents();
-        }
-        console.log('알림 설정이 저장되었습니다.');
-      } catch (error) {
-        console.error('알림 설정 저장 중 오류가 발생했습니다.', error);
-      }
-    },
-
-    // 알림 취소 처리
-    async handleAlertCanceled(alertData) {
-      try {
-        if (alertData.alertId) {
-          await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/cancel-alert/${alertData.alertId}`);
-          await this.refreshCalendarEvents();
-        }
-        console.log('알림이 취소되었습니다.');
-      } catch (error) {
-        console.error('알림 취소 중 오류가 발생했습니다.', error);
+        console.error('Error during schedule saving process:', error);
       }
     },
 
     // 일정 삭제 처리
-    async handleScheduleDeleted() {
+    async handleScheduleDeleted(scheduleId) {
       try {
-        if (this.selectedEvent) {
-          await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${this.selectedEvent.id}/delete`);
-          await this.refreshCalendarEvents();
+        if (scheduleId) {
+          const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${scheduleId}/delete`);
+          console.log(response.data);
+          alert(response.data.status_message);
+          await this.refreshCalendarEvents(); // 일정 삭제 후 캘린더 새로고침
         }
         this.isModalVisible = false;
       } catch (error) {
@@ -448,40 +394,8 @@ export default {
   justify-content: flex-start;
 }
 
-::v-deep .mini-calendar-container {
-  margin-top: 25%;
-  margin-bottom: 20px;
+::v-deep .fc-media-screen fc-direction-ltr fc-theme-standard {
   height: 800px;
-}
-
-::v-deep .fc-media-screen fc-direction-ltr fc-theme-standard{
-  height: 800px;
-}
-
-::v-deep .mini-calendar-container .fc-header-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-::v-deep .mini-calendar-container .fc-toolbar-title {
-  margin-top: 10%;
-  font-size: 20px;
-}
-
-::v-deep .mini-calendar-container .fc-prev-button,
-::v-deep .mini-calendar-container .fc-next-button {
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #000;
-}
-
-::v-deep .mini-calendar-container .fc-col-header-cell-cushion {
-  color: #000;
-  font-size: 12px;
-  padding: 5px 0;
 }
 
 /* 메인 캘린더 */
@@ -540,12 +454,13 @@ export default {
 ::v-deep .fc-next-button:hover {
   color: #000;
 }
-::v-deep .fc-daygrid-day-number{
+
+::v-deep .fc-daygrid-day-number {
   color: #000;
   text-decoration: none;
 }
 
-::v-deep .fc-col-header-cell-cushion{
+::v-deep .fc-col-header-cell-cushion {
   color: #000;
   text-decoration: none;
 }

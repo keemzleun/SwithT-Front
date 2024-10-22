@@ -1,6 +1,7 @@
 <template>
     <!-- Lecture Info Card 컴포넌트 -->
-    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules" :isShowMap="isShowMap" />
+    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules"
+        :isShowMap="isShowMap" />
 
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
@@ -282,12 +283,14 @@
                     <h4 class="mb-1 ml-6 mr-2"> <strong>과제 생성</strong> </h4>
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-8 mr-2"> 제목 </h4>
-                    <div class="mb-2 ml-8 mr-2">{{this.assignmentTitle}}</div>
+                    <div class="mb-2 ml-8 mr-2">{{ this.assignmentTitle }}</div>
                     <h4 class="mb-1 ml-8 mr-2"> 내용 </h4>
-                    <div class="mb-2 ml-8 mr-2">{{this.assignmentContent}}</div>
+                    <div class="mb-2 ml-8 mr-2">{{ this.assignmentContent }}</div>
                     <h4 class="mb-1 ml-8 mr-2"> 제출 일자 </h4>
-                    <div class="mb-2 ml-8 mr-2">{{this.assignmentDate?.split('T')[0]}} {{this.assignmentDate?.split('T')[1]}}</div>
-  
+                    <div class="mb-2 ml-8 mr-2">{{ this.assignmentDate?.split('T')[0] }}
+                        {{ this.assignmentDate?.split('T')[1] }}
+                    </div>
+
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -348,14 +351,15 @@
                     </v-radio-group>
                     <!-- 제목  -->
                     <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
-                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-8 mr-2"></v-text-field>
+                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs"
+                        variant="outlined" class="mb-2 ml-8 mr-2"></v-text-field>
                     <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
                         class="mb-2 ml-8 mr-2"></v-textarea>
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeCreateModal = false" class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" @click="noticeCreateModal = false"
+                            class="cancel-btn mr-3">취소하기</v-btn>
                         <v-btn variant="outlined" class="submit-btn" @click="noticeCreate()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
@@ -376,8 +380,8 @@
                     </v-radio-group>
                     <!-- 제목  -->
                     <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
-                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs" variant="outlined"
-                        class="mb-2 ml-8 mr-2"></v-text-field>
+                    <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs"
+                        variant="outlined" class="mb-2 ml-8 mr-2"></v-text-field>
                     <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
                         class="mb-2 ml-8 mr-2"></v-textarea>
                 </v-card-text>
@@ -410,25 +414,25 @@
                     <h4 class="mt-6 mb-1 ml-6 mr-2">댓글</h4>
                     <v-row v-for="comment in comments" :key="comment.id">
                         <!-- <v-col v-for="comment in comments" :key="comment.id"> -->
-                            <!-- <v-card class="pa-3 mb-2"> -->
-                                <!-- <v-row> -->
-                                <div class="mb-4 ml-7 mr-2 mt-2 px-3">
-                                    <strong>{{ comment.memberName }}</strong>
-                                    <span class="ml-2">{{ comment.contents }}</span>
-                                </div>
-                                <div class="align-center mt-1">
-                                <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
-                                <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
-                            </div>
-                            <!-- </v-row> -->
-                            <!-- </v-card> -->
+                        <!-- <v-card class="pa-3 mb-2"> -->
+                        <!-- <v-row> -->
+                        <div class="mb-4 ml-7 mr-2 mt-2 px-3">
+                            <strong>{{ comment.memberName }}</strong>
+                            <span class="ml-2">{{ comment.contents }}</span>
+                        </div>
+                        <div class="align-center mt-1">
+                            <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
+                            <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
+                        </div>
+                        <!-- </v-row> -->
+                        <!-- </v-card> -->
                         <!-- </v-col> -->
                     </v-row>
                     <v-pagination v-model="commentPage" :length="commentPages"
-                    @click="handleCommentPageChange()"></v-pagination>
+                        @click="handleCommentPageChange()"></v-pagination>
                     <!-- 댓글 입력 폼 -->
                     <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
-                    <h4 class="mt-6 mb-1 ml-6 mr-2" v-else >댓글 작성 </h4>
+                    <h4 class="mt-6 mb-1 ml-6 mr-2" v-else>댓글 작성 </h4>
                     <v-textarea class="mb-1 ml-6 mr-2" v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
                     <v-btn class="ml-6" @click="submitComment">댓글 등록</v-btn>
                 </v-card-text>
@@ -470,8 +474,8 @@ export default {
             noticePage: 1,
             assignmentPages: 0,
             assignmentPage: 1,
-            commentPage:0,
-            commentPages:1,
+            commentPage: 0,
+            commentPages: 1,
             infoData: {
                 category: "",
                 chatRoomId: 0,
@@ -533,7 +537,7 @@ export default {
             mapModal: false,
             urgentAssignment: [],
             isDataLoaded: false,
-            isCommentEdit:false,
+            isCommentEdit: false,
         };
     },
     mounted() {
@@ -710,6 +714,8 @@ export default {
             this.commentId = comment.id;
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
             console.log(response)
+            await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
+
         },
         renewNotice() {
             this.isNotice = false;
@@ -729,8 +735,16 @@ export default {
                 type
             }
             const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body)
-
-            console.log(response)
+            if (response) {
+                let params = {
+                    size: this.size,
+                    page: this.page,
+                };
+                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+                this.notices = noticeResponse?.data?.result?.content;
+                this.noticeCreateModal = false;
+                this.renewNotice();
+            }
 
         },
         // 과제 CRUD 메서드
@@ -745,9 +759,6 @@ export default {
         },
         async submitAssignmentCreate() {
             try {
-                console.log(this.assignmentTitle)
-                console.log(this.assignmentDate)
-                console.log(this.assignmentContent)
                 const endDate = this.assignmentDate.split('T')[0];
                 const endTime = this.assignmentDate.split('T')[1];
                 const body = {
@@ -757,8 +768,13 @@ export default {
                     endTime
                 }
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body)
-                console.log(response);
-                this.renewAssignment();
+
+                if (response) {
+                    const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
+                    this.assignments = assignmentResponse?.data?.result?.content;
+                    this.assignmentCreateModal = false;
+                    this.renewAssignment();
+                }
             }
             catch (e) {
                 console.log(e);
@@ -776,7 +792,7 @@ export default {
         async updateAssignmentOpen(id) {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentUpdateModal = true;
-            
+
             this.assignmentTitle = getResponse?.data?.result?.title;
             this.assignmentContent = getResponse?.data?.result?.contents;
             this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
@@ -800,10 +816,11 @@ export default {
                     body
                 );
                 // 응답이 성공적이면 새로고침
-                if (response && response.status === 200) {
-                    console.log('Update successful:', response);
+                if (response) {
+                    await this.fetchAssignments();  // 리스트 갱신
                     this.renewAssignment();
-                    await this.fetchAssignments();
+                    this.assignmentUpdateModal = false;
+
                 } else {
                     console.error('Update failed:', response);
                 }
@@ -818,9 +835,12 @@ export default {
         },
         async deleteAssignments() {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
-            console.log(response);
+            if (response) {
+                await this.fetchAssignments();  // 리스트 갱신
+                this.renewAssignment();
+                this.assignmentUpdateModal = false;
+            }
             this.renewAssignment();
-            window.location.reload()
         },
 
         changeDay(day) {
@@ -864,7 +884,7 @@ export default {
             console.log(getResponse)
             this.noticeTitle = getResponse?.data?.result?.title;
             this.noticeContent = getResponse?.data?.result?.contents;
-            if(getResponse?.data?.result?.type === "POST") this.isNotice = false;
+            if (getResponse?.data?.result?.type === "POST") this.isNotice = false;
             else this.isNotice = true;
             this.noticeUpdateModal = true;
             this.noticeId = item.id;
@@ -880,14 +900,28 @@ export default {
                 type
             }
             const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${this.noticeId}`, body)
-            console.log(response)
-
+            if (response) {
+                let params = {
+                    size: this.size,
+                    page: this.page,
+                };
+                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+                this.notices = noticeResponse?.data?.result?.content;
+                this.noticeUpdateModal = false;
+            }
             this.renewNotice();
 
         },
         async deleteItem(item) {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}/delete`)
-            console.log(response)
+            if (response) {
+                let params = {
+                    size: this.size,
+                    page: this.page,
+                };
+                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+                this.notices = noticeResponse?.data?.result?.content;
+            }
             this.renewNotice();
         },
 

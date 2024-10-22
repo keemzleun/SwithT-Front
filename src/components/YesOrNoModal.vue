@@ -20,34 +20,32 @@
                 </v-row>
 
             </v-card-text>
-                
-
         </v-card>
     </v-dialog>
-
-
 </template>
+
 <script>
 export default {
     props:['icon', 'title', 'contents', 'yesBtnName'],
     data() {
         return {
+            noticeCreateModal: this.dialog
+        }
+    },
+    watch: {
+        dialog(val) {
+            this.noticeCreateModal = val;
         }
     },
     methods: {
-        clickYes(){
+        clickYes() {
             this.$emit('confirmed');
-
         },
-        
         closeModal() {
             this.$emit('update:dialog', false)
         }
-    },
-
-
+    }
 }
-
 </script>
 
 <style scoped>

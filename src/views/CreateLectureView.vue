@@ -583,6 +583,7 @@ export default {
         console.log(formData);
         if (response.status === 200) {
           this.showSnackbar('강의가 성공적으로 생성되었습니다!', 'success');
+          window.location.href = "/tutor-applied-list";
         }
       } catch (e) {
         console.error('강의 생성 중 오류 발생:', e);

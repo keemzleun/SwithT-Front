@@ -27,7 +27,7 @@
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate }}</div>
                 <div class="detailInfo">강의 일정 : </div>
                 <div v-html="lectureSchedules" class="detailInfo"></div>
-                <div class="detailInfo">위치 : {{ infoData.address }} <v-icon @click="showMap()">mdi-google-maps</v-icon>
+                <div class="detailInfo">위치 : {{ infoData.address }} {{infoData.detailAddress}}<v-icon @click="showMap()">mdi-google-maps</v-icon>
                 </div>
 
             </v-col>
@@ -158,6 +158,7 @@ export default {
             category: "",
             infoModal: false,
             address: "",
+            detailAddress:"",
             lectureGroupId: 0,
             days: ['월', '화', '수', '목', '금', '토', '일'],
             hours: [
@@ -183,6 +184,7 @@ export default {
         this.isLoading = false;
         this.loadKakaoMapScript();
         this.address = this.infoData.address;
+        this.detailAddress=this.infoData.detailAddress;
         this.startDate = this.infoData.startDate;
         this.endDate = this.infoData.endDate;
     },
@@ -194,6 +196,7 @@ export default {
                 this.startDate = this.infoData.startDate;
                 this.endDate = this.infoData.endDate;
                 this.address = this.infoData.address;
+                this.detailAddress=this.infoData.detailAddress;
                 this.price = this.infoData.price
                 this.limitPeople = this.infoData.limitPeople
                 this.groupTimes = this.infoData.lectureGroupTimes

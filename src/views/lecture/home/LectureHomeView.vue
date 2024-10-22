@@ -483,6 +483,7 @@ export default {
                 image: "",
                 limitPeople: null,
                 address: "",
+                detailAddress:"",
                 price:0,
                 memberName: "",
                 startDate: "",
@@ -562,6 +563,7 @@ export default {
         this.infoData.endDate = data.endDate;
         this.infoData.title = data.title;
         this.infoData.address = data.address;
+        this.infoData.detailAddress=data.detailAddress;
         this.infoData.totalDayCount = data.totalDayCount;
         this.infoData.pastDayCount = data.pastDayCount;
         this.isDataLoaded = true;

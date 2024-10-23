@@ -146,9 +146,9 @@
                   v-if="review.writerId.toString() === currentUser.id" 
                   color="#82D691"
                   @click="openEditModal(review)"
-                  class="edit-btn mb-6 mr-5"
+                  class="edit-btn mb-6 mr-10"
                 >
-                  수정
+                  수정하기
                 </v-btn>
               </v-row>
             </v-col>

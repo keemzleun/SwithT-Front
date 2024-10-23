@@ -242,7 +242,11 @@ export default {
         },
         removePaymentAlert(applyId) {
             this.paymentLectures = this.paymentLectures.filter(lecture => lecture.applyId !== applyId);
-            localStorage.setItem('paymentLectures', JSON.stringify(this.paymentLectures)); // localStorage 업데이트
+            let paymentEvents = JSON.parse(localStorage.getItem('paymentEvents')) || [];
+            
+            paymentEvents = paymentEvents.filter(event => event.contents !== applyId.toString());
+            
+            localStorage.setItem('paymentEvents', JSON.stringify(paymentEvents));
         },
     },
     created() {

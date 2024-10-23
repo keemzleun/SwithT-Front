@@ -21,26 +21,47 @@
         <v-tabs-window-item value="tutor" >
         <!-- 튜터 로그인 -->
         <v-form @submit.prevent="doLogin" class="pa-4">
-          <v-text-field
-            label="이메일"
-            v-model="email"
-            type="email"
-            solo
-            required
-            hide-details
-          ></v-text-field>
-          <v-text-field
-            label="비밀번호"
-            v-model="password"
-            type="password"
-            solo
-            required
-            hide-details
-          ></v-text-field>
           
-          <v-btn color="#6C97FD" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
+          <v-row class="mt-0 mr-2">
+            
+            <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
+              person_outline
+              </span>
+
+              <v-text-field
+              clearable
+              variant="outlined"
+              label="Email"
+              v-model="email"
+              type="email"
+              solo
+              required
+              hide-details
+            ></v-text-field>
+          </v-row>
+
+          <v-row class="mr-2 mt-3">
+            <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
+              password
+              </span>
+              <v-text-field
+              clearable
+              class="mt-2"
+              variant="outlined"
+                label="Password"
+                v-model="password"
+                type="password"
+                solo
+                required
+                hide-details
+              ></v-text-field>
+          </v-row>
+
+
+          <v-btn color="#6C97FD" class="mx-auto mt-5 ml-5" large style="width: 662px; " type="submit">
             로그인
           </v-btn>
+
         </v-form>
         <div class="text-center" style="margin-top: 20px;">
           <a href="/member/email/register/tutor">TUTOR 회원가입</a>
@@ -50,23 +71,43 @@
         <v-tabs-window-item>
           <!-- 튜티 로그인 -->
           <v-form @submit.prevent="doLogin" class="pa-4">
-            <v-text-field
-              label="아이디"
-              v-model="email"
-              type="email"
-              solo
-              required
-              hide-details
-            ></v-text-field>
-            <v-text-field
-              label="비밀번호"
-              v-model="password"
-              type="password"
-              solo
-              required
-              hide-details
-            ></v-text-field>
-            <v-btn color="#6C97FD" class="mx-auto mt-3 mr-1" large style="width: 700px; " type="submit">
+            <v-row class="mt-0 mr-2">
+            
+              <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
+                person_outline
+                </span>
+  
+                <v-text-field
+                clearable
+                variant="outlined"
+                label="Email"
+                v-model="email"
+                type="email"
+                solo
+                required
+                hide-details
+              ></v-text-field>
+            </v-row>
+  
+            <v-row class="mr-2 mt-3">
+              <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
+                password
+                </span>
+                <v-text-field
+                clearable
+                class="mt-2"
+                variant="outlined"
+                  label="Password"
+                  v-model="password"
+                  type="password"
+                  solo
+                  required
+                  hide-details
+                ></v-text-field>
+            </v-row>
+  
+  
+            <v-btn color="#6C97FD" class="mx-auto mt-5 ml-5" large style="width: 662px; " type="submit">
               로그인
             </v-btn>
           </v-form>

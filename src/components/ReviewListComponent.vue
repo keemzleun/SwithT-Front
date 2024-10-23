@@ -48,16 +48,16 @@
     <v-row justify="start" class="ml-8">
       <!-- 정렬 버튼 -->
       <v-btn-toggle v-model="selectedSort" class="mb-4">
-        <v-btn @click="setSort('createdTime', 'DESC')" style="font-size: 18px"
+        <v-btn @click="setSort('createdTime', 'DESC')" style="font-size: 15px"
           ><strong>최신순</strong></v-btn
         >
-        <v-btn @click="setSort('createdTime', 'ASC')" style="font-size: 18px"
+        <v-btn @click="setSort('createdTime', 'ASC')" style="font-size: 15px"
           ><strong>오래된순</strong></v-btn
         >
-        <v-btn @click="setSort('star', 'DESC')" style="font-size: 18px"
+        <v-btn @click="setSort('star', 'DESC')" style="font-size: 15px"
           ><strong>평점 높은순</strong></v-btn
         >
-        <v-btn @click="setSort('star', 'ASC')" style="font-size: 18px"
+        <v-btn @click="setSort('star', 'ASC')" style="font-size: 15px"
           ><strong>평점 낮은순</strong></v-btn
         >
       </v-btn-toggle>

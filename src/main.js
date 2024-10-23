@@ -10,7 +10,6 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import '@mdi/font/css/materialdesignicons.css'
 import { useKakao } from 'vue3-kakao-maps/@utils';
 import 'font-awesome/css/font-awesome.css';
-
 const app = createApp(App);
 
 axios.interceptors.request.use(
@@ -29,7 +28,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => response,
   async error => {
-      if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 500 || error.response.status === 401) {
           
           const refreshToken = localStorage.getItem('refreshToken');
           

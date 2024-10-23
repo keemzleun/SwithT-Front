@@ -24,7 +24,7 @@
           
           <v-row class="mt-0 mr-2">
             
-            <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
+            <span class="material-icons mt-4 mr-4" style="font-size: 36px;">
               person_outline
               </span>
 
@@ -41,8 +41,8 @@
           </v-row>
 
           <v-row class="mr-2 mt-3">
-            <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
-              password
+            <span class="material-icons mt-4 mr-4" style="font-size: 36px;">
+              lock_outline
               </span>
               <v-text-field
               clearable
@@ -58,12 +58,12 @@
           </v-row>
 
 
-          <v-btn color="#6C97FD" class="mx-auto mt-5 ml-5" large style="width: 662px; " type="submit">
+          <v-btn color="#6C97FD" class="mx-auto mt-5 ml-8" large style="width: 655px; " type="submit">
             로그인
           </v-btn>
 
         </v-form>
-        <div class="text-center" style="margin-top: 20px;">
+        <div class="text-center" style="margin-top: 20px; ">
           <a href="/member/email/register/tutor">TUTOR 회원가입</a>
         </div>
         </v-tabs-window-item>
@@ -73,7 +73,7 @@
           <v-form @submit.prevent="doLogin" class="pa-4">
             <v-row class="mt-0 mr-2">
             
-              <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
+              <span class="material-icons mt-4 mr-4" style="font-size: 36px;">
                 person_outline
                 </span>
   
@@ -90,8 +90,8 @@
             </v-row>
   
             <v-row class="mr-2 mt-3">
-              <span class="material-icons mt-3 mr-2" style="font-size: 36px;">
-                password
+              <span class="material-icons mt-4 mr-4" style="font-size: 36px;">
+                lock_outline
                 </span>
                 <v-text-field
                 clearable
@@ -107,7 +107,7 @@
             </v-row>
   
   
-            <v-btn color="#6C97FD" class="mx-auto mt-5 ml-5" large style="width: 662px; " type="submit">
+            <v-btn color="#6C97FD" class="mx-auto mt-5 ml-5" large style="width: 660px; " type="submit">
               로그인
             </v-btn>
           </v-form>
@@ -176,7 +176,7 @@ export default {
 <style scoped>
 .v-btn {
   font-weight: bold;
-  border-radius: 20px;
+  border-radius: 8px;
 }
 .v-text-field input {
   border-radius: 10px;

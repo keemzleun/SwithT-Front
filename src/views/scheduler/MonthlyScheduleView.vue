@@ -309,9 +309,9 @@ export default {
     },
 
     // 일정 데이터가 모달에서 넘어왔을 때 처리
-    async handleScheduleSubmitted(scheduleData) {
+    async handleScheduleSubmitted({scheduleData, alertData}) {
       try {
-        console.log("AlertData Parent Component", this.alertData)
+        console.log("AlertData Parent Component", this.dataToSend)
         let response;
         if (this.selectedEvent) {
           // 일정 수정 처리
@@ -320,19 +320,18 @@ export default {
           // 새 일정 등록 처리
           response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/make`, scheduleData);
         }
-
         // 스케줄 저장 후 반환된 ID를 알림 데이터에 사용
-        const savedScheduleId = response.data.result?.id || this.selectedEvent.id;
-
-        // 알림 데이터가 있는 경우 알림 저장 처리
-        if (this.alertData) {
-          this.alertData.scheduleId = savedScheduleId; // 알림 데이터에 스케줄 ID 설정
-          await this.saveAlertData(this.alertData); // 알림 저장
+        const savedScheduleId = response.data.result || this.selectedEvent.id;
+        console.log(console.log("alertData", alertData))
+        console.log("scheudleID",savedScheduleId)
+        if (alertData) {
+          alertData.scheduleId = savedScheduleId; // 알림 데이터에 스케줄 ID 설정
+          console.log("alertData", alertData)
+          await this.handleCreateAlert(alertData); // 알림 저장
         }
 
         this.isModalVisible = false;
         await this.refreshCalendarEvents(); // 일정 새로고침
-        console.log("Schedule and Alert saved, calendar refreshed.");
       } catch (error) {
         console.error('Error during schedule saving process:', error);
       }

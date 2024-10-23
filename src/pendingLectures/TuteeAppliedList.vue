@@ -192,6 +192,7 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/group/${lectureApplyId}`);
                 this.title = response.data.result.lectureName;
                 this.price = response.data.result.price;
+                this.groupId = response.data.result.groupId;
 
                 console.log('결제 요청 데이터 불러오기 성공:', response.data);
             } catch (error) {
@@ -225,6 +226,7 @@ export default {
                         title: this.title,
                         price: this.price,
                         memberId: this.memberId,
+                        lectureGroupId: this.groupId,
                         id: this.applyId
                     };
                     console.log(data);
@@ -240,7 +242,11 @@ export default {
         },
         removePaymentAlert(applyId) {
             this.paymentLectures = this.paymentLectures.filter(lecture => lecture.applyId !== applyId);
-            localStorage.setItem('paymentLectures', JSON.stringify(this.paymentLectures)); // localStorage 업데이트
+            let paymentEvents = JSON.parse(localStorage.getItem('paymentEvents')) || [];
+            
+            paymentEvents = paymentEvents.filter(event => event.contents !== applyId.toString());
+            
+            localStorage.setItem('paymentEvents', JSON.stringify(paymentEvents));
         },
     },
     created() {

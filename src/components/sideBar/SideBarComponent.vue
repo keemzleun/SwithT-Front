@@ -95,6 +95,20 @@
         eventId: "",
       };
     },
+    watch:{
+      paymentEvents: {
+        handler() {
+          this.setAlertCount();
+        },
+        deep: true, // 배열 내부의 요소 변화를 감지
+      },
+      generalEvents: {
+        handler() {
+          this.setAlertCount();
+        },
+        deep: true, // 배열 내부의 요소 변화를 감지
+      },
+    },
     async created() {
       await this.getMyInfo();
       const token = localStorage.getItem('token');
@@ -253,6 +267,9 @@
         }
   
         this.alertDialogSSE = false;
+      },
+      setAlertCount() {
+        this.count = this.paymentEvents.length + this.generalEvents.length;
       },
       selectTab(tab) {
         this.selectedTab = tab;

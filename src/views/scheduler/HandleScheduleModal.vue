@@ -108,6 +108,7 @@ export default {
     },
     enableAlertEdit() {
       this.isAlertEditable = true; // 알림 수정 또는 생성 모드 활성화
+      this.alertYn = true;
     },
     async handleSubmit() {
       const scheduleData = {
@@ -117,7 +118,16 @@ export default {
         content: this.content,
       };
 
-      this.$emit('scheduleSaved', scheduleData); // 부모 컴포넌트에 저장된 일정 전송
+      const dataToSend = { 
+        scheduleData,
+        alertData: this.alertYn ? {
+          scheduleId: this.selectedSchedule?.id || null,
+          reserveDay: this.schedulerDate,
+          reserveTime: this.schedulerTime,
+        } : null 
+      };
+      console.log('scheduleSaved', dataToSend)
+      this.$emit('scheduleSaved', dataToSend); // 부모 컴포넌트에 저장된 일정 전송
     },
     calculateAlertTimeInMinutes() {
       if (this.alertTime === '1시간 전') {

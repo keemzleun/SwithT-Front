@@ -1,10 +1,10 @@
 <template>
     <v-row justify="center" class="mb-1">
-      <v-col cols="4" class="text-center mt-6">
-        <h3 class="mt-5"><strong>사용자 총 평점</strong></h3>
+      <v-col cols="auto" class="text-center mt-6">
+        <h4 class="mt-16"><strong>사용자 총 평점</strong></h4>
         <v-row class="ml-2 mt-5">
-          <v-col cols="auto" v-for="n in 5" :key="n" class="pa-0 ml-4">
-            <v-icon :color="n <= averageRating ? 'red' : 'grey'" size="40">
+          <v-col cols="1" v-for="n in 5" :key="n" class="pa-0 ml-4">
+            <v-icon :color="n <= averageRating ? 'red' : 'grey'" size="30">
               {{ n <= averageRating ? "mdi-star" : "mdi-star-outline" }}
             </v-icon>
           </v-col>
@@ -14,12 +14,12 @@
         </h3>
       </v-col>
 
-      <v-col cols="3" class="text-center mt-11">
-        <h3><strong>전체 리뷰 수</strong></h3>
+      <v-col cols="3" class="text-center mt-16  ">
+        <h4 class="mt-5"><strong>전체 리뷰 수</strong></h4>
         <v-icon
           color="blue-grey-darken-3s"
           icon="mdi-message-text"
-          style="font-size: 80px"
+          style="font-size: 60px"
           class="mt-5"
         ></v-icon>
         <p class="text-h4">
@@ -27,8 +27,8 @@
         </p>
       </v-col>
 
-      <v-col cols="5">
-        <h3 class="text-center mb-3 mt-10"><strong>평점 비율</strong></h3>
+      <v-col cols="4">
+        <h4 class="text-center mb-3 mt-10"><strong>평점 비율</strong></h4>
         <v-row v-for="n in 5" :key="n" align="center" class="mb-1">
           <v-col cols="2">{{ n }}점</v-col>
           <v-col cols="8">
@@ -45,7 +45,7 @@
 
     <v-divider></v-divider>
 
-    <v-row justify="start">
+    <v-row justify="start" class="ml-8">
       <!-- 정렬 버튼 -->
       <v-btn-toggle v-model="selectedSort" class="mb-4">
         <v-btn @click="setSort('createdTime', 'DESC')" style="font-size: 18px"
@@ -63,7 +63,7 @@
       </v-btn-toggle>
     </v-row>
 
-    <v-row class="mt-15" justify="center">
+    <v-row class="mt-15 ml-10" justify="center">
       <v-row justify="center">
         <v-col
           cols="12"
@@ -73,19 +73,21 @@
           justify="center"
         >
           <v-row align="center">
-            <v-col cols="1" class="d-flex flex-column align-start">
-              <v-avatar size="80" class="mb-5">
-                <v-img
-                  :src="
-                    review.profileImage || 'https://via.placeholder.com/150'
-                  "
-                  alt="Profile"
-                ></v-img>
-              </v-avatar>
-              <v-row class="mb-3 ml-4">{{ review.name }}</v-row>
+            <v-col cols="2" class="d-flex flex-column align-center justify-center">
+              <v-row class="d-flex justify-center">
+                <v-avatar size="100" class="mb-5">
+                  <v-img
+                    :src="review.profileImage || 'https://via.placeholder.com/150'"
+                    alt="Profile"
+                  ></v-img>
+                </v-avatar>
+              </v-row>
+              <v-row class="mb-3 d-flex justify-center">
+                {{ review.name }}
+              </v-row>
             </v-col>
 
-            <v-col class="review-detail ml-3 mb-10" cols="8">
+            <v-col class="review-detail ml-0 mb-10" cols="8">
               <v-row no-gutters style="padding: 0">
                 <v-col cols="auto" v-for="n in 5" :key="n">
                   <v-icon color="red" v-if="n <= review.star">mdi-star</v-icon>

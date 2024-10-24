@@ -218,9 +218,10 @@ export default {
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
-        axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/upload`, formData)
+        axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/imageUpdate`, formData)
           .then(response => {
             this.memberInfo.profileImage = response.data.url;
+            window.location.reload();
             alert("프로필 이미지가 업로드 되었습니다.");
           })
           .catch(error => {

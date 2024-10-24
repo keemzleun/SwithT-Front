@@ -108,7 +108,7 @@
                     <v-card-text>
                         <v-row justify="end" class="mr-6">
                             <v-col cols="5" class="mr-5"><v-btn rounded color="#90CDFF"
-                                    @click="assignmentCreateModal = true"
+                                    @click="renewAssignment(); assignmentCreateModal = true;"
                                     v-if="this.istutor"><v-icon>mdi-plus</v-icon></v-btn></v-col>
                         </v-row>
 
@@ -147,8 +147,13 @@
             </v-tabs-window-item>
             <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
-                <v-row justify="end">
-                    <v-col class="mr-5" cols="5"><v-btn rounded color="#90CDFF"
+                <v-row justify="space-between">
+                    <v-col class="ml-5" cols="5">
+                        <v-btn :class="onlyNotice ? 'active' : 'inactive'" rounded @click="onlyNotice = !onlyNotice; onlyNoticeClick();">
+                            공지사항만 보기
+                        </v-btn>
+                    </v-col>
+                    <v-col class="mr-15" cols="5"><v-btn rounded color="#90CDFF"
                             @click="noticeCreateModal = true"><v-icon>mdi-plus</v-icon></v-btn></v-col>
                 </v-row>
                 <v-row justify="center">
@@ -157,9 +162,9 @@
                         <v-row class="header">
                             <v-col cols="2">작성자</v-col>
                             <v-col cols="2">분류</v-col>
-                            <v-col cols="4">제목</v-col>
-                            <v-col cols="2">작성 일자</v-col>
-                            <v-col cols="2">수정/삭제</v-col>
+                            <v-col cols="5">제목</v-col>
+                            <v-col cols="3">작성 일자</v-col>
+                            <!-- <v-col cols="2">수정/삭제</v-col> -->
                         </v-row>
                     </v-col>
                 </v-row>
@@ -168,10 +173,9 @@
                         <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
                             <v-col cols="2">{{ notice.memberName }}</v-col>
                             <v-col cols="2">{{ notice.type }}</v-col>
-                            <v-col cols="4">{{ notice.title }}</v-col>
-                            <v-col cols="2">{{ notice.postDate }}</v-col>
-                            <v-col cols="2">
-                                <!-- <template v-slot:[getitemcontrols()]="{ item }"> -->
+                            <v-col cols="5">{{ notice.title }}</v-col>
+                            <v-col cols="3">{{ notice.postDate }}</v-col>
+                            <!-- <v-col cols="2">
 
                                 <v-icon class="me-2" size="small" @click.stop="editItem(notice)" v-if="notice.author">
                                     mdi-pencil
@@ -179,8 +183,7 @@
                                 <v-icon size="small" @click.stop="deleteItem(notice)" v-if="notice.author">
                                     mdi-delete
                                 </v-icon>
-                                <!-- </template> -->
-                            </v-col>
+                            </v-col> -->
                         </v-row>
                     </v-col>
                 </v-row>
@@ -203,9 +206,9 @@
                                     mdi-delete
                                 </v-icon>
                             </template>
-                        </v-data-table>
-                    </v-card-text>
-                </v-card> -->
+</v-data-table>
+</v-card-text>
+</v-card> -->
 
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
@@ -247,7 +250,7 @@
 
         <!-- 과제 모달 -->
         <v-dialog v-model="assignmentCreateModal" max-width="800px">
-            <v-card>
+            <v-card style="border-radius: 20px;">
                 <!-- <v-card-title class="text-h4 pa-4 d-flex justify-center">
                     과제 생성
                 </v-card-title> -->
@@ -258,7 +261,7 @@
                     <!-- 제목  -->
                     <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
                     <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6>
+                    <!-- <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6> -->
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
                     <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
@@ -266,8 +269,10 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="renewAssignment()" class="cancel-btn mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitAssignmentCreate()" class="submit-btn">등록하기</v-btn>
+                        <v-btn variant="outlined" rounded @click="renewAssignment()"
+                            class="cancel-btn mr-3">취소하기</v-btn>
+                        <v-btn variant="outlined" rounded @click="submitAssignmentCreate()"
+                            class="submit-btn">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -275,12 +280,29 @@
             </v-card>
         </v-dialog>
         <v-dialog v-model="assignmentViewModal" max-width="800px">
-            <v-card>
+            <v-card style="border-radius: 20px;">
 
                 <v-divider class="mt-10 mb-2"></v-divider>
 
-                <v-card-text class="pa-4 pt-0 mt-5">
-                    <h4 class="mb-1 ml-6 mr-2"> <strong>과제 생성</strong> </h4>
+                <v-card-text class="pa-4 pt-0">
+                    <v-row class="justify-space-between mt-5 mb-5">
+                        <h4 class="mb-1 ml-6 mr-2"> <strong>과제 조회</strong> </h4>
+                        <v-icon v-if="this.istutor" class="mr-5"
+                            @click="drawer = !drawer">mdi-dots-horizontal-circle-outline</v-icon>
+                        <v-navigation-drawer location="right" v-if="drawer" v-model="drawer" temporary>
+
+
+                            <v-list density="compact" nav>
+
+                                <v-list-item prepend-icon="mdi-pencil" title="수정"
+                                    @click="assignmentUpdateModal = true; drawer = !drawer; assignmentViewModal = false;"></v-list-item>
+
+                                <v-list-item prepend-icon="mdi-delete" title="삭제"
+                                    @click="deleteAssignments(); drawer = !drawer;"></v-list-item>
+                            </v-list>
+                        </v-navigation-drawer>
+                    </v-row>
+
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-8 mr-2"> 제목 </h4>
                     <div class="mb-2 ml-8 mr-2">{{ this.assignmentTitle }}</div>
@@ -302,7 +324,7 @@
             </v-card>
         </v-dialog>
         <v-dialog v-model="assignmentUpdateModal" max-width="800px">
-            <v-card>
+            <v-card style="border-radius: 20px;">
                 <v-divider class="mt-10 mb-2"></v-divider>
 
                 <v-card-text class="pa-4 pt-0 mt-5">
@@ -310,7 +332,7 @@
                     <!-- 제목  -->
                     <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
                     <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
-                    <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6>
+                    <!-- <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6> -->
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
                     <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
@@ -319,9 +341,10 @@
                 <v-card-actions class="pa-4">
                     <v-row justify="center" class="flex">
 
-                        <v-btn variant="outlined" class="cancel-btn mr-3" @click="renewAssignment()">취소하기</v-btn>
-                        <v-btn variant="outlined" class="delete-btn mr-3" @click="deleteAssignments()">삭제하기</v-btn>
-                        <v-btn variant="outlined" class="submit-btn" @click="updateAssignment()">등록하기</v-btn>
+                        <v-btn variant="outlined" rounded class="cancel-btn mr-3"
+                            @click="renewAssignment()">취소하기</v-btn>
+                        <!-- <v-btn variant="outlined" class="delete-btn mr-3" @click="deleteAssignments()">삭제하기</v-btn> -->
+                        <v-btn variant="outlined" rounded class="submit-btn" @click="updateAssignment()">등록하기</v-btn>
                     </v-row>
 
                 </v-card-actions>
@@ -333,7 +356,7 @@
 
         <!-- 공지사항 모달-->
         <v-dialog v-model="noticeCreateModal" max-width="800px">
-            <v-card>
+            <v-card style="border-radius: 20px;">
                 <!-- <v-card-title class="text-h4 pa-4 d-flex justify-center">
                     게시판 작성
                 </v-card-title> -->
@@ -350,7 +373,7 @@
                         <v-radio label="게시글로 등록" :value="false"></v-radio>
                     </v-radio-group>
                     <!-- 제목  -->
-                    <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
+                    <!-- <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6> -->
                     <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs"
                         variant="outlined" class="mb-2 ml-8 mr-2"></v-text-field>
                     <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
@@ -358,9 +381,9 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="noticeCreateModal = false"
+                        <v-btn variant="outlined" @click="noticeCreateModal = false" rounded
                             class="cancel-btn mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" class="submit-btn" @click="noticeCreate()">등록하기</v-btn>
+                        <v-btn rounded variant="outlined" class="submit-btn" @click="noticeCreate()">등록하기</v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -368,7 +391,7 @@
             </v-card>
         </v-dialog>
         <v-dialog v-model="noticeUpdateModal" max-width="800px">
-            <v-card>
+            <v-card style="border-radius: 20px;">
                 <v-divider class="mt-10 mb-2"></v-divider>
                 <v-card-text class="pa-4 pt-0">
                     <h5 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 수정</strong> </h5>
@@ -379,7 +402,7 @@
                         <v-radio label="게시글로 등록" :value="false"></v-radio>
                     </v-radio-group>
                     <!-- 제목  -->
-                    <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6>
+                    <!-- <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6> -->
                     <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs"
                         variant="outlined" class="mb-2 ml-8 mr-2"></v-text-field>
                     <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
@@ -387,8 +410,10 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="renewNotice()" class="cancel-btn mr-3">취소하기</v-btn>
-                        <v-btn variant="outlined" @click="submitEditNotice()" class="submit-btn">수정하기</v-btn>
+                        <v-btn variant="outlined" rounded @click="renewNotice()"
+                            class="cancel-btn mr-3"><strong>취소하기</strong></v-btn>
+                        <v-btn variant="outlined" rounded @click="submitEditNotice()"
+                            class="submit-btn"><strong>수정하기</strong></v-btn>
                     </v-row>
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
@@ -396,12 +421,27 @@
             </v-card>
         </v-dialog>
         <v-dialog v-model="noticeViewModal" max-width="800px">
-            <v-card>
+            <v-card style="border-radius: 20px;">
                 <v-divider class="mt-10 mb-2"></v-divider>
 
                 <v-card-text class="pa-4 pt-0">
-                    <h4 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 조회</strong> </h4>
+                    <v-row class="justify-space-between mt-5 mb-5">
 
+                        <h4 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 조회</strong> </h4>
+                        <v-icon v-if="isAuthor" class="mr-5"
+                            @click="noticeDrawer = !noticeDrawer">mdi-dots-horizontal-circle-outline</v-icon>
+                        <v-navigation-drawer location="right" v-if="noticeDrawer" v-model="noticeDrawer" temporary>
+
+
+                            <v-list density="compact" nav>
+
+                                <v-list-item prepend-icon="mdi-pencil" title="수정"
+                                    @click="noticeUpdateModal = true; noticeViewModal = false; noticeDrawer = !noticeDrawer;"></v-list-item>
+
+                                <v-list-item prepend-icon="mdi-delete" title="삭제" @click="deleteItem()"></v-list-item>
+                            </v-list>
+                        </v-navigation-drawer>
+                    </v-row>
                     <!-- 제목  -->
                     <h4 class="mb-1 ml-7 mr-2"> 제목 </h4>
                     <v-row class="mb-4 ml-7 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
@@ -464,12 +504,14 @@ export default {
     },
     data() {
         return {
+            drawer: false,
             topNotice: [],
             currentNotice: 0,
             isShowMap: false,
             istutor: false,
             page: 0,
             size: 5,
+            noticePageSize: 10,
             noticePages: 0,
             noticePage: 1,
             assignmentPages: 0,
@@ -483,11 +525,11 @@ export default {
                 image: "",
                 limitPeople: null,
                 address: "",
-                detailAddress:"",
-                price:0,
+                detailAddress: "",
+                price: 0,
                 memberName: "",
                 startDate: "",
-                endData:"",
+                endData: "",
                 title: "",
                 lectureGroupTimes: [],
                 totalDayCount: 0,
@@ -539,6 +581,10 @@ export default {
             urgentAssignment: [],
             isDataLoaded: false,
             isCommentEdit: false,
+            noticeDrawer: false,
+            isAuthor: false,
+            onlyNotice: false,
+
         };
     },
     mounted() {
@@ -563,7 +609,7 @@ export default {
         this.infoData.endDate = data.endDate;
         this.infoData.title = data.title;
         this.infoData.address = data.address;
-        this.infoData.detailAddress=data.detailAddress;
+        this.infoData.detailAddress = data.detailAddress;
         this.infoData.totalDayCount = data.totalDayCount;
         this.infoData.pastDayCount = data.pastDayCount;
         this.isDataLoaded = true;
@@ -575,9 +621,12 @@ export default {
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
         let params = {
-            size: this.size,
+            size: this.noticePageSize,
             page: this.page,
         };
+        if (this.onlyNotice) {
+            params.type = 'notice';
+        }
         const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
         this.notices = noticeResponse?.data?.result?.content;
         this.noticePages = noticeResponse?.data?.result?.totalPages;
@@ -598,6 +647,7 @@ export default {
         if (this.infoData.address != "") this.isShowMap = true;
 
     },
+
     methods: {
         startSlider() {
             setInterval(() => {
@@ -607,6 +657,19 @@ export default {
         showMap() {
             this.execDaumPostcode();
             this.mapModal = true;
+        },
+        async onlyNoticeClick() {
+            let params = {
+                size: this.noticePageSize,
+                page: this.page,
+            };
+            if (this.onlyNotice) {
+                params.type = 'notice';
+            }
+            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+            this.notices = noticeResponse?.data?.result?.content;
+            this.noticePages = noticeResponse?.data?.result?.totalPages;
+
         },
         loadKakaoMapScript() {
             const script = document.createElement('script');
@@ -660,9 +723,12 @@ export default {
         async handleNoticePageChange() {
             this.page = this.noticePage - 1;
             let params = {
-                size: this.size,
+                size: this.noticePageSize,
                 page: this.page,
             };
+            if (this.onlyNotice) {
+                params.type = 'notice';
+            }
             const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
             this.notices = noticeResponse?.data?.result?.content;
             this.commentPages = noticeResponse?.data?.result?.totalPages;
@@ -679,13 +745,17 @@ export default {
         },
         async noticeView(item) {
             this.renewNotice();
-            this.noticeViewModal = true;
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}`);
             this.noticeTitle = response?.data?.result?.title;
             this.noticeContent = response?.data?.result?.contents;
             this.noticeId = item.id;
+            this.isAuthor = response?.data?.result?.author
+            if (response?.data?.result?.type === "POST") this.isNotice = false;
+            else this.isNotice = true;
             // 댓글 목록 가져오기
             await this.fetchComments(item.id);
+            this.noticeViewModal = true;
+
         },
         async fetchComments(noticeId) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list?page=0`)
@@ -728,6 +798,9 @@ export default {
             this.noticeCreateModal = false;
             this.noticeUpdateModal = false;
             this.noticeViewModal = false;
+            this.isAuthor = false;
+            this.noticeId = null;
+
         },
         async noticeCreate() {
             let type = null;
@@ -741,15 +814,19 @@ export default {
             const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body)
             if (response) {
                 let params = {
-                    size: this.size,
+                    size: this.noticePageSize,
                     page: this.page,
                 };
+                if (this.onlyNotice) {
+                    params.type = 'notice';
+                }
                 const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
                 this.notices = noticeResponse?.data?.result?.content;
                 this.noticeCreateModal = false;
                 this.renewNotice();
             }
-
+            const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
+            this.urgentAssignment = urgentAssignmentResponse?.data?.result?.content;
         },
         // 과제 CRUD 메서드
         renewAssignment() {
@@ -906,9 +983,12 @@ export default {
             const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${this.noticeId}`, body)
             if (response) {
                 let params = {
-                    size: this.size,
+                    size: this.noticePageSize,
                     page: this.page,
                 };
+                if (this.onlyNotice) {
+                    params.type = 'notice';
+                }
                 const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
                 this.notices = noticeResponse?.data?.result?.content;
                 this.noticeUpdateModal = false;
@@ -916,13 +996,16 @@ export default {
             this.renewNotice();
 
         },
-        async deleteItem(item) {
-            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${item.id}/delete`)
+        async deleteItem() {
+            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${this.noticeId}/delete`)
             if (response) {
                 let params = {
-                    size: this.size,
+                    size: this.noticePageSize,
                     page: this.page,
                 };
+                if (this.onlyNotice) {
+                    params.type = 'notice';
+                }
                 const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
                 this.notices = noticeResponse?.data?.result?.content;
             }
@@ -991,9 +1074,10 @@ export default {
 }
 
 .cancel-btn {
-    color: black;
-    border-color: #e0e0e0;
-    width: 30%;
+    background-color: rgb(255, 94, 94);
+    color: white;
+    border-color: rgb(255, 94, 94);
+    width: 40%;
     height: 40px;
 }
 
@@ -1007,7 +1091,16 @@ export default {
 .submit-btn {
     background-color: #0066ff;
     color: white;
-    width: 30%;
+    width: 40%;
     height: 40px;
+}
+
+.active {
+    background-color: #90CDFF !important;
+}
+
+.inactive {
+    background-color: #CCCCCC !important;
+    /* 회색 */
 }
 </style>

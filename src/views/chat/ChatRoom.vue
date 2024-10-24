@@ -4,7 +4,7 @@
         <br>
         <v-row justify="center">
             <v-col cols="4">
-                <v-card  style="height: 650px;">
+                <v-card style="height: 650px;">
                     <v-card-title class="title-font-size">
                         채팅방 리스트
                     </v-card-title>
@@ -42,7 +42,7 @@
                     <v-card-text class="chat-content">
                         <v-row class="chat-messages">
 
-                            <div class="chat-history" ref="chatHistory">
+                            <div class="chat-history" ref="chatHistory" @scroll="onScrollUp">
                                 <div v-for="(msg, index) in chatHistory" :key="index" :class="getMessageClass(msg)">
                                     {{ msg.memberName }}
                                     <br>
@@ -93,17 +93,85 @@ export default {
             lectureType: null,
             topic: '',
 
+            size: 50,
+            currentPage: 0,
+            isLastPage: false,
+            isLoading: false,
+
         };
 
     },
     created() {
+        //채팅방 목록
         this.showChatRoomList();
+
+        //채팅 내역
+        if(this.chatRoomId){
+            this.getChatRoomLogs();
+        }
+        
+
+        //websocket 연결
         this.connectWebSocket();
 
     },
-    
+
+
 
     methods: {
+        async getChatRoomLogs() {
+            if (this.chatRoomId != '') {
+                try {
+                    
+        
+                    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/chat/log/${this.chatRoomId}`, {
+                        params: {
+                            size: this.size,
+                            page: this.currentPage
+                        }
+                    });
+
+                    const olderMessages = response.data.result.content;
+                    console.log(olderMessages);
+                    this.chatHistory = [...olderMessages, ...this.chatHistory];
+
+                    if(olderMessages.length==0){
+                        this.isLastPage = true;
+                    }
+                    this.currentPage += 1;
+                    this.isLoading = false;
+                    const chatHistoryElement = this.$refs.chatHistory;
+                    const previousScrollHeight = chatHistoryElement.scrollHeight;
+                        
+                    this.$nextTick(() => {
+                        
+                        const newScrollHeight = chatHistoryElement.scrollHeight;
+                        chatHistoryElement.scrollTop = newScrollHeight - previousScrollHeight;
+                    });
+
+
+                } catch (error) {
+                    console.error("Failed to load more messages:", error);
+                }
+
+                
+                
+            }
+        },
+
+        async onScrollUp() {
+            const chatHistoryElement = this.$refs.chatHistory;
+
+        // Check if the user scrolled to the top
+        if (chatHistoryElement.scrollTop === 0 && !this.isLoading && !this.isLastPage) {
+            this.isLoading = true;
+
+            // Load older messages
+            await this.getChatRoomLogs();
+            
+        }
+        },
+
 
         connectWebSocket() {
             if (this.chatRoomId != '') {
@@ -137,10 +205,9 @@ export default {
                     chatRoomId: this.chatRoomId
                 };
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/list`, { params });
-                
-                this.chatRoomList= response.data.result;
+
+                this.chatRoomList = response.data.result;
                 if (this.$route.query.chatRoomId != '') {
-                    console.log("정해짐");
                     this.setChatRoom(this.chatRoomList[0]);
                 }
 
@@ -158,11 +225,14 @@ export default {
             } else {
                 this.chatRoomTitle = chatRoom.chatRoomTitle;
             }
-
         },
 
         changeChatRoom(chatRoom) {
             this.disconnectWebSocket();
+            this.currentPage = 0;
+            this.isLastPage = false;
+            this.isLoading = false;
+
 
             this.chatRoomId = chatRoom.chatRoomId;
             console.log("chatRoom = " + this.chatRoomId);
@@ -172,6 +242,8 @@ export default {
                 this.chatRoomTitle = chatRoom.chatRoomTitle;
             }
             this.connectWebSocket();
+            this.getChatRoomLogs();
+            
         },
 
         async onConnected(frame) {
@@ -230,6 +302,7 @@ export default {
 
             // 메시지를 채팅이력에 추가
             this.chatHistory.push({
+                chatRoomId: parsedMessage.chatRoomId,
                 memberName: parsedMessage.memberName,
                 memberId: parsedMessage.memberId,
                 message: parsedMessage.message
@@ -385,15 +458,15 @@ export default {
 
 .chat-list-scroll {
     height: calc(650px - 56px);
-    overflow-y: auto; 
+    overflow-y: auto;
     padding: 10px;
     scrollbar-width: none;
 
-  }
+}
 
 
-  .title-font-size{
+.title-font-size {
     font-size: 30px;
     font-weight: bold;
-  }
+}
 </style>

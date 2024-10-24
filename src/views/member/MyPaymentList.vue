@@ -35,7 +35,9 @@
                     <v-col cols="1">
                         <a :href="payment.receiptUrl" target="_blank">영수증 보기</a>
                     </v-col>
-                    <v-col v-if="formatStatus(payment.status) === '결제 완료'" cols="1">환불</v-col>
+                    <v-col v-if="formatStatus(payment.status) === '결제 완료'" cols="1">
+                        <v-btn @click="openRefundModal(payment)" small outlined color="primary">환불</v-btn>
+                    </v-col>
                     <v-col v-else cols="1"></v-col>
                     <v-col cols="1">{{ formatStatus(payment.status) }}</v-col>
                 </v-row>
@@ -61,9 +63,49 @@
         >
             다음 페이지
         </v-btn>
-        <refundModal
-            v-model:dialog="showRefundModal"
-        />
+
+        <!-- Refund Modal -->
+        <v-dialog v-model="showRefundModal" max-width="500px">
+            <v-card>
+                <v-card-title class="headline">환불 요청</v-card-title>
+
+                <v-card-text>
+                    <div v-if="selectedPayment">
+                        <p>강의명: {{ selectedPayment.name }}</p>
+                        <p>결제 금액: {{ selectedPayment.amount }} 원</p>
+                        <p>결제일: {{ formatDate(selectedPayment.paidAt) }}</p>
+                    </div>
+
+                    <!-- 환불 사유 선택 -->
+                    <!-- <v-radio-group v-model="selectedReason" @change="handleReasonChange">
+                        <v-radio label="단순 변심" value="변심"></v-radio>
+                        <v-radio label="서비스 불만" value="서비스 불만"></v-radio>
+                        <v-radio label="강의 내용 불만" value="강의 내용 불만"></v-radio>
+                        <v-radio label="스케줄 변경" value="스케줄 변경"></v-radio>
+                        <v-radio label="직접 입력" value="custom"></v-radio>
+                    </v-radio-group> -->
+                    <v-radio-group v-model="selectedReason">
+                        <v-radio label="단순 변심" value="변심"></v-radio>
+                        <v-radio label="서비스 불만" value="서비스 불만"></v-radio>
+                        <v-radio label="강의 내용 불만" value="강의 내용 불만"></v-radio>
+                        <v-radio label="스케줄 변경" value="스케줄 변경"></v-radio>
+                        <v-radio label="직접 입력" value="custom"></v-radio>
+                    </v-radio-group>
+
+                    <!-- 직접 입력 필드 -->
+                    <v-text-field
+                        v-if="selectedReason === 'custom'"
+                        label="직접 입력"
+                        v-model="customReason"
+                    />
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-btn color="blue darken-1" text @click="showRefundModal = false">취소</v-btn>
+                    <v-btn color="red darken-1" text @click="submitRefund">환불 요청</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -78,7 +120,12 @@ export default {
             totalItems: 0,
             totalPages: 0,
             paymentList: [],
-            thumbnailUrls: {}, // 썸네일 URL을 저장할 객체
+            thumbnailUrls: {},
+            showRefundModal: false,
+            selectedPayment: null,
+            selectedReason: '',
+            isCustomReason: false,
+            customReason: ''
         };
     },
     created() {
@@ -96,7 +143,7 @@ export default {
             this.totalItems = response.data.totalItems;
             this.totalPages = response.data.totalPages;
 
-            // 각 결제 항목에 대해 썸네일 이미지 URL을 비동기로 가져옵니다.
+            // 각 결제 항목에 대해 썸네일 이미지 URL을 비동기로 가져옴
             await Promise.all(this.paymentList.map(async (payment) => {
                 if (payment.lectureGroupId !== null) {
                     this.thumbnailUrls[payment.id] = await this.getThumbnail(payment.lectureGroupId);
@@ -133,6 +180,39 @@ export default {
         async getThumbnail(groupId) {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group/get-image-and-title/${groupId}`);
             return response.data.result.image;
+        },
+        openRefundModal(payment) {
+            this.selectedPayment = payment;
+            this.showRefundModal = true;
+            this.selectedReason = '';
+            this.customReason = '';
+            this.isCustomReason = false;
+        },
+        handleReasonChange(value) {
+            this.isCustomReason = value === 'custom';
+        },
+        submitRefund() {
+            let reason = this.selectedReason === 'custom' ? this.customReason : this.selectedReason;
+
+            // '직접 입력'이 선택되었을 경우 customReason 사용
+            if (this.selectedReason === 'custom' && !this.customReason) {
+                alert("직접 입력한 환불 사유를 입력하세요.");
+                return;
+            }
+
+            // 환불 요청 API 호출
+            axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/refund/${this.selectedPayment.id}`, {
+                cancelReason: reason
+            })
+            .then(() => {
+                alert("환불 요청이 완료되었습니다.");
+                this.showRefundModal = false; // 모달 닫기
+                this.customReason = ''; // 환불 사유 초기화
+            })
+            .catch((error) => {
+                console.error("환불 요청 실패:", error);
+                alert("환불 요청에 실패했습니다.");
+            });
         }
     }
 };

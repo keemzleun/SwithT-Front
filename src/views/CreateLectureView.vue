@@ -85,7 +85,7 @@
 
         <v-col cols="8" class="align-center">
           <v-row class="align-center">
-          <div class="text-left mr-2 align-center">{{ this.address }}</div>
+          <div class="text-left ml-2 mr-2 align-center">{{ this.address }}</div>
           <input v-model="detailAddress" class="form-control detail-width" placeholder="상세주소를 입력해주세요" type="text" />
         </v-row>
         </v-col>

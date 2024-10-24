@@ -626,6 +626,7 @@ checkAndSelectGroup(group) {
 
 
 <style scoped>
+
 .v-container {
     width: 70vw;
 }

@@ -1,34 +1,34 @@
 <template>
-
     <v-row justify="center" class="mb-1">
-      <v-col cols="4" class="text-center mt-6">
-        <h3 class="mt-5"><strong>사용자 총 평점</strong></h3>
+      <v-col cols="auto" class="text-center mt-6">
+        <h4 class="mt-16"><strong>사용자 총 평점</strong></h4>
         <v-row class="ml-2 mt-5">
-          <v-col cols="auto" v-for="n in 5" :key="n" class="pa-0 ml-4">
-            <v-icon
-              :color="n <= averageRating ? 'red' : 'grey'"
-              size="40"
-            >
-              {{ n <= averageRating ? 'mdi-star' : 'mdi-star-outline' }} 
+          <v-col cols="1" v-for="n in 5" :key="n" class="pa-0 ml-4">
+            <v-icon :color="n <= averageRating ? 'red' : 'grey'" size="30">
+              {{ n <= averageRating ? "mdi-star" : "mdi-star-outline" }}
             </v-icon>
           </v-col>
         </v-row>
-        <h3 class="mt-5"><strong>{{ averageRating }} / 5.0</strong></h3>
+        <h3 class="mt-5">
+          <strong>{{ averageRating }} / 5.0</strong>
+        </h3>
       </v-col>
-    
-      <v-col cols="3" class="text-center mt-11">
-        <h3><strong>전체 리뷰 수</strong></h3>
+
+      <v-col cols="3" class="text-center mt-16  ">
+        <h4 class="mt-5"><strong>전체 리뷰 수</strong></h4>
         <v-icon
-        color="blue-grey-darken-3s"
-        icon="mdi-message-text"
-        style="font-size: 80px;"
-        class="mt-5"
-      ></v-icon>
-        <p class="text-h4"><strong>{{ totalReviews }}</strong></p>
+          color="blue-grey-darken-3s"
+          icon="mdi-message-text"
+          style="font-size: 60px"
+          class="mt-5"
+        ></v-icon>
+        <p class="text-h4">
+          <strong>{{ totalReviews }}</strong>
+        </p>
       </v-col>
-      
-      <v-col cols="5">
-        <h3 class="text-center mb-3 mt-10"><strong>평점 비율</strong></h3>
+
+      <v-col cols="4">
+        <h4 class="text-center mb-3 mt-10"><strong>평점 비율</strong></h4>
         <v-row v-for="n in 5" :key="n" align="center" class="mb-1">
           <v-col cols="2">{{ n }}점</v-col>
           <v-col cols="8">
@@ -41,22 +41,29 @@
           <v-col cols="2" class="text-right">{{ starDistribution[n] }}개</v-col>
         </v-row>
       </v-col>
-
     </v-row>
-    
+
     <v-divider></v-divider>
 
-    <v-row justify="start">
+    <v-row justify="start" class="ml-8">
       <!-- 정렬 버튼 -->
       <v-btn-toggle v-model="selectedSort" class="mb-4">
-        <v-btn @click="setSort('createdTime', 'DESC')" style="font-size: 18px;"><strong>최신순</strong></v-btn>
-        <v-btn @click="setSort('createdTime', 'ASC')" style="font-size: 18px;"><strong>오래된순</strong></v-btn>
-        <v-btn @click="setSort('star', 'DESC')" style="font-size: 18px;"><strong>평점 높은순</strong></v-btn>
-        <v-btn @click="setSort('star', 'ASC')" style="font-size: 18px;"><strong>평점 낮은순</strong></v-btn>
+        <v-btn @click="setSort('createdTime', 'DESC')" style="font-size: 15px"
+          ><strong>최신순</strong></v-btn
+        >
+        <v-btn @click="setSort('createdTime', 'ASC')" style="font-size: 15px"
+          ><strong>오래된순</strong></v-btn
+        >
+        <v-btn @click="setSort('star', 'DESC')" style="font-size: 15px"
+          ><strong>평점 높은순</strong></v-btn
+        >
+        <v-btn @click="setSort('star', 'ASC')" style="font-size: 15px"
+          ><strong>평점 낮은순</strong></v-btn
+        >
       </v-btn-toggle>
     </v-row>
 
-    <v-row class="mt-15" justify="center">
+    <v-row class="mt-15 ml-10" justify="center">
       <v-row justify="center">
         <v-col
           cols="12"
@@ -66,19 +73,21 @@
           justify="center"
         >
           <v-row align="center">
-            <v-col cols="1" class="d-flex flex-column align-start">
-              <v-avatar size="80" class="mb-5">
-                <v-img
-                  :src="
-                    review.profileImage || 'https://via.placeholder.com/150'
-                  "
-                  alt="Profile"
-                ></v-img>
-              </v-avatar>
-              <v-row class="mb-3 ml-4">{{ review.name }}</v-row>
+            <v-col cols="2" class="d-flex flex-column align-center justify-center">
+              <v-row class="d-flex justify-center">
+                <v-avatar size="100" class="mb-5">
+                  <v-img
+                    :src="review.profileImage || 'https://via.placeholder.com/150'"
+                    alt="Profile"
+                  ></v-img>
+                </v-avatar>
+              </v-row>
+              <v-row class="mb-3 d-flex justify-center">
+                {{ review.name }}
+              </v-row>
             </v-col>
 
-            <v-col class="review-detail ml-3 mb-10" cols="8">
+            <v-col class="review-detail ml-0 mb-10" cols="8">
               <v-row no-gutters style="padding: 0">
                 <v-col cols="auto" v-for="n in 5" :key="n">
                   <v-icon color="red" v-if="n <= review.star">mdi-star</v-icon>
@@ -132,12 +141,14 @@
             </v-col>
             <v-col cols="12" class="text-right">
               <v-row justify="end" class="edit-delete-buttons">
+               <!-- 로컬스토리지 데이터는 문자열로 가져오기 때문에 toString으로 비교해야한다.  -->
                 <v-btn
+                  v-if="review.writerId.toString() === currentUser.id" 
                   color="#82D691"
                   @click="openEditModal(review)"
-                  class="edit-btn mb-6 mr-5"
+                  class="edit-btn mb-6 mr-10"
                 >
-                  수정
+                  수정하기
                 </v-btn>
               </v-row>
             </v-col>
@@ -167,15 +178,17 @@
         <v-card-text>
           <v-form @submit.prevent="updateReview">
             <!-- 평점 -->
-            <v-row class="mb-3">하이</v-row>
+            <v-row class="mb-3 ml-3" style="font-size: 25px" ><strong>평점</strong></v-row>
+            
             <v-rating
+            
               v-model="editedReview.rating"
               background-color="grey darken-3"
               color="pink"
               large
               dense
               :length="5"
-              class="mb-3"
+              class="mb-3 "
             >
             </v-rating>
 
@@ -213,13 +226,16 @@ import axios from "axios";
 
 export default {
   props: {
-  tutorId: {
-    type: Number,
-    required: false, // 이 prop은 선택적임
+    tutorId: {
+      type: Number,
+      required: false, // 이 prop은 선택적임
+    },
   },
-},
   data() {
     return {
+      currentUser: {
+        id: localStorage.getItem("id"), // localStorage에서 사용자 ID 가져오기
+      },
 
       reviewList: [],
       reviewId: null,
@@ -247,10 +263,10 @@ export default {
   },
   methods: {
     getBarGradient(ratio) {
-    const percentage = ratio * 100;
-    return `background: linear-gradient(90deg, #6C97FD ${percentage}%, white ${percentage}%);`;
-  },
-    
+      const percentage = ratio * 100;
+      return `background: linear-gradient(90deg, #6C97FD ${percentage}%, white ${percentage}%);`;
+    },
+
     openEditModal(review) {
       this.reviewId = review.id; // 리뷰 ID 저장
       this.editedReview.title = review.title; // 기존 제목 불러오기
@@ -267,8 +283,7 @@ export default {
       this.editDialog = false; // 모달 닫기
     },
     async fetchReviews() {
-
-      console.log("현재 tutorId->"+this.tutorId);
+      console.log("현재 tutorId->" + this.tutorId);
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/review/list`,
@@ -285,7 +300,6 @@ export default {
 
         this.totalPages = response.data.result.totalPages;
         this.reviewList = response.data.result.content;
-
       } catch (error) {
         console.error("리뷰를 불러오는 중 에러 발생:", error);
       }
@@ -316,7 +330,7 @@ export default {
     async fetchAllReviews() {
       try {
         // const response = await axios.get(`/member-service/review/all`);
-        
+
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/review/all`,
           {
@@ -327,16 +341,15 @@ export default {
         );
 
         console.log("전체 리뷰!!!!!!!!!!!!!!!");
-        
 
         const reviews = response.data.result; // 전체 리뷰 데이터
-        console.log(reviews+"전체리뷰!!!!!!!!!!!!!!!!!!!!!!!");
+        console.log(reviews + "전체리뷰!!!!!!!!!!!!!!!!!!!!!!!");
         this.totalReviews = reviews.length; // 전체 리뷰 수
 
         let totalStars = 0; // 총 평점
         const starCount = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }; // 별점 카운트 초기화
 
-        reviews.forEach(review => {
+        reviews.forEach((review) => {
           totalStars += review.star; // 평점 합산
           starCount[review.star] += 1; // 별점 카운트
         });
@@ -347,8 +360,6 @@ export default {
         console.error("Error fetching all reviews:", error);
       }
     },
-
-
   },
   created() {
     this.fetchReviews(); // 컴포넌트가 생성될 때 리뷰 데이터를 서버에서 가져옴

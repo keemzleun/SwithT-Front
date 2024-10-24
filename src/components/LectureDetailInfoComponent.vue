@@ -30,7 +30,7 @@
 import axios from 'axios';
 
 export default {
-    // props:['lectureId'],
+    props:['lectureId'],
     data() {
         return {
             lectureInfo: null, // 강의 정보를 저장할 객체
@@ -67,9 +67,9 @@ export default {
     },
     methods: {
         async fetchLectureDetail() {
-            const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
+            // const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${this.lectureId}`);
                 this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
                 console.log(this.lectureInfo);
             } catch (error) {

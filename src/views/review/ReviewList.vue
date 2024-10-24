@@ -1,7 +1,7 @@
 <template>
 
   <div class="mt-15" style=" background-color: white; color:black;">
-      <v-container v-if="isAuthenticated">
+      <v-container fluid v-if="isAuthenticated">
           <ReviewListComponent :isUserReviews="true" />
       </v-container>
 

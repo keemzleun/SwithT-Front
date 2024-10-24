@@ -12,7 +12,7 @@
         <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="dashboard">대시보드</v-tab>
-            <v-tab value="assignment">과제</v-tab>
+            <v-tab value="assignment" >과제</v-tab>
             <v-tab value="notice">게시판</v-tab>
             <v-tab value="tuteeList" v-if="isLecture && istutor">튜티 리스트</v-tab>
         </v-tabs>
@@ -23,20 +23,32 @@
                 <v-container>
                     <v-row>
                         <!-- 과제 리스트 -->
-                        <v-col cols="12" md="6">
+                        <v-col cols="12" md="6" > 
                             <v-card class="pa-4 mb-3" outlined height="400px">
                                 <v-card-title><strong>과제 리스트</strong> </v-card-title>
                                 <v-spacer></v-spacer>
-                                <v-card-text>
+                                <v-card-text v-if="urgentAssignment.length">
                                     <v-row class="mb-1">
                                         <v-col cols="4"><strong>과제 제목</strong></v-col>
                                         <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
                                         <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
                                     </v-row>
-                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2">
+                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2" >
                                         <v-col cols="4">{{ assignment.title }}</v-col>
                                         <v-col cols="4">{{ assignment.startDate }}</v-col>
                                         <v-col cols="4">{{ assignment.endDate }}</v-col>
+                                    </v-row>
+                                </v-card-text>
+                                <v-card-text v-else>
+                                    <v-row class="mb-1">
+                                        <v-col cols="4"><strong>과제 제목</strong></v-col>
+                                        <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
+                                        <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
+                                    </v-row>
+                                    <v-row class="mb-2" >
+                                        <v-col cols="12" class="text-center" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size:large;">
+                                            등록된 과제가 없습니다
+                                        </v-col>
                                     </v-row>
                                 </v-card-text>
                             </v-card>
@@ -113,9 +125,8 @@
                         </v-row>
 
                         <!-- 과제 목록 -->
-                        <v-row justify="center">
-                            <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
-                                class="text-left">
+                        <v-row justify="center" v-if="assignments.length">
+                            <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id" class="text-left">
                                 <v-card class="pa-4 mb-3" variant="outlined">
                                     <v-row>
                                         <v-col @click="viewAssignmentOpen(assignment.id)">
@@ -123,19 +134,22 @@
                                             <p>제출 시작 날짜: {{ assignment.startDate }}</p>
                                             <p>제출 마감 날짜: {{ assignment.endDate }}</p>
                                         </v-col>
-
+                        
                                         <v-col cols="auto">
-                                            <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)"
-                                                v-if="this.istutor">
+                                            <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)" v-if="this.istutor">
                                                 <v-icon>mdi-pencil</v-icon>
                                             </v-btn>
-                                            <!-- <v-icon class="me-2" size="small" @click.stop="updateAssignmentOpen(assignment.id)" v-if="notice.author">
-                                                mdi-pencil
-                                            </v-icon>
-                                            <v-btn color="#90CDFF" @click="updateAssignmentOpen(assignment.id)"
-                                                v-if="this.istutor"><strong>수정</strong></v-btn> -->
                                         </v-col>
                                     </v-row>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                        
+                        <!-- 과제가 없을 경우 표시할 내용 -->
+                        <v-row justify="center" v-else>
+                            <v-col cols="12" class="text-center">
+                                <v-card class="pa-4 mb-3 align-center mx-auto" min-height="200px" width="80%">
+                                    <h3>등록된 과제가 없습니다</h3>
                                 </v-card>
                             </v-col>
                         </v-row>
@@ -150,7 +164,7 @@
                 <v-row justify="space-between">
                     <v-col class="ml-5" cols="5">
                         <v-btn :class="onlyNotice ? 'active' : 'inactive'" rounded @click="onlyNotice = !onlyNotice; onlyNoticeClick();">
-                            공지사항만 보기
+                            {{onlyNotice? "전체 보기" : "공지사항만 보기"}}
                         </v-btn>
                     </v-col>
                     <v-col class="mr-15" cols="5"><v-btn rounded color="#90CDFF"
@@ -158,16 +172,16 @@
                 </v-row>
                 <v-row justify="center">
                     <v-col cols="8">
-
                         <v-row class="header">
                             <v-col cols="2">작성자</v-col>
                             <v-col cols="2">분류</v-col>
                             <v-col cols="5">제목</v-col>
                             <v-col cols="3">작성 일자</v-col>
-                            <!-- <v-col cols="2">수정/삭제</v-col> -->
                         </v-row>
                     </v-col>
                 </v-row>
+                
+                <!-- 공지사항 리스트 -->
                 <v-row justify="center">
                     <v-col cols="8" v-if="notices.length">
                         <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
@@ -175,18 +189,17 @@
                             <v-col cols="2">{{ notice.type }}</v-col>
                             <v-col cols="5">{{ notice.title }}</v-col>
                             <v-col cols="3">{{ notice.postDate }}</v-col>
-                            <!-- <v-col cols="2">
-
-                                <v-icon class="me-2" size="small" @click.stop="editItem(notice)" v-if="notice.author">
-                                    mdi-pencil
-                                </v-icon>
-                                <v-icon size="small" @click.stop="deleteItem(notice)" v-if="notice.author">
-                                    mdi-delete
-                                </v-icon>
-                            </v-col> -->
                         </v-row>
                     </v-col>
+                
+                    <!-- 공지사항이 없을 때 표시 -->
+                    <v-col cols="8" v-else class="text-center">
+                        <v-card class="pa-4 mb-3" min-height="200px">
+                            <h3>등록된 공지사항이 없습니다</h3>
+                        </v-card>
+                    </v-col>
                 </v-row>
+                
                 <v-pagination v-model="noticePage" :length="noticePages"
                     @click="handleNoticePageChange()"></v-pagination>
 
@@ -216,35 +229,45 @@
                 <v-card flat>
                     <v-card-text>
                         <!-- 튜티 리스트 -->
-                        <v-list width="20%" class="mx-auto">
-                            <v-list-item v-for="tutee in this.tutees" :key="tutee.id" justify="center"
-                                class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
-                                style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
-                                variant="outlined">
-
-                                <v-row>
-                                    <v-col>
-                                        <v-list-item-avatar>
-                                            <v-avatar size="50">
-                                                <v-img :src="tutee.tuteeProfile" :alt="tutee.name" />
-                                            </v-avatar>
-                                        </v-list-item-avatar>
-                                    </v-col>
-                                    <v-col class="d-flex justify-center" style="align-items: center;">
-                                        <v-list-item-content>
-                                            <v-list-item-title class="tutee-name"
-                                                style="font-weight:400; text-align: center;">
-                                                <h5>{{
-                                                    tutee.tuteeName }}</h5>
-                                            </v-list-item-title>
-                                        </v-list-item-content>
-                                    </v-col>
-                                </v-row>
-                            </v-list-item>
+                        <v-list width="30%" class="mx-auto" style="overflow: hidden;">
+                            <!-- 튜티가 있을 경우 리스트 출력 -->
+                            <template v-if="tutees.length">
+                                <v-list-item v-for="tutee in tutees" :key="tutee.id" justify="center"
+                                    class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
+                                    style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
+                                    variant="outlined">
+                
+                                    <v-row>
+                                        <v-col>
+                                            <v-list-item-avatar>
+                                                <v-avatar size="50">
+                                                    <v-img :src="tutee.tuteeProfile" :alt="tutee.name" />
+                                                </v-avatar>
+                                            </v-list-item-avatar>
+                                        </v-col>
+                                        <v-col class="d-flex justify-center" style="align-items: center;">
+                                            <v-list-item-content>
+                                                <v-list-item-title class="tutee-name" style="font-weight:400; text-align: center;">
+                                                    <h5>{{ tutee.tuteeName }}</h5>
+                                                </v-list-item-title>
+                                            </v-list-item-content>
+                                        </v-col>
+                                    </v-row>
+                                </v-list-item>
+                            </template>
+                
+                            <!-- 튜티가 없을 경우 메시지 출력 -->
+                            <v-row v-else justify="center">
+                                <v-col cols="12" class="text-center">
+                                    <v-card class="pa-4 mb-3 align-center mx-auto" min-height="160px" width="80%" style="overflow: hidden;">
+                                        <h3>등록된 튜티가 없습니다</h3>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
                         </v-list>
-
                     </v-card-text>
                 </v-card>
+                
             </v-tabs-window-item>
         </v-tabs-window>
 
@@ -791,7 +814,7 @@ export default {
             await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
 
         },
-        renewNotice() {
+        async renewNotice() {
             this.isNotice = false;
             this.noticeTitle = "";
             this.noticeContent = "";
@@ -800,6 +823,8 @@ export default {
             this.noticeViewModal = false;
             this.isAuthor = false;
             this.noticeId = null;
+            const topNoticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list?page=0&type=notice`)
+            this.topNotice = topNoticeResponse?.data?.result?.content;
 
         },
         async noticeCreate() {
@@ -825,11 +850,10 @@ export default {
                 this.noticeCreateModal = false;
                 this.renewNotice();
             }
-            const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
-            this.urgentAssignment = urgentAssignmentResponse?.data?.result?.content;
+
         },
         // 과제 CRUD 메서드
-        renewAssignment() {
+        async renewAssignment() {
             this.assignmentCreateModal = false;
             this.assignmentUpdateModal = false;
             this.assignmentViewModal = false;
@@ -837,6 +861,8 @@ export default {
             this.assignmentDate = null;
             this.assignmentContent = "";
             this.assignmentId = null;
+            const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
+            this.urgentAssignment = urgentAssignmentResponse?.data?.result?.content;
         },
         async submitAssignmentCreate() {
             try {
@@ -855,6 +881,7 @@ export default {
                     this.assignments = assignmentResponse?.data?.result?.content;
                     this.assignmentCreateModal = false;
                     this.renewAssignment();
+
                 }
             }
             catch (e) {

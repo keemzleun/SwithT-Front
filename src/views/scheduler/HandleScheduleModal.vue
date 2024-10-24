@@ -28,22 +28,17 @@
         <div class="alert-setting">
           <label for="alertYn">
             알림 여부:
-            <input type="checkbox" v-model="alertYn" @change="onAlertYnChange" />
-            <button v-if="alertYn && !isAlertEditable" type="button" @click="enableAlertEdit" class="alert-edit-btn">수정</button>
+            <input type="checkbox" v-model="alertYn" disabled /> <!-- 체크박스 비활성화 -->
+            <button v-if="!isAlertEditable" type="button" @click="enableAlertEdit" class="alert-edit-btn">{{ alertInfo?.reserveDay ? '수정' : '생성' }}</button> <!-- 체크박스 옆에 생성/수정 버튼 -->
           </label>
+          <p v-if="alertInfo?.reserveDay">알림 일자: {{ alertInfo.reserveDay || '설정되지 않음' }}</p>
+          <p v-if="alertInfo?.reserveTime">알림 시간: {{ alertInfo.reserveTime || '설정되지 않음' }}</p>
 
-          <div v-if="alertYn" class="alert-time">
-            <div v-if="!isAlertEditable">
-              <!-- 알림 정보 출력 -->
-              <p v-if="alertInfo">알림 일자: {{ alertInfo?.reserveDay || '설정되지 않음' }}</p>
-              <p v-if="alertInfo">알림 시간: {{ alertInfo?.reserveTime || '설정되지 않음' }}</p>
-            </div>
-            <div v-if="isAlertEditable">
-              <label><input type="radio" value="1시간 전" v-model="alertTime" /> 1시간 전</label>
-              <label><input type="radio" value="10분 전" v-model="alertTime" /> 10분 전</label>
-              <label><input type="radio" value="직접 입력" v-model="alertTime" /> 직접 입력</label>
-              <input v-if="alertTime === '직접 입력'" type="time" v-model="customAlertTime" />
-            </div>
+          <div v-if="isAlertEditable" class="alert-time">
+            <label><input type="radio" value="1시간 전" v-model="alertTime" /> 1시간 전</label>
+            <label><input type="radio" value="10분 전" v-model="alertTime" /> 10분 전</label>
+            <label><input type="radio" value="직접 입력" v-model="alertTime" /> 직접 입력</label>
+            <input v-if="alertTime === '직접 입력'" type="time" v-model="customAlertTime" />
           </div>
         </div>
 
@@ -53,8 +48,15 @@
           <button v-if="selectedSchedule && !isEditable" type="button" @click="enableEdit">수정하기</button>
           <button v-if="!selectedSchedule" type="submit">등록하기</button>
           <button v-if="selectedSchedule" type="button" @click="$emit('scheduleDeleted', selectedSchedule.id)" class="delete-button">삭제하기</button>
-          <button v-if="alertYn && isAlertEditable && selectedSchedule" type="button" @click="saveAlertSettings">알림 수정</button>
-          <button v-if="alertInfo && !isAlertEditable" type="button" @click="cancelAlert">알림 취소</button>
+
+          <!-- 알림 생성 버튼 (알림이 없을 때만 표시) -->
+          <button v-if="isAlertEditable && !alertInfo?.reserveDay" type="button" @click="createAlert">알림 생성</button>
+
+          <!-- 알림 수정 버튼 (알림이 있을 때만 표시) -->
+          <button v-if="alertInfo?.reserveDay && isAlertEditable && selectedSchedule" type="button" @click="saveAlertSettings">알림 수정</button>
+
+          <!-- 알림 취소 버튼 (알림이 있을 때만 표시) -->
+          <button v-if="alertInfo?.reserveDay && !isAlertEditable" type="button" @click="cancelAlert">알림 취소</button>
         </div>
       </form>
     </div>
@@ -105,7 +107,8 @@ export default {
       this.isEditable = true;
     },
     enableAlertEdit() {
-      this.isAlertEditable = true; // 알림 수정 모드 활성화
+      this.isAlertEditable = true; // 알림 수정 또는 생성 모드 활성화
+      this.alertYn = true;
     },
     async handleSubmit() {
       const scheduleData = {
@@ -115,16 +118,16 @@ export default {
         content: this.content,
       };
 
-      this.$emit('scheduleSaved', scheduleData); // 부모 컴포넌트에 저장된 일정 전송
-    },
-    onAlertYnChange() {
-      if (!this.alertYn) {
-        this.isAlertEditable = false;
-        this.alertTime = '';
-        this.customAlertTime = '';
-      } else {
-        this.isAlertEditable = true;
-      }
+      const dataToSend = { 
+        scheduleData,
+        alertData: this.alertYn ? {
+          scheduleId: this.selectedSchedule?.id || null,
+          reserveDay: this.schedulerDate,
+          reserveTime: this.schedulerTime,
+        } : null 
+      };
+      console.log('scheduleSaved', dataToSend)
+      this.$emit('scheduleSaved', dataToSend); // 부모 컴포넌트에 저장된 일정 전송
     },
     calculateAlertTimeInMinutes() {
       if (this.alertTime === '1시간 전') {
@@ -134,22 +137,53 @@ export default {
       } else if (this.customAlertTime) {
         const [customHour, customMinute] = this.customAlertTime.split(':');
         const [scheduleHour, scheduleMinute] = this.schedulerTime.split(':');
-        return (scheduleHour - customHour) * 60 + (scheduleMinute - customMinute);
+        const alertTimeInMinutes = (scheduleHour - customHour) * 60 + (scheduleMinute - customMinute);
+        console.log('alertTimeInMinutes:', alertTimeInMinutes);
+        return alertTimeInMinutes;
       }
       return 0;
     },
-    async saveAlertSettings() {
+        
+    // 알림 생성 메서드
+    async createAlert() {
       const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
-      const alertTimeValue = dayjs(this.schedulerTime, 'HH:mm').subtract(alertTimeInMinutes, 'minute').format('HH:mm');
+      console.log('alertTimeInMinutes:', alertTimeInMinutes);  // 확인용 로그
+
+      const alertTimeValue = dayjs(`${this.schedulerDate}T${this.schedulerTime}`, 'YYYY-MM-DDTHH:mm')
+      .subtract(alertTimeInMinutes, 'minute')
+      .format('HH:mm');
+      console.log('alertTimeValue:', alertTimeValue);  // 확인용 로그
+
       const reserveTime = alertTimeValue !== 'Invalid Date' ? alertTimeValue : this.schedulerTime;
 
       const alertData = {
-        scheduleId: this.selectedSchedule.id,
+        scheduleId: this.selectedSchedule?.id || null,
+        reserveDay: this.schedulerDate,
         reserveTime: reserveTime,
-        reserveDay: this.schedulerDate
       };
 
-      this.$emit('saveAlert', alertData); // 부모 컴포넌트에 알림 데이터 전송
+      console.log("Alert Create Data:", alertData);
+
+      this.$emit('createAlert', alertData);  // 부모 컴포넌트로 알림 생성 데이터 전송
+    },
+
+    // 알림 수정 메서드
+    async saveAlertSettings() {
+      const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
+      const alertTimeValue = dayjs(`${this.schedulerDate}T${this.schedulerTime}`, 'YYYY-MM-DDTHH:mm')
+      .subtract(alertTimeInMinutes, 'minute')
+      .format('HH:mm');
+      const reserveTime = alertTimeValue !== 'Invalid Date' ? alertTimeValue : this.schedulerTime;
+
+      const alertData = {
+        scheduleId: this.selectedSchedule?.id || null,  // 스케줄 ID
+        newReserveDay: this.schedulerDate,            // 새로 선택된 알림 날짜
+        newReserveTime: reserveTime      
+      };
+
+      console.log("Alert Update Data:", alertData);
+
+      this.$emit('saveAlert', alertData); // 부모 컴포넌트로 알림 수정 데이터 전송
     },
     async cancelAlert() {
       const alertData = { alertId: this.alertInfo?.id };

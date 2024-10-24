@@ -7,12 +7,19 @@ import MemberEmailLoginView from "@/views/member/MemberEmailLoginView.vue";
 import TuteeEmailRegisterView from "@/views/member/TuteeEmailRegisterView.vue";
 import MemberWelcome from "@/views/member/MemberWelcome.vue";
 import MemberMyPage from "@/views/member/MemberMyPage.vue";
-import ReviewList from "@/views/review/ReviewList.vue"; AdminLogin
+import ReviewList from "@/views/review/ReviewList.vue";
+import ReviewCreateTest from "@/views/review/ReviewCreateTest.vue";
 import AdminLogin from "@/views/member/AdminLogin.vue"; 
 
 
 import { jwtDecode } from 'jwt-decode'
 export const memberRouter = [
+    // ReviewCreateTest
+    {
+        path: '/review/test',
+        name: 'ReviewCreateTest',
+        component: ReviewCreateTest
+    },
     {
         path: '/member/main',
         name: 'MemberMainView',

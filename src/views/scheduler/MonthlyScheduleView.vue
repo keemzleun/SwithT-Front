@@ -1,6 +1,5 @@
 <template>
   <div class="calendar-wrapper">
-    <!-- 작은 캘린더 -->
     <div class="sidebar">
       <!-- 오늘의 일정 -->
       <div class="today-schedule">
@@ -40,6 +39,9 @@
         @close="isModalVisible = false"
         @scheduleSaved="handleScheduleSubmitted"
         @scheduleDeleted="handleScheduleDeleted"
+        @saveAlert="handleSaveAlert"
+        @createAlert="handleCreateAlert"
+        @cancelAlert="handleCancelAlert"
       />
     </v-container>
   </div>
@@ -64,7 +66,7 @@ export default {
       isModalVisible: false, // 모달 표시 여부
       selectedDate: '', // 선택한 날짜
       selectedEvent: null, // 선택한 이벤트 데이터
-      alertInfo: null, // 알림 정보 저장
+      alertData: null, // 알림 정보 저장
       todayEvents: [], // 오늘의 일정
       weekAlertEvents: [], // 이번 주 알림 일정
       calendarOptions: {
@@ -88,25 +90,6 @@ export default {
           right: "dayGridMonth,timeGridWeek,timeGridDay"
         },
       },
-      miniCalendarOptions: {
-        plugins: [dayGridPlugin, interactionPlugin],
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-          left: "prev",
-          center: "title",
-          right: "next"
-        },
-        titleFormat: { year: 'numeric', month: 'long' },
-        selectable: false,
-        events: [],
-        eventTimeFormat: {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: false,
-        },
-        dayCellDidMount: this.handleMiniCalendarDayCellDidMount,
-        dayHeaderFormat: { weekday: 'narrow' },
-      },
     };
   },
   computed: {
@@ -117,12 +100,6 @@ export default {
     sortedWeekAlertEvents() {
       return [...this.weekAlertEvents].sort((a, b) => new Date(a.start) - new Date(b.start));
     },
-  },
-  mounted() {
-    // miniCalendar가 완전히 마운트된 후에 setTodayEvents 호출
-    this.$nextTick(() => {
-      this.setTodayEvents();
-    });
   },
   methods: {
     formatTime(dateString) {
@@ -288,7 +265,7 @@ export default {
       this.selectedDate = selectionInfo.startStr;
       this.selectedEvent = null; // 새 일정이므로 선택된 이벤트는 없음
       this.isModalVisible = true;
-      this.alertInfo = null; // 새 일정이므로 알림 정보 초기화
+      this.alertData = null; // 새 일정이므로 알림 정보 초기화
     },
 
     // 이벤트 클릭 시 호출
@@ -330,23 +307,59 @@ export default {
 
       this.isModalVisible = true;
     },
-    
+
     // 일정 데이터가 모달에서 넘어왔을 때 처리
-    async handleScheduleSubmitted(scheduleData) {
+    async handleScheduleSubmitted({scheduleData, alertData}) {
       try {
+        console.log("AlertData Parent Component", this.dataToSend)
+        let response;
         if (this.selectedEvent) {
           // 일정 수정 처리
-          await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${this.selectedEvent.id}/update`, scheduleData);
+          response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${this.selectedEvent.id}/update`, scheduleData);
         } else {
           // 새 일정 등록 처리
-          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/make`, scheduleData);
+          response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/make`, scheduleData);
+        }
+        // 스케줄 저장 후 반환된 ID를 알림 데이터에 사용
+        const savedScheduleId = response.data.result || this.selectedEvent.id;
+        console.log(console.log("alertData", alertData))
+        console.log("scheudleID",savedScheduleId)
+        if (alertData) {
+          alertData.scheduleId = savedScheduleId; // 알림 데이터에 스케줄 ID 설정
+          console.log("alertData", alertData)
+          await this.handleCreateAlert(alertData); // 알림 저장
         }
 
         this.isModalVisible = false;
         await this.refreshCalendarEvents(); // 일정 새로고침
-        console.log("Schedule saved and calendar refreshed.");
       } catch (error) {
         console.error('Error during schedule saving process:', error);
+      }
+    },
+
+    // 알림 데이터를 서버에 저장하는 함수
+    async handleCreateAlert(alertData) {
+      try {
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/set-alert`, alertData);
+        console.log("Alert created successfully:", response.data);
+        this.isModalVisible = false;
+        alert(response.data.status_message)
+        await this.refreshCalendarEvents(); // 일정 새로고침
+      } catch (error) {
+        console.error('Error while creating alert:', error);
+      }
+    },
+
+    async handleSaveAlert(alertData) {
+      try {
+        const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/update-alert`, alertData);
+        console.log("알림 수정 완료:", response.data);
+
+        this.isModalVisible = false;
+        alert(response.data.status_message)
+        await this.refreshCalendarEvents(); // 일정 새로고침
+      } catch (error) {
+        alert('알림 수정 중 오류 발생:', error);
       }
     },
 
@@ -365,11 +378,37 @@ export default {
       }
     },
 
+    async handleCancelAlert(alertData) {
+      try {
+        const response = await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/cancel-alert/${alertData.alertId}`);
+        console.log("Alert canceled successfully:", response.data);
+        this.isModalVisible = false;
+        alert(response.data.status_message)
+        await this.refreshCalendarEvents(); // 캘린더 새로고침
+      } catch (error) {
+        console.error('Error while canceling alert:', error);
+      }
+    },
+
     // 캘린더 이벤트 새로고침
     async refreshCalendarEvents() {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.removeAllEvents();
-      await this.fetchSchedules();
+      try {
+        const calendarApi = this.$refs.fullCalendar.getApi();
+        calendarApi.removeAllEvents(); // 기존 이벤트 제거
+
+        // 현재 년도와 월을 가져옴
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        let month = currentDate.getMonth() + 1; // 기본값으로 현재 월 설정
+        month = month.toString().padStart(2, '0'); // 01, 02 형식으로 설정
+
+        const response = await this.fetchSchedules(year, month); // fetchSchedules 호출
+        if (response && response.data && response.data.result) {
+          calendarApi.addEventSource(response.data.result); // 새로운 일정 데이터 추가
+        }
+      } catch (error) {
+        alert(error);
+      }
     },
   },
 };
@@ -408,7 +447,7 @@ export default {
 
 .today-schedule,
 .week-alert-schedule {
-  margin-bottom: 20px;
+  margin-top: 40%;
 }
 
 .group-color-info ul {

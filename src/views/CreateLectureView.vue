@@ -83,9 +83,11 @@
             @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
         </v-col>
 
-        <v-col cols="8">
-          <div class="text-left">{{ this.address }}</div>
-          <!-- <input v-model="address" class="form-control" placeholder="강의 주소를 입력해주세요" type="text" /> -->
+        <v-col cols="8" class="align-center">
+          <v-row class="align-center">
+          <div class="text-left ml-2 mr-2 align-center">{{ this.address }}</div>
+          <input v-model="detailAddress" class="form-control detail-width" placeholder="상세주소를 입력해주세요" type="text" />
+        </v-row>
         </v-col>
       </v-row>
       <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
@@ -296,6 +298,7 @@ export default {
     return {
       isLogin: false,
       address: null,
+      detailAddress:"",
       startDate: null,
       endDate: null,
       userName: null,
@@ -548,14 +551,15 @@ export default {
           price: (group.fee && group.fee.replace(/,/g, '')) || '0',
           limitPeople: group.capacity,
           address: this.address,
+          detailAddress:this.detailAddress,
           startDate: this.startDate,
           endDate: this.endDate,
           groupTimeReqDtos: group.timeSlots.map(slot => ({
             // 요일을 영어로 변환
             lectureDay: this.convertDayToEnglish(slot.day),
             // 시작 시간과 종료 시간을 LocalDateTime 형식으로 변환
-            startTime: slot.startTime,
-            endTime: slot.endTime
+            startTime: slot.startTime === "24:00" ? "00:00" : slot.startTime, // 24:00을 00:00으로 변환
+            endTime: slot.endTime === "24:00" ? "00:00" : slot.endTime // 24:00을 00:00으로 변환
           }))
         }))
       };
@@ -583,6 +587,7 @@ export default {
         console.log(formData);
         if (response.status === 200) {
           this.showSnackbar('강의가 성공적으로 생성되었습니다!', 'success');
+          window.location.href = "/tutor-applied-list";
         }
       } catch (e) {
         console.error('강의 생성 중 오류 발생:', e);
@@ -758,6 +763,10 @@ td {
   border-radius: 10px;
   line-height: 50px;
   margin-top: 120px;
+}
+.detail-width {
+  width: 400px;
+  /* 원하는 너비로 조정 */
 }
 
 .create-lecture:hover {

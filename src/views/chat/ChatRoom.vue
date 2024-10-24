@@ -5,7 +5,7 @@
         <v-row justify="center">
             <v-col cols="4">
                 <div style="height: 650px;" class="v-card-custom">
-     
+
                     <v-card-text class="chat-list-scroll">
                         <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id"
                             :class="{ 'selected-chat-room': chatRoomId === chatRoom.chatRoomId, 'custom-border': true }"
@@ -54,11 +54,12 @@
                     <v-card-actions>
                         <v-row class="chat-input mt-auto">
                             <v-col cols="11" style="padding-right: 0px;">
-                                <input v-model="message" type="text" placeholder="..."
-                                    class="w-100 custom-input" @keydown.enter="sendMessage" />
+                                <input v-model="message" type="text" placeholder="..." class="w-100 custom-input"
+                                    @keydown.enter="sendMessage" />
                             </v-col>
                             <v-col cols="1" style="padding-left:0px;">
-                                <v-btn @click="sendMessage"><v-icon style="font-size: 30px;" color="blue">mdi-send</v-icon></v-btn>
+                                <v-btn @click="sendMessage"><v-icon style="font-size: 30px;"
+                                        color="blue">mdi-send</v-icon></v-btn>
                             </v-col>
                         </v-row>
                     </v-card-actions>
@@ -95,6 +96,7 @@ export default {
             currentPage: 0,
             isLastPage: false,
             isLoading: false,
+            isChange: false,
 
         };
 
@@ -104,69 +106,66 @@ export default {
         this.showChatRoomList();
 
         //채팅 내역
-        if (this.chatRoomId != ''){
+        if (this.chatRoomId != '') {
             this.getChatRoomLogs();
         }
-        
 
         //websocket 연결
         this.connectWebSocket();
 
     },
 
-
-
     methods: {
         async getChatRoomLogs() {
-            
-                try {
-                    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/chat/log/${this.chatRoomId}`, {
-                        params: {
-                            size: this.size,
-                            page: this.currentPage
-                        }
-                    });
-
-                    const olderMessages = response.data.result.content;
-                    console.log(olderMessages);
-                    this.chatHistory = [...olderMessages, ...this.chatHistory];
-
-                    if(olderMessages.length==0){
-                        this.isLastPage = true;
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/chat/log/${this.chatRoomId}`, {
+                    params: {
+                        size: this.size,
+                        page: this.currentPage
                     }
-                    const chatHistoryElement = this.$refs.chatHistory;
-                    const previousScrollHeight = chatHistoryElement.scrollHeight;
-                    this.currentPage += 1;
-                    this.isLoading = false;
-                    
-                        
-                    this.$nextTick(() => {
-                        
-                        const newScrollHeight = chatHistoryElement.scrollHeight;
-                        chatHistoryElement.scrollTop = newScrollHeight - previousScrollHeight;
-                    });
+                });
 
+                const olderMessages = response.data.result.content;
+                console.log(olderMessages);
 
-                } catch (error) {
-                    console.error("Failed to load more messages:", error);
+                if (olderMessages.length > 0) {
+                    this.chatHistory = [...olderMessages, ...this.chatHistory];
+                }else{
+                    this.isLastPage = true;
                 }
+                const chatHistoryElement = this.$refs.chatHistory;
+                const previousScrollHeight = chatHistoryElement.scrollHeight;
+                this.currentPage += 1;
+                this.isLoading = false;
 
-                
-                
-            
+
+                this.$nextTick(() => {
+                    const newScrollHeight = chatHistoryElement.scrollHeight;
+                    chatHistoryElement.scrollTop = newScrollHeight - previousScrollHeight;
+                });
+
+
+            } catch (error) {
+                console.error("Failed to load more messages:", error);
+            }
+
+
+
+
         },
 
         async onScrollUp() {
             const chatHistoryElement = this.$refs.chatHistory;
 
-        // Check if the user scrolled to the top
-        if (chatHistoryElement.scrollTop === 0 && !this.isLoading && !this.isLastPage) {
-            this.isLoading = true;
+            // Check if the user scrolled to the top
+            if ( !this.isChange &&chatHistoryElement.scrollTop === 0 && !this.isLoading && !this.isLastPage) {
+                this.isLoading = true;
 
-            // Load older messages
-            await this.getChatRoomLogs();
-            
-        }
+                // Load older messages
+                await this.getChatRoomLogs();
+
+            }
+            this.isChange = false;
         },
 
 
@@ -230,6 +229,7 @@ export default {
             this.isLastPage = false;
             this.isLoading = false;
             this.chatHistory = [];
+            this.isChange = true;
 
 
             this.chatRoomId = chatRoom.chatRoomId;
@@ -239,10 +239,17 @@ export default {
             } else {
                 this.chatRoomTitle = chatRoom.chatRoomTitle;
             }
+
+            this.$nextTick(() => {
+                const chatHistoryElement = this.$refs.chatHistory;
+                if (chatHistoryElement) {
+                    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight; // Reset to bottom
+                }
+            });
             this.getChatRoomLogs();
             this.connectWebSocket();
-            
-            
+
+
         },
 
         async onConnected(frame) {
@@ -250,6 +257,8 @@ export default {
             console.log('Connected: ' + frame);
 
             this.topic = '/topic/chat-' + this.chatRoomId;
+
+            
             //topic 구독
             this.stompClient.subscribe(this.topic, (message) => {
                 console.log('Received message: ' + message.body);
@@ -348,7 +357,7 @@ export default {
 
 }
 
-.v-card-custom{
+.v-card-custom {
     border: 2px solid #D9D9D9;
     border-radius: 8px;
     box-shadow: none !important;

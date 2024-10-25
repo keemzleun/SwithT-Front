@@ -282,6 +282,8 @@
 </template>
 
 <script>
+/* global kakao */
+
 import axios from 'axios';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';

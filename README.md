@@ -14,12 +14,12 @@
   -	프로젝트 개요
 
 
-현 교육 시장에서는 대형 플랫폼들이 시장을 독점하면서 프리랜서 강사들이 교육 기회를 얻기 어려워졌고, 소비자 입장에서는 다양한 교육 기회를 접하기 힘든 상황이 발생하고 있습니다. 대형 플랫폼들은 특정 강사와 컨텐츠에 대한 과도한 집중을 야기하고, 그로 인해 소비자의 선택의 폭이 제한되어 교육의 다양성이 악화되는 문제를 초래하고 있습니다.
+현 교육 시장에서는 대형 플랫폼들이 시장을 독점하면서 프리랜서 강사들이 교육 서비스 제공 기회를 얻기 어려워졌고, 소비자 입장에서는 다양한 교육 기회를 접하기 힘든 상황이 발생하고 있습니다. 대형 플랫폼들은 특정 강사와 컨텐츠에 대한 과도한 집중을 야기하고, 그로 인해 소비자의 선택의 폭이 제한되어 교육의 다양성이 정체되는 문제를 초래하고 있습니다.
 
 -	프로젝트 목표
 
 
-SwithT Project의 목표는 개인 맞춤형 교육과 강의를 소비자가 손 개인 일정과 교육 일정을 쉽게 이용할 수 있는 교육 플랫폼을 구축하는 것 입니다. 사용자(강사,수강생) 경험을 개선하고 교육의 접근성을 높이며 1:1 강의와 1:N 강의 중개를 통해 교육 기회를 확대 합니다. 또한 일정 관리 및 알림 기능을 통해 강의 운영을 효율적으로 운영하고, 일정 공유 기능으로 강사와 수강생간의 상호작용을 극대화하여 교육의 질을 높입니다.
+SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일정과 교육 일정을 비교하여 쉽게 이용할 수 있는 교육 중개 서비스 플랫폼을 구축하는 것 입니다. 사용자(강사,수강생) 경험을 개선하고 교육의 접근성을 높이며 1:1 강의와 1:N 강의 중개를 통해 교육 기회를 확대 합니다. 또한 다양한 기능을 통해 강의 운영을 효율적으로 운영하고, 일정 공유 기능으로 강사와 수강생간의 상호작용을 극대화하여 교육의 질을 높입니다.
 
 
   <br/>
@@ -51,14 +51,14 @@ SwithT Project의 목표는 개인 맞춤형 교육과 강의를 소비자가 �
 <br/>
 
 ## 🗓️ Work Breakdown Structure - [WBS 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=811390028#gid=811390028)
-![10-04 17;43;57](https://github.com/user-attachments/assets/996d0475-6631-4f5b-8a92-a8c780ffb7c0)
+![WBS_10-25](https://github.com/user-attachments/assets/828caf1b-0c5e-47ed-8601-9927523f71b5)
 
 
 
 
 ## 📝 요구사항정의서 - [요구사항 정의서 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=348186960#gid=348186960)
-![10-04 17;49;11](https://github.com/user-attachments/assets/300bd034-9bdc-4528-8c11-190ab157cbf6)
-![10-04 17;49;33](https://github.com/user-attachments/assets/650567d9-73fb-4285-8257-6224af0cf00b)
+![요구사항명세서(1)_10-25](https://github.com/user-attachments/assets/0781b334-e552-4b3c-95fe-3220d9c38c93)
+![요구사항명세서(2)_10-25](https://github.com/user-attachments/assets/9585bbd8-c316-4ee2-bb55-d0e591317879)
 
 <br/>
 
@@ -74,7 +74,8 @@ SwithT Project의 목표는 개인 맞춤형 교육과 강의를 소비자가 �
 
 
 ## 📝 프로그램 사양서 - [프로그램 사양서 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=1934764833#gid=1934764833)
-![10-06 18;51;32](https://github.com/user-attachments/assets/761fb617-1199-4ecf-9a27-53989b8af605)
+![프로그램 사양서(1)_10-25](https://github.com/user-attachments/assets/fbd47cb2-5c84-4c2f-81fa-088d963adf1c)
+![프로그램 사양서(2)_10-25](https://github.com/user-attachments/assets/d10f4958-d61f-48ab-882b-d68c1efa7d24)
 <br/>
 
 ## 📝 API 단위 테스트 결과서 - [API 단위 테스트 결과서 상세보기](https://documenter.getpostman.com/view/38251958/2sAXxLDFDP)

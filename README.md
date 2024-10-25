@@ -56,8 +56,8 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 
 ### DEVOPS
 <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white">
-
-
+<img src="[https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white](https://camo.githubusercontent.com/d121ba9dffed0ebb80c0191ed6a4c9e0b42c8427b3ea89188b98c33f784bbd13/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f416d617a6f6e2532305244532d3532374646463f7374796c653d666f722d7468652d6261646765266c6f676f3d416d617a6f6e253230524453266c6f676f436f6c6f723d7768697465
+)">
 <br/>
 
 ## 🗓️ Work Breakdown Structure - [WBS 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=811390028#gid=811390028)

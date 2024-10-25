@@ -52,6 +52,10 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 ![figma](https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
 
 
+### DEVOPS
+<img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white">
+
+
 <br/>
 
 ## 🗓️ Work Breakdown Structure - [WBS 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=811390028#gid=811390028)

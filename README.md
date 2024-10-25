@@ -111,6 +111,15 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 <br/>
 
 ## 📝UI/UX 단위 테스트 결과서
+### 회원 가입 및 로그인 화면
+<details>
+<summary><b>로그인 화면 진입 & 탭 전환</b></summary>
+    
+  ![로그인 화면 진입 탭 전환 ](https://github.com/user-attachments/assets/1509c0d4-1a95-42d5-8d10-b21d363914f0)
+  ![TUTOR 회원가입](https://github.com/user-attachments/assets/521ac644-a6a1-48cb-9091-db7b12d516e5)
+</details>
+<br/>
+
 ### 튜터 강의 개설
 <details>
 <summary><b>튜터 강의 개설</b></summary>

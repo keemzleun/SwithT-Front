@@ -53,7 +53,7 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white)
 ![figma](https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
 <img src="https://img.shields.io/badge/GoogleDocs-4285F4?style=for-the-badge&logo=GoogleDocs&logoColor=white">
-
+<img src="https://img.shields.io/badge/IntelliJIDEA-000000?style=for-the-badge&logo=IntelliJIDEA&logoColor=white">
 ### DEVOPS
 <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white">
 <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=Kubernetes&logoColor=white">

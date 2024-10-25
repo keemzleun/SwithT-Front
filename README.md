@@ -110,7 +110,7 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 
 <br/>
 
-## 📝테스트 결과서
+## 📝UI/UX 단위 테스트 결과서
 ### 튜터 강의 개설
 <details>
 <summary><b>튜터 강의 개설</b></summary>

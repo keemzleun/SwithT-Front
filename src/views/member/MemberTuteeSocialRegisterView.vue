@@ -7,7 +7,14 @@
       <div class="form-group row mb-3">
         <label for="name" class="col-sm-2 col-form-label">이름</label>
         <div class="col-sm-10">
-          <input type="text" id="name" class="form-control" placeholder="이름을 입력하세요." v-model="name" required />
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            placeholder="이름을 입력하세요."
+            v-model="name"
+            required
+          />
         </div>
       </div>
 
@@ -15,7 +22,13 @@
       <div class="form-group row mb-3">
         <label for="birthDate" class="col-sm-2 col-form-label">생년월일</label>
         <div class="col-sm-10">
-          <input type="date" id="birthDate" class="form-control" v-model="birthday" required />
+          <input
+            type="date"
+            id="birthDate"
+            class="form-control"
+            v-model="birthday"
+            required
+          />
         </div>
       </div>
 
@@ -24,12 +37,26 @@
         <label class="col-sm-2 col-form-label">성별</label>
         <div class="col-sm-10 text-left">
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gender" id="male" value="남성" v-model="displayGender"
-              required />
+            <input
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="male"
+              value="남성"
+              v-model="displayGender"
+              required
+            />
             <label class="form-check-label" for="male">남성</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gender" id="female" value="여성" v-model="displayGender" />
+            <input
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="female"
+              value="여성"
+              v-model="displayGender"
+            />
             <label class="form-check-label" for="female">여성</label>
           </div>
         </div>
@@ -37,10 +64,18 @@
 
       <!-- 핸드폰 -->
       <div class="form-group row mb-3">
-        <label for="phoneNumber" class="col-sm-2 col-form-label">휴대전화</label>
+        <label for="phoneNumber" class="col-sm-2 col-form-label"
+          >휴대전화</label
+        >
         <div class="col-sm-10">
-          <input type="tel" id="phoneNumber" class="form-control" placeholder="휴대전화를 입력하세요." v-model="phoneNumber"
-            required />
+          <input
+            type="tel"
+            id="phoneNumber"
+            class="form-control"
+            placeholder="휴대전화를 입력하세요."
+            v-model="phoneNumber"
+            required
+          />
         </div>
       </div>
 
@@ -49,7 +84,11 @@
         <label for="address" class="col-sm-2 col-form-label">주소</label>
 
         <div class="col-sm-10 d-flex align-items-center">
-          <v-btn style="border: 1px solid #ccc;" variant="outlined" @click="updateAddress()">
+          <v-btn
+            style="border: 1px solid #ccc"
+            variant="outlined"
+            @click="updateAddress()"
+          >
             <v-icon>mdi-map-search</v-icon> 주소 검색
           </v-btn>
 
@@ -57,15 +96,26 @@
             {{ this.address }}
           </div>
 
-          <input type="text" id="detailAddress" class="form-control ml-2" placeholder="상세주소를 입력하세요."
-            v-model="detailAddress" style="width: 300px;" required />
+          <input
+            type="text"
+            id="detailAddress"
+            class="form-control ml-2"
+            placeholder="상세주소를 입력하세요."
+            v-model="detailAddress"
+            style="width: 300px"
+            required
+          />
         </div>
       </div>
 
       <!-- 제출 버튼 -->
       <div class="form-group row mb-3 text-center mt-4">
         <div class="col-sm-12">
-          <button type="submit" class="btn" style="background-color: #6C97FD; color: white; border: none;">
+          <button
+            type="submit"
+            class="btn"
+            style="background-color: #6c97fd; color: white; border: none"
+          >
             완료
           </button>
         </div>
@@ -77,7 +127,7 @@
 /* global kakao */
 import axios from "axios";
 import Cookies from "js-cookie";
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from "jwt-decode";
 export default {
   data() {
     return {
@@ -90,8 +140,7 @@ export default {
       gender: "",
       displayGender: "",
       role: "TUTEE",
-      profileImage:
-        "https://minseong-file.s3.ap-northeast-2.amazonaws.com/member/%ED%95%99%EC%83%9D%EC%9E%84%ED%8B%B0.png", // 디폴트 프로필 이미지
+      profileImage: "",
     };
   },
   mounted() {
@@ -104,6 +153,13 @@ export default {
   methods: {
     async addInfo() {
       try {
+        // 성별에 따라 프로필 이미지 설정
+
+        if (this.displayGender === "남성") {
+          this.profileImage = process.env.VUE_APP_DEFAULT_MALE_IMAGE;
+        } else if (this.displayGender === "여성") {
+          this.profileImage = process.env.VUE_APP_DEFAULT_FEMALE_IMAGE;
+        }
 
         this.gender = this.displayGender === "남성" ? "MAN" : "WOMAN";
 
@@ -119,7 +175,10 @@ export default {
           role: this.role,
         };
 
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/member/AddInfoUpdate`, updateDate);
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/member-service/member/AddInfoUpdate`,
+          updateDate
+        );
 
         console.log("추가 정보 입력 성공");
 
@@ -154,29 +213,30 @@ export default {
             const geocoder = new kakao.maps.services.Geocoder();
             geocoder.addressSearch(this.roadAddress, (result, status) => {
               if (status === kakao.maps.services.Status.OK) {
-                console.log('위도 : ' + result[0].y);
-                console.log('경도 : ' + result[0].x);
+                console.log("위도 : " + result[0].y);
+                console.log("경도 : " + result[0].x);
 
                 // 지도에 마커를 추가하는 로직
                 this.initMap(result[0].y, result[0].x);
               }
             });
-          }
+          },
         }).open();
       } else {
         console.error("Daum Postcode 스크립트가 로드되지 않았습니다.");
       }
     },
     loadDaumPostcodeScript() {
-      const script = document.createElement('script');
-      script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      const script = document.createElement("script");
+      script.src =
+        "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
       script.onload = () => {
         this.isDaumScriptLoaded = true;
       };
       document.head.appendChild(script);
     },
     loadKakaoMapScript() {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=03a055c21377bee26ab1559dedf4af6f&libraries=services&autoload=false`;
       script.onload = () => {
         window.kakao.maps.load(() => {

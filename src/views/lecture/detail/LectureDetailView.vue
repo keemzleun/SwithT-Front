@@ -228,7 +228,10 @@
                             <v-row>
                                 <v-col>
                                     <label for="location" class="form-label">강의 위치</label>
-                                    <input v-model="location" id="location" class="form-control" type="text" />
+                                    <v-btn style="border: 1px solid #ccc; padding-left:5px;" variant="outlined" class="ml-3 mb-2"
+                                      @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
+                                      <div>{{this.location}}</div>
+                                    <input v-model="detailAddress" id="detailAddress" class="form-control" type="text" />
                                 </v-col>
                             </v-row>
                         </div>
@@ -238,7 +241,7 @@
             </v-card-text>
             <v-card-actions style="justify-content: flex-end;">
                 <transition name="fade">
-                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication">신청하기</v-btn>
+                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication(); closeApplyModal();">신청하기</v-btn>
                 </transition>
                 <v-btn @click="closeApplyModal">취소</v-btn>
             </v-card-actions>
@@ -301,6 +304,8 @@ export default {
       selectedLectureGroup: null,
       startDate: null,
       endDate: null,
+      location:null,
+      detailAddress : null,
       days: ['월', '화', '수', '목', '금', '토', '일'],
       hours: [
         '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -341,9 +346,54 @@ export default {
   async mounted() {
     await this.fetchLectureDetail(); // 강의 세부 정보를 먼저 가져옵니다.
     await this.fetchTutorInfo(); // 이후 강사 정보를 가져옵니다.
+    this.loadDaumPostcodeScript();
+    this.loadKakaoMapScript();
   },
   
   methods: {
+    loadDaumPostcodeScript() {
+      const script = document.createElement('script');
+      script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      script.onload = () => {
+        this.isDaumScriptLoaded = true;
+      };
+      document.head.appendChild(script);
+    },
+    loadKakaoMapScript() {
+      const script = document.createElement('script');
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=03a055c21377bee26ab1559dedf4af6f&libraries=services&autoload=false`;
+      script.onload = () => {
+        window.kakao.maps.load(() => {
+          this.isKakaoScriptLoaded = true;
+        });
+      };
+      document.head.appendChild(script);
+    },
+    updateAddress() {
+      if (window.daum && window.daum.Postcode) {
+        // eslint-disable-next-line no-undef
+        new daum.Postcode({
+          oncomplete: (data) => {
+            this.location = data?.roadAddress;
+
+            // 주소 검색한 거 기반으로 위도 경도
+            // 좌표 검색을 위해 Kakao 지도 Geocoder 사용
+            const geocoder = new kakao.maps.services.Geocoder();
+            geocoder.addressSearch(this.roadAddress, (result, status) => {
+              if (status === kakao.maps.services.Status.OK) {
+                console.log('위도 : ' + result[0].y);
+                console.log('경도 : ' + result[0].x);
+
+                // 지도에 마커를 추가하는 로직
+                this.initMap(result[0].y, result[0].x);
+              }
+            });
+          }
+        }).open();
+      } else {
+        console.error("Daum Postcode 스크립트가 로드되지 않았습니다.");
+      }
+    },
     async fetchLectureDetail() {
       const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
       try {
@@ -489,6 +539,8 @@ closeApplyModal() {
     this.startDate = null;
     this.endDate = null;
     this.lectureLocation = '';
+    this.location = null;
+    this.detailAddress=null;
     
 },
 closeWaitingDialog() {
@@ -499,6 +551,7 @@ sendDeleteQueue() {
     axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-delete-queue`, null, { 
         params: this.getOrderData
     });
+    
 },
 selectLectureGroup(group) {
     this.selectedLectureGroup = group;
@@ -575,12 +628,13 @@ async submitApplication() {
             this.snackbar = { show: true, message: "시작일, 종료일, 위치를 입력해 주세요.", color: "error" };
             return;
         }
-
+        console.log(this.location + this.detailAddress)
         const requestData = {
             lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID
             startDate: this.startDate, // 시작일
             endDate: this.endDate, // 종료일
             location: this.location, // 강의 위치
+            detailAddress: this.detailAddress, // 강의 위치
         };
 
         try {

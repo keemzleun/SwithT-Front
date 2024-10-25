@@ -31,7 +31,7 @@
 
 <script>
 import axios from "axios"
-import { EventSourcePolyfill } from 'event-source-polyfill'
+// import { EventSourcePolyfill } from 'event-source-polyfill'
 import { jwtDecode } from 'jwt-decode'
 
 export default {
@@ -83,45 +83,44 @@ export default {
     // },
     async created() {
         await this.checkLoginStatus()
-        const storedEvents = localStorage.getItem('eventList')
-        this.member = JSON.parse(localStorage.getItem('memberInfo'))
-        if (storedEvents) {
-            this.eventList = JSON.parse(storedEvents) // localStorage에서 불러오기
-            this.count = this.eventList.length // 이벤트 리스트의 길이에 따라 카운트 설정
-        }
-        // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/hello`)
+        // const storedEvents = localStorage.getItem('eventList')
+        // this.member = JSON.parse(localStorage.getItem('memberInfo'))
+        // if (storedEvents) {
+        //     this.eventList = JSON.parse(storedEvents) // localStorage에서 불러오기
+        //     this.count = this.eventList.length // 이벤트 리스트의 길이에 따라 카운트 설정
+        // }
+        // // const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/hello`)
 
-        // console.log(response) 헬스체크 메서드 주석처리.
+        // // console.log(response) 헬스체크 메서드 주석처리.
         
-        const token = localStorage.getItem('token')
-        if (token) {
-            let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/subscribe`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-            console.log("EventSource created") // 디버깅용 로그
-            sse.addEventListener('connect', (event) => {
-                console.log(event)
-            });
-            sse.addEventListener('notification', (event) => { // 'notification' 이벤트
-                console.log('Notification event received:', event) // 이벤트 수신 확인
-                if (event.data && event.data !== '""') {
-                    const newEvent = JSON.parse(event.data)
+        // const token = localStorage.getItem('token')
+        // if (token) {
+        //     let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/subscribe`, {
+        //         headers: { 'Authorization': `Bearer ${token}` }
+        //     })
+        //     console.log("EventSource created") // 디버깅용 로그
+        //     sse.addEventListener('connect', (event) => {
+        //         console.log(event)
+        //     });
+        //     sse.addEventListener('notification', (event) => { // 'notification' 이벤트
+        //         console.log('Notification event received:', event) // 이벤트 수신 확인
+        //         if (event.data && event.data !== '""') {
+        //             const newEvent = JSON.parse(event.data)
 
-                    // 중복 확인: 동일한 id의 알림이 있는지 확인
-                    const isDuplicate = this.eventList.some(e => e.id === newEvent.id)
+        //             // 중복 확인: 동일한 id의 알림이 있는지 확인
+        //             const isDuplicate = this.eventList.some(e => e.id === newEvent.id)
 
-                    if (!isDuplicate) {
-                        this.eventList.push(newEvent) // 중복이 아니면 리스트에 추가
-                        this.count = this.eventList.length // 카운트 증가
-                        localStorage.setItem('eventList', JSON.stringify(this.eventList)) // localStorage에 저장
-                    }
-                }
-            });
-        } else {
-            console.log("Token not found"); // 토큰이 없을 경우
-        }
+        //             if (!isDuplicate) {
+        //                 this.eventList.push(newEvent) // 중복이 아니면 리스트에 추가
+        //                 this.count = this.eventList.length // 카운트 증가
+        //                 localStorage.setItem('eventList', JSON.stringify(this.eventList)) // localStorage에 저장
+        //             }
+        //         }
+        //     });
+        // } else {
+        //     console.log("Token not found"); // 토큰이 없을 경우
+        // }
     },
-
 
     methods: {
         openAlertListModal() {

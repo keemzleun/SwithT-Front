@@ -85,7 +85,7 @@
 
         <v-col cols="8" class="align-center">
           <v-row class="align-center">
-          <div class="text-left mr-2 align-center">{{ this.address }}</div>
+          <div class="text-left ml-2 mr-2 align-center">{{ this.address }}</div>
           <input v-model="detailAddress" class="form-control detail-width" placeholder="상세주소를 입력해주세요" type="text" />
         </v-row>
         </v-col>
@@ -558,8 +558,8 @@ export default {
             // 요일을 영어로 변환
             lectureDay: this.convertDayToEnglish(slot.day),
             // 시작 시간과 종료 시간을 LocalDateTime 형식으로 변환
-            startTime: slot.startTime,
-            endTime: slot.endTime
+            startTime: slot.startTime === "24:00" ? "00:00" : slot.startTime, // 24:00을 00:00으로 변환
+            endTime: slot.endTime === "24:00" ? "00:00" : slot.endTime // 24:00을 00:00으로 변환
           }))
         }))
       };

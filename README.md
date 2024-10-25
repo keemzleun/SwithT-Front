@@ -80,7 +80,7 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 
 
 ## 📋 ERD - [ERD 상세보기](https://www.erdcloud.com/d/Ci6kBDHm5HRx5T5pX)
-![ERD_SwithT](https://github.com/user-attachments/assets/9ead1c5a-efca-4801-a820-59cb4827e4eb)
+![ERD_10-25](https://github.com/user-attachments/assets/6a45ddcb-8bd2-4664-92ff-a2724d8354b5)
 <br/>
 
 

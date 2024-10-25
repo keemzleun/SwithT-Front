@@ -436,7 +436,7 @@ export default {
         return false;
       }
 
-      for (let i = startHour; i <= endHour; i++) {
+      for (let i = startHour; i < endHour; i++) {
         if (this.schedule[day][i]) {
           return true;
         }
@@ -488,7 +488,7 @@ export default {
           this.schedule[day] = {};
         }
 
-        for (let i = startHour; i <= endHour; i++) {
+        for (let i = startHour; i < endHour; i++) {
           this.schedule[day][i] = {
             name: this.currentLecture.name,
             color: color,

@@ -241,7 +241,7 @@
             </v-card-text>
             <v-card-actions style="justify-content: flex-end;">
                 <transition name="fade">
-                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication(); closeApplyModal();">신청하기</v-btn>
+                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication();">신청하기</v-btn>
                 </transition>
                 <v-btn @click="closeApplyModal">취소</v-btn>
             </v-card-actions>
@@ -557,7 +557,7 @@ sendDeleteQueue() {
 },
 selectLectureGroup(group) {
     this.selectedLectureGroup = group;
-    console.log(this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
+    console.log("선택한 강의 그룹 아이디:" + this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
 },
 
 async submitApplication() {
@@ -578,7 +578,7 @@ async submitApplication() {
         };
 
         try {
-            // 대기열에 넣기
+            // 대기열에 넣기 (lecture-add-queue)
             await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-add-queue`, null, { 
                 params: requestData // 쿼리 파라미터로 전달
             });

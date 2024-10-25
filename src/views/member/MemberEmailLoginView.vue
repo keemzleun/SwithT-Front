@@ -45,17 +45,18 @@
               lock_outline
               </span>
               <v-text-field
-              clearable
+              :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
               
               class="mt-2"
               variant="outlined"
-                label="Password"
-                v-model="password"
-                type="password"
-                solo
-                required
-                hide-details
-              ></v-text-field>
+              label="Password"
+              v-model="password"
+              :type="visible ? 'text' : 'password'" 
+              solo
+              required
+              hide-details 
+              @click:append-inner="visible = !visible"
+            ></v-text-field>
           </v-row>
 
 
@@ -95,16 +96,18 @@
                 lock_outline
                 </span>
                 <v-text-field
-                clearable
+                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                
                 class="mt-2"
                 variant="outlined"
-                  label="Password"
-                  v-model="password"
-                  type="password"
-                  solo
-                  required
-                  hide-details
-                ></v-text-field>
+                label="Password"
+                v-model="password"
+                :type="visible ? 'text' : 'password'" 
+                solo
+                required
+                hide-details 
+                @click:append-inner="visible = !visible"
+              ></v-text-field>
             </v-row>
   
   
@@ -128,7 +131,7 @@ import { jwtDecode } from 'jwt-decode'
 export default {
   data() {
     return {
-      
+      visible: false,
       activeTab: 0, // 기본 탭을 튜터 로그인으로 설정
       email: "",
       password: ""

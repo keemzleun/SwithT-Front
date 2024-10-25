@@ -157,7 +157,7 @@ export default {
       try {
         // 리뷰 작성 데이터 준비
         const reviewData = {
-          tutorId: 2, // 실제 튜터 ID를 동적으로 설정해야 함 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          tutorId: 5, // 실제 튜터 ID를 동적으로 설정해야 함 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           star: this.rating,
           applyId: 1, // 실제 applyId 동적으로 를 설정해야 함
           title: this.reviewTitle,

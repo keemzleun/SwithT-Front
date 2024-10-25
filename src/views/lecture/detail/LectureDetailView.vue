@@ -182,7 +182,7 @@
         </v-snackbar>
     </v-container>
 
-    <v-dialog v-model="isApplyModalOpen" max-width="600px" maxHeight="400px">
+    <v-dialog v-model="isApplyModalOpen" max-width="600px">
         <v-card style="padding: 40px 20px 50px; border-radius: 10px;">
             <div style="font-size: 24px; font-weight: 700; margin: auto;">강의 신청</div>
             <v-card-text>
@@ -212,7 +212,7 @@
                 <!-- 강의 그룹 선택 시 추가 정보 입력 폼 -->
                 <transition name="fade">
                     <div v-if="selectedLectureGroup" style="margin-top: 20px;">
-                        <div v-if="lectureInfo?.lectureType === 'LESSON'" >
+                        <div v-if="lectureInfo?.lectureType === 'LESSON'" style="padding: 0 10px;">
                             <hr style="margin: 30px 0"/>
                             <div style="font-size: 18px; font-weight: 700; color: #5d8dfc; margin: 10px 0;">추가 정보 입력</div>
                             <v-row>
@@ -227,11 +227,11 @@
                             </v-row>
                             <v-row>
                                 <v-col>
-                                    <label for="location" class="form-label">강의 위치</label>
-                                    <v-btn style="border: 1px solid #ccc; padding-left:5px;" variant="outlined" class="ml-3 mb-2"
-                                      @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
-                                      <div>{{this.location}}</div>
-                                    <input v-model="detailAddress" id="detailAddress" class="form-control" type="text" />
+                                    <label for="location" class="form-label">강의 위치</label><br/>
+                                    <v-btn style="border: 1px solid #ccc;" variant="outlined"
+                                      @click="updateAddress()"> 주소 검색</v-btn>
+                                      <span style="margin: 5px 10px; font-weight: 700;">{{this.location}}</span>
+                                    <input v-model="detailAddress" id="detailAddress" class="form-control" placeholder="상세 주소를 입력해주세요" type="text" style="margin-top: 10px;"/>
                                 </v-col>
                             </v-row>
                         </div>

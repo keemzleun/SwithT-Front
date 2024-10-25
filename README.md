@@ -107,3 +107,42 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 ![image](https://github.com/user-attachments/assets/97da9fba-f566-4d39-8244-5a86e6e5dfa6)
 ![image](https://github.com/user-attachments/assets/70bc7cbb-cf28-4c26-97e2-a2c9ca8edc63)
 
+
+<br/>
+
+## 📝테스트 결과서
+### 튜터 강의 개설
+<details>
+<summary><b>튜터 강의 개설</b></summary>
+<img src="https://github.com/user-attachments/assets/c6d6bccd-8803-4d61-9922-b145da657801" alt="튜터 강의 개설"/>
+</details>
+<br/>
+
+### 튜터 과외 개설
+<details>
+<summary><b>튜터 과외 개설</b></summary>
+<img src="https://github.com/user-attachments/assets/60beff98-9f61-4af6-a847-a143c69381fa" alt="튜터 과외 개설"/>
+</details>
+<br/>
+
+
+### 어드민 강의 과외 승인
+<details>
+<summary><b>어드민 강의 과외 승인</b></summary>
+<img src="https://github.com/user-attachments/assets/872808f8-b692-4bc8-85c8-d04314ac38a0" alt="어드민 강의 과외 승인"/>
+</details>
+<br/>
+
+### 튜터의 개설된 강의 과외 리스트 확인 및 해당 그룹 확인
+<details>
+<summary><b>튜터의 개설된 강의 과외 리스트 확인 및 해당 그룹 확인</b></summary>
+<img src="https://github.com/user-attachments/assets/45e9b50b-6aa8-4a70-9023-5abfa44bcc54" alt="어드민 강의 과외 승인"/>
+</details>
+<br/>
+
+### 튜터의 강의 그룹 수정
+<details>
+<summary><b>튜터의 강의 그룹 수정</b></summary>
+<img src="https://github.com/user-attachments/assets/2a5db18b-6b52-4f8a-a165-a7e0e77d4489" alt="튜터의 강의 그룹 수정"/>
+</details>
+<br/>

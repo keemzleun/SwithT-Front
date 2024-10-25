@@ -509,7 +509,7 @@ async submitApplication() {
                 }
             });
             this.snackbar = { show: true, message: "강의 신청이 완료되었습니다.", color: "success" };
-            // this.closeApplyModal();
+            this.closeApplyModal();
             // location.reload(); // 페이지 새로 고침
         } catch (error) {
             alert(error.response.data.error_message);

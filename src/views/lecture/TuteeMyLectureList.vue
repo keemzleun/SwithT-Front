@@ -19,7 +19,8 @@
         <v-card-text>
             <v-row class="lessons-container">
                 <v-col v-for="lecture in lectures" :key="lecture.id" cols="4" class="mb-4">
-                    <div @click="clickLectureHome(lecture.lectureGroupId)" class="lesson-card">
+                    <div @click="clickLectureImage(lecture.lectureGroupId)" class="lesson-card"
+                    :class="{ 'terminated-lecture': lecture.status === 'TERMINATE'}">
                         <img :src="lecture.lectureImage" alt="강의 썸네일" class="lecture-image" />
                         <br>
                         <v-chip v-if="lecture.lectureType === 'LESSON'" color="primary" class="mr-2">과외</v-chip>
@@ -30,6 +31,13 @@
                         
                         <br>
                         {{ lecture.startDate }} ~ {{ lecture.endDate }}
+
+                        <v-btn 
+            class="review-button" 
+            color="blue"
+        >
+            리뷰작성
+        </v-btn>
                     </div>
                 </v-col>
             </v-row>
@@ -86,7 +94,7 @@ export default {
             this.showLectureList();
         },
 
-        clickLectureHome(lectureGroupId) {
+        clickLectureImage(lectureGroupId) {
             if (this.status === 'ADMIT') {
                 this.$router.push(`/lecture-home/${lectureGroupId}`);
             }
@@ -121,4 +129,27 @@ export default {
 .admit-color {
     background-color: #90CDFF;
 }
+
+.lesson-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.review-button {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+/* Show the review button on hover only if the lecture is terminated */
+.terminated-lecture:hover .review-button {
+    display: inline-block;
+    opacity: 1;
+}
+
 </style>

@@ -202,6 +202,7 @@
             { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
             { title: '신청 내역', icon: 'assignment', route: '/tutee-applied-list'},
             { title: '내 정보', icon: 'person', route: '/member/mypage' },
+            { title: '내 결제내역', icon: 'payments', route: 'payments/list' },
           ];
         } else if (this.userRole === 'TUTOR') {
           this.menuItems = [

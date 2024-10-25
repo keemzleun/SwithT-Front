@@ -12,7 +12,7 @@
         <!-- Lecture Tabs -->
         <v-tabs v-model="tab" align-tabs="center" class="mt-5">
             <v-tab value="dashboard">대시보드</v-tab>
-            <v-tab value="assignment" >과제</v-tab>
+            <v-tab value="assignment">과제</v-tab>
             <v-tab value="notice">게시판</v-tab>
             <v-tab value="tuteeList" v-if="isLecture && istutor">튜티 리스트</v-tab>
         </v-tabs>
@@ -23,7 +23,7 @@
                 <v-container>
                     <v-row>
                         <!-- 과제 리스트 -->
-                        <v-col cols="12" md="6" > 
+                        <v-col cols="12" md="6">
                             <v-card class="pa-4 mb-3" outlined height="400px">
                                 <v-card-title><strong>과제 리스트</strong> </v-card-title>
                                 <v-spacer></v-spacer>
@@ -33,7 +33,7 @@
                                         <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
                                         <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
                                     </v-row>
-                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2" >
+                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2">
                                         <v-col cols="4">{{ assignment.title }}</v-col>
                                         <v-col cols="4">{{ assignment.startDate }}</v-col>
                                         <v-col cols="4">{{ assignment.endDate }}</v-col>
@@ -45,8 +45,9 @@
                                         <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
                                         <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
                                     </v-row>
-                                    <v-row class="mb-2" >
-                                        <v-col cols="12" class="text-center" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size:large;">
+                                    <v-row class="mb-2">
+                                        <v-col cols="12" class="text-center"
+                                            style="height: 100px; display: flex; align-items: center; justify-content: center; font-size:large;">
                                             등록된 과제가 없습니다
                                         </v-col>
                                     </v-row>
@@ -126,7 +127,8 @@
 
                         <!-- 과제 목록 -->
                         <v-row justify="center" v-if="assignments.length">
-                            <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id" class="text-left">
+                            <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
+                                class="text-left">
                                 <v-card class="pa-4 mb-3" variant="outlined">
                                     <v-row>
                                         <v-col @click="viewAssignmentOpen(assignment.id)">
@@ -134,9 +136,10 @@
                                             <p>제출 시작 날짜: {{ assignment.startDate }}</p>
                                             <p>제출 마감 날짜: {{ assignment.endDate }}</p>
                                         </v-col>
-                        
+
                                         <v-col cols="auto">
-                                            <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)" v-if="this.istutor">
+                                            <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)"
+                                                v-if="this.istutor">
                                                 <v-icon>mdi-pencil</v-icon>
                                             </v-btn>
                                         </v-col>
@@ -144,7 +147,7 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        
+
                         <!-- 과제가 없을 경우 표시할 내용 -->
                         <v-row justify="center" v-else>
                             <v-col cols="12" class="text-center">
@@ -163,8 +166,9 @@
             <v-tabs-window-item value="notice">
                 <v-row justify="space-between">
                     <v-col class="ml-5" cols="5">
-                        <v-btn :class="onlyNotice ? 'active' : 'inactive'" rounded @click="onlyNotice = !onlyNotice; onlyNoticeClick();">
-                            {{onlyNotice? "전체 보기" : "공지사항만 보기"}}
+                        <v-btn :class="onlyNotice ? 'active' : 'inactive'" rounded
+                            @click="onlyNotice = !onlyNotice; onlyNoticeClick();">
+                            {{ onlyNotice ? "전체 보기" : "공지사항만 보기" }}
                         </v-btn>
                     </v-col>
                     <v-col class="mr-15" cols="5"><v-btn rounded color="#90CDFF"
@@ -180,7 +184,7 @@
                         </v-row>
                     </v-col>
                 </v-row>
-                
+
                 <!-- 공지사항 리스트 -->
                 <v-row justify="center">
                     <v-col cols="8" v-if="notices.length">
@@ -191,7 +195,7 @@
                             <v-col cols="3">{{ notice.postDate }}</v-col>
                         </v-row>
                     </v-col>
-                
+
                     <!-- 공지사항이 없을 때 표시 -->
                     <v-col cols="8" v-else class="text-center">
                         <v-card class="pa-4 mb-3" min-height="200px">
@@ -199,7 +203,7 @@
                         </v-card>
                     </v-col>
                 </v-row>
-                
+
                 <v-pagination v-model="noticePage" :length="noticePages"
                     @click="handleNoticePageChange()"></v-pagination>
 
@@ -236,7 +240,7 @@
                                     class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
                                     style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
                                     variant="outlined">
-                
+
                                     <v-row>
                                         <v-col>
                                             <v-list-item-avatar>
@@ -247,7 +251,8 @@
                                         </v-col>
                                         <v-col class="d-flex justify-center" style="align-items: center;">
                                             <v-list-item-content>
-                                                <v-list-item-title class="tutee-name" style="font-weight:400; text-align: center;">
+                                                <v-list-item-title class="tutee-name"
+                                                    style="font-weight:400; text-align: center;">
                                                     <h5>{{ tutee.tuteeName }}</h5>
                                                 </v-list-item-title>
                                             </v-list-item-content>
@@ -255,11 +260,12 @@
                                     </v-row>
                                 </v-list-item>
                             </template>
-                
+
                             <!-- 튜티가 없을 경우 메시지 출력 -->
                             <v-row v-else justify="center">
                                 <v-col cols="12" class="text-center">
-                                    <v-card class="pa-4 mb-3 align-center mx-auto" min-height="160px" width="80%" style="overflow: hidden;">
+                                    <v-card class="pa-4 mb-3 align-center mx-auto" min-height="160px" width="80%"
+                                        style="overflow: hidden;">
                                         <h3>등록된 튜티가 없습니다</h3>
                                     </v-card>
                                 </v-col>
@@ -267,7 +273,7 @@
                         </v-list>
                     </v-card-text>
                 </v-card>
-                
+
             </v-tabs-window-item>
         </v-tabs-window>
 
@@ -392,7 +398,7 @@
                         hide-details></v-switch> -->
                     <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
                     <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
-                        <v-radio label="공지사항으로 등록" :value="true"></v-radio>
+                        <v-radio label="공지사항으로 등록" :value="true" v-if="isTutor"></v-radio>
                         <v-radio label="게시글로 등록" :value="false"></v-radio>
                     </v-radio-group>
                     <!-- 제목  -->
@@ -421,7 +427,7 @@
 
                     <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
                     <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
-                        <v-radio label="공지사항으로 등록" :value="true"></v-radio>
+                        <v-radio label="공지사항으로 등록" :value="true" v-if="isTutor"></v-radio>
                         <v-radio label="게시글로 등록" :value="false"></v-radio>
                     </v-radio-group>
                     <!-- 제목  -->

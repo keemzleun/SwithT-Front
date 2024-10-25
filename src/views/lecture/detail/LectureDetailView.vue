@@ -182,7 +182,7 @@
         </v-snackbar>
     </v-container>
 
-    <v-dialog v-model="isApplyModalOpen" max-width="600px">
+    <v-dialog v-model="isApplyModalOpen" max-width="600px" maxHeight="400px">
         <v-card style="padding: 40px 20px 50px; border-radius: 10px;">
             <div style="font-size: 24px; font-weight: 700; margin: auto;">강의 신청</div>
             <v-card-text>
@@ -245,35 +245,52 @@
         </v-card>
     </v-dialog>
 
+    <!-- 대기열 모달 -->
     <v-dialog v-model="waitingDialog" persistent max-width="600px">
-        <v-card style="padding: 40px 20px 50px; border-radius: 10px;">
-          <v-card-title class="headline">대기열 상태</v-card-title>
-          <v-card-text>
-            <div v-if="loading">대기열 정보를 불러오는 중...</div>
-            <div v-else>
+        <v-card style="padding: 40px 20px 50px; border-radius: 10px; text-align: center;">
+            <v-card-title class="headline">대기열 상태</v-card-title>
+            <v-card-text>
+                
                 <div v-if="queueStatusMessage">{{ queueStatusMessage }}</div> <!-- 대기열 상태 메시지 표시 -->
-              <div v-if="queuePosition !== null && queuePosition !== -1">
-                현재 대기 순번은 <strong>{{ this.rank }}</strong>번 입니다.
-              </div>
-              <div v-else>
-                대기열 정보가 없습니다.
-              </div>
-            </div>
-          </v-card-text>
+                
+                <div v-if="this.rank !== -1 && this.rank !== null && this.rank !== 0">
+                    현재 대기 순번은 <strong>{{ this.rank }}</strong>번 입니다.
+                </div>
+                
+                <div v-if="this.rank == 0">잠시 후 결제 페이지로 넘어갑니다.</div>
+                
+                <div v-else-if="this.rank === -1 || this.rank === null">
+                    대기열 정보를 불러오는 중입니다.
+                </div>
+                
+                <div class="caution">창을 벗어날 시 대기열에서 순번이 뒤로 밀리게 됩니다.</div>
+            </v-card-text>
         </v-card>
-      </v-dialog>  
+    </v-dialog>
+    
+      <!-- YesOrNoModal -->
+      <YesOrNoModal
+        v-model:dialog="showPaymentModal"
+        :title="paymentModalTitle"
+        :contents="paymentModalContents"
+        yesBtnName="결제"
+        @confirmed="proceedPayment"
+     />
 </template>
 
 <script>
 import axios from 'axios';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import YesOrNoModal from "@/components/YesOrNoModal.vue";
+import { jwtDecode } from 'jwt-decode'
+
 
 export default {
   components: {
     LectureDetailInfoComponent,
     ReviewListComponent,
+    YesOrNoModal,
   },
   data() {
     return {
@@ -298,16 +315,20 @@ export default {
       tutorId: null,
       lectureId : this.$route.params.id,
       memberId: null,
-      memnerName: null,
+      memberName: null,
       snackbar: {
             show: false,
             message: "",
             color: ""
         },
       waitingDialog: false,
-      loading: false,
       rank: null,
-
+      queueStatusMessage: '', // 대기열 상태 메시지
+      showPaymentModal: false, // 모달 표시 여부
+      paymentModalTitle: '',
+      paymentModalContents: '',
+      queueRank: -1,
+      getOrderData: null,
     };
   },
   created() {
@@ -320,11 +341,9 @@ export default {
   async mounted() {
     await this.fetchLectureDetail(); // 강의 세부 정보를 먼저 가져옵니다.
     await this.fetchTutorInfo(); // 이후 강사 정보를 가져옵니다.
-    this.setupSSE(); // 컴포넌트 마운트 시 SSE 설정
   },
   
   methods: {
-    
     async fetchLectureDetail() {
       const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
       try {
@@ -358,7 +377,6 @@ export default {
               endTime: time.endTime,
               groupIndex: index + 1 // 인덱스를 강의 그룹 순서대로 부여
             }))
-            
           }));
           
 
@@ -441,18 +459,16 @@ export default {
         });
         return schedule;
 },
-
-
 getRandomColor() {
     const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
 },
-
 async fetchTutorInfo() {
     try {
     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
     this.tutorInfo = response.data.result; // 강사 정보를 저장
+    console.log(this.tutorInfo);
     } catch (error) {
     console.error('강사 정보를 가져오는 데 실패했습니다:', error);
     }
@@ -465,8 +481,8 @@ formatPrice(value) {
     return new Intl.NumberFormat('ko-KR').format(value);
 },
 openApplyModal() {
-      this.isApplyModalOpen = true;
-    },
+    this.isApplyModalOpen = true;
+},
 closeApplyModal() {
     this.isApplyModalOpen = false;
     this.selectedLectureGroup = null;
@@ -474,17 +490,21 @@ closeApplyModal() {
     this.endDate = null;
     this.lectureLocation = '';
     
-    // 대기열 업데이트 중지
-    if (this.queueUpdateInterval) {
-        clearInterval(this.queueUpdateInterval);
-        this.queueUpdateInterval = null; // 인터벌 초기화
-    }
+},
+closeWaitingDialog() {
+    this.waitingDialog = false;
+    this.sendDeleteQueue();
+},
+sendDeleteQueue() {
+    axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-delete-queue`, null, { 
+        params: this.getOrderData
+    });
 },
 selectLectureGroup(group) {
-    this.selectedLectureGroup = group
-
+    this.selectedLectureGroup = group;
     console.log(this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
 },
+
 async submitApplication() {
 
     this.token = localStorage.getItem('token');
@@ -495,10 +515,7 @@ async submitApplication() {
 
     // LECTURE 신청 로직
     if (this.lectureInfo.lectureType === "LECTURE") {
-
-        this.loading = true;
-        this.waitingDialog = true;
-
+    
         const requestData = {
             lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID
             memberId: this.memberId, // 요청할 때 필요한 memberId
@@ -507,29 +524,45 @@ async submitApplication() {
 
         try {
             // 대기열에 넣기
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-add-queue`, null, { 
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-add-queue`, null, { 
                 params: requestData // 쿼리 파라미터로 전달
             });
-            this.rank = response.data.result;
+            console.log("this.rank:" + this.rank);
+            this.waitingDialog = true;  // 대기열 모달 열기
+
+            this.getOrderData = {
+                lectureGroupId: this.selectedLectureGroup.lectureGroupId,
+                memberId: this.memberId,
+            };
+
+            try {
+                while(this.rank !== 0 && this.rank !== -1) {
+                    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-get-order`, { 
+                        params: this.getOrderData
+                    });
+
+                    this.rank = response.data.result;
+                    console.log("현재 대기열 순위: " + this.rank);
+
+                    // 3초 대기
+                    await new Promise(resolve => setTimeout(resolve, 3000)); 
+                }
+
+                this.closeWaitingDialog();
+                // 결제 로직 실행
+                this.confirmPayment();
+
+            } catch (error) {
+                this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+                this.closeApplyModal();
+                this.waitingDialog = false;
+            }
 
         } catch (error) {
             this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+            this.closeApplyModal();
+            this.waitingDialog = false;
         }
-
-        const queueReqData = {
-            lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID
-            memberId: this.memberId, // 요청할 때 필요한 memberId
-        }
-
-        while(this.rank !== 0){
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-get-order`, null, { 
-                params: queueReqData
-            });
-
-            this.rank = response.data.result;
-            console.log(this.rank);
-        }
-
 
         
     }
@@ -562,55 +595,10 @@ async submitApplication() {
         } catch (error) {
             alert(error.response.data.error_message);
             console.error("강의 신청 중 오류가 발생했습니다:", error);
-            this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" }; // Snackbar 사용
+            this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" };
         }
     }
 },
-async fetchQueueStatus() {
-  try {
-      const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-queue/${this.selectedLectureGroup.lectureGroupId}/${this.memberId}`);
-      if (response.data.result) {
-          return response.data.result; // 대기열 정보 반환
-      } else {
-          this.queueStatusMessage = '대기열 정보가 없습니다.'; // 대기열 정보가 없을 때 메시지 표시
-          return { rank: -1 }; // 기본값 반환
-      }
-  } catch (error) {
-      console.error('대기열 상태 조회 중 오류가 발생했습니다:', error);
-      this.queueStatusMessage = '대기열 상태 조회 중 오류가 발생했습니다.'; // 오류 메시지 표시
-      return { rank: -1 }; // 기본값 반환
-  }
-},
-setupSSE() {
-      const token = localStorage.getItem('token');
-      if (token) {
-        let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/subscribe`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        console.log("EventSource created"); // 디버깅용 로그
-
-        sse.addEventListener('connect', (event) => {
-          console.log(event);
-        });
-
-        sse.addEventListener('waiting-notifications', (event) => { // 'waiting-notifications' 이벤트
-          console.log('Waiting notification received:', event);
-          if (event.data && event.data !== '""') {
-            const waitingData = JSON.parse(event.data);
-
-            // 대기열 상태 업데이트
-            if (waitingData && waitingData.rank >= 0) {
-                this.queuePosition = waitingData.rank;
-                this.snackbar.success(`대기열에서 ${this.queuePosition + 1}번째 순번입니다.`);
-            } else {
-                this.snackbar.error('대기열 정보가 없습니다.');
-            }
-          }
-        });
-      } else {
-        console.log("Token not found"); // 토큰이 없을 경우
-      }
-    },
 checkAndSelectGroup(group) {
     console.log('강의 그룹 상태:', group.isAvailable, '잔여석:', group.remaining);
     
@@ -619,8 +607,64 @@ checkAndSelectGroup(group) {
     } else {
         console.log('선택할 수 없는 강의 그룹입니다.');
     }
-}
+},
+confirmPayment() {
+    this.paymentModalTitle = `${this.lectureInfo.title} 결제하시겠습니까?`;
+    this.paymentModalContents = "결제를 진행하려면 결제 버튼을 클릭하세요.";
+    this.showPaymentModal = true; // 결제 확인 모달을 엶
+},
+async proceedPayment() {
+    this.showPaymentModal = false; // 모달 닫기
+    try {
+        this.initiatePayment(); // 결제 진행
+    } catch (error) {
+        console.error('결제 요청 중 오류 발생:', error);
+    }
+},
+initiatePayment() {
 
+    const IMP = window.IMP;  // 아임포트 전역 객체
+    IMP.init("imp00575764"); // 아임포트 상점 고유코드로 초기화
+
+
+    const paymentData = {
+        pg: "html5_inicis", // 결제 PG사
+        pay_method: "card", // 결제 방법
+        merchant_uid: `merchant_${new Date().getTime()}`, // 주문번호
+        name: this.lectureInfo.title, // 결제 내역
+        amount: this.selectedLectureGroup.price, // 결제 금액
+        buyer_email: jwtDecode(localStorage.getItem('token')).email,
+        buyer_name: jwtDecode(localStorage.getItem('token')).name,
+        buyer_tel: "",
+    };
+
+    this.closeApplyModal();
+    console.log(paymentData);
+
+    IMP.request_pay(paymentData, this.processPayment); // 결제 요청
+},
+async processPayment(rsp) {
+
+    console.log("processPayment");
+    try {
+        this.memberId = localStorage.getItem('id');
+        if (rsp.success) {
+            const data = {
+                impUid: rsp.imp_uid, // 아임포트 거래 고유번호
+                title: this.lectureInfo.title,
+                price: this.lectureInfo.price,
+                memberId: this.memberId,
+                lectureGroupId: this.selectedLectureGroup.lectureGroupId,
+            };
+            console.log(data);
+
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/complete`, data);
+            alert("결제가 완료되었습니다!");
+        }
+    } catch (error) {
+        console.log("결제 처리 중 오류 발생:", error);
+    }
+},
 }}
 </script>
 
@@ -737,6 +781,9 @@ td {
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
     opacity: 0;
 }
-
+.caution {
+    font-size: 14px;
+    color: red;
+}
 
 </style>

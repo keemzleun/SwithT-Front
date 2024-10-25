@@ -117,6 +117,14 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
     
   ![로그인 화면 진입 탭 전환 ](https://github.com/user-attachments/assets/1509c0d4-1a95-42d5-8d10-b21d363914f0)
   ![TUTOR 회원가입](https://github.com/user-attachments/assets/521ac644-a6a1-48cb-9091-db7b12d516e5)
+  ![TUTEE 회원가입 및 로그인](https://github.com/user-attachments/assets/edc95f62-d68e-41ed-9042-773ad4c527f2)
+
+<summary><b>카카오 소셜 로그인 및 회원 가입</b></summary>
+
+
+<summary><b>구글 소셜 로그인 및 회원 가입</b></summary>
+
+
 </details>
 <br/>
 

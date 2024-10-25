@@ -182,7 +182,7 @@
         </v-snackbar>
     </v-container>
 
-    <v-dialog v-model="isApplyModalOpen" max-width="600px">
+    <v-dialog v-model="isApplyModalOpen" max-width="600px" maxHeight="400px">
         <v-card style="padding: 40px 20px 50px; border-radius: 10px;">
             <div style="font-size: 24px; font-weight: 700; margin: auto;">강의 신청</div>
             <v-card-text>
@@ -228,34 +228,74 @@
                             <v-row>
                                 <v-col>
                                     <label for="location" class="form-label">강의 위치</label>
-                                    <input v-model="location" id="location" class="form-control" type="text" />
+                                    <v-btn style="border: 1px solid #ccc; padding-left:5px;" variant="outlined" class="ml-3 mb-2"
+                                      @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
+                                      <div>{{this.location}}</div>
+                                    <input v-model="detailAddress" id="detailAddress" class="form-control" type="text" />
                                 </v-col>
                             </v-row>
                         </div>
                     </div>
+                    
                 </transition>
             </v-card-text>
             <v-card-actions style="justify-content: flex-end;">
                 <transition name="fade">
-                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication">신청하기</v-btn>
+                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication(); closeApplyModal();">신청하기</v-btn>
                 </transition>
                 <v-btn @click="closeApplyModal">취소</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <!-- 대기열 모달 -->
+    <v-dialog v-model="waitingDialog" persistent max-width="600px">
+        <v-card style="padding: 40px 20px 50px; border-radius: 10px; text-align: center;">
+            <v-card-title class="headline">대기열 상태</v-card-title>
+            <v-card-text>
+                
+                <div v-if="queueStatusMessage">{{ queueStatusMessage }}</div> <!-- 대기열 상태 메시지 표시 -->
+                
+                <div v-if="this.rank !== -1 && this.rank !== null && this.rank !== 0">
+                    현재 대기 순번은 <strong>{{ this.rank }}</strong>번 입니다.
+                </div>
+                
+                <div v-if="this.rank == 0">잠시 후 결제 페이지로 넘어갑니다.</div>
+                
+                <div v-else-if="this.rank === -1 || this.rank === null">
+                    대기열 정보를 불러오는 중입니다.
+                </div>
+                
+                <div class="caution">창을 벗어날 시 대기열에서 순번이 뒤로 밀리게 됩니다.</div>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
     
-    
+      <!-- YesOrNoModal -->
+      <YesOrNoModal
+        v-model:dialog="showPaymentModal"
+        :title="paymentModalTitle"
+        :contents="paymentModalContents"
+        yesBtnName="결제"
+        @confirmed="proceedPayment"
+     />
 </template>
 
 <script>
+/* global kakao */
+
 import axios from 'axios';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
+import YesOrNoModal from "@/components/YesOrNoModal.vue";
+import { jwtDecode } from 'jwt-decode'
+
 
 export default {
   components: {
     LectureDetailInfoComponent,
     ReviewListComponent,
+    YesOrNoModal,
   },
   data() {
     return {
@@ -266,6 +306,8 @@ export default {
       selectedLectureGroup: null,
       startDate: null,
       endDate: null,
+      location:null,
+      detailAddress : null,
       days: ['월', '화', '수', '목', '금', '토', '일'],
       hours: [
         '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -280,12 +322,20 @@ export default {
       tutorId: null,
       lectureId : this.$route.params.id,
       memberId: null,
-      memnerName: null,
+      memberName: null,
       snackbar: {
             show: false,
             message: "",
             color: ""
         },
+      waitingDialog: false,
+      rank: null,
+      queueStatusMessage: '', // 대기열 상태 메시지
+      showPaymentModal: false, // 모달 표시 여부
+      paymentModalTitle: '',
+      paymentModalContents: '',
+      queueRank: -1,
+      getOrderData: null,
     };
   },
   created() {
@@ -298,9 +348,54 @@ export default {
   async mounted() {
     await this.fetchLectureDetail(); // 강의 세부 정보를 먼저 가져옵니다.
     await this.fetchTutorInfo(); // 이후 강사 정보를 가져옵니다.
+    this.loadDaumPostcodeScript();
+    this.loadKakaoMapScript();
   },
+  
   methods: {
-    
+    loadDaumPostcodeScript() {
+      const script = document.createElement('script');
+      script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      script.onload = () => {
+        this.isDaumScriptLoaded = true;
+      };
+      document.head.appendChild(script);
+    },
+    loadKakaoMapScript() {
+      const script = document.createElement('script');
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=03a055c21377bee26ab1559dedf4af6f&libraries=services&autoload=false`;
+      script.onload = () => {
+        window.kakao.maps.load(() => {
+          this.isKakaoScriptLoaded = true;
+        });
+      };
+      document.head.appendChild(script);
+    },
+    updateAddress() {
+      if (window.daum && window.daum.Postcode) {
+        // eslint-disable-next-line no-undef
+        new daum.Postcode({
+          oncomplete: (data) => {
+            this.location = data?.roadAddress;
+
+            // 주소 검색한 거 기반으로 위도 경도
+            // 좌표 검색을 위해 Kakao 지도 Geocoder 사용
+            const geocoder = new kakao.maps.services.Geocoder();
+            geocoder.addressSearch(this.roadAddress, (result, status) => {
+              if (status === kakao.maps.services.Status.OK) {
+                console.log('위도 : ' + result[0].y);
+                console.log('경도 : ' + result[0].x);
+
+                // 지도에 마커를 추가하는 로직
+                this.initMap(result[0].y, result[0].x);
+              }
+            });
+          }
+        }).open();
+      } else {
+        console.error("Daum Postcode 스크립트가 로드되지 않았습니다.");
+      }
+    },
     async fetchLectureDetail() {
       const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
       try {
@@ -334,7 +429,6 @@ export default {
               endTime: time.endTime,
               groupIndex: index + 1 // 인덱스를 강의 그룹 순서대로 부여
             }))
-            
           }));
           
 
@@ -417,18 +511,16 @@ export default {
         });
         return schedule;
 },
-
-
 getRandomColor() {
     const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
 },
-
 async fetchTutorInfo() {
     try {
     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
     this.tutorInfo = response.data.result; // 강사 정보를 저장
+    console.log(this.tutorInfo);
     } catch (error) {
     console.error('강사 정보를 가져오는 데 실패했습니다:', error);
     }
@@ -441,20 +533,33 @@ formatPrice(value) {
     return new Intl.NumberFormat('ko-KR').format(value);
 },
 openApplyModal() {
-      this.isApplyModalOpen = true;
-    },
+    this.isApplyModalOpen = true;
+},
 closeApplyModal() {
     this.isApplyModalOpen = false;
     this.selectedLectureGroup = null;
     this.startDate = null;
     this.endDate = null;
     this.lectureLocation = '';
+    this.location = null;
+    this.detailAddress=null;
+    
+},
+closeWaitingDialog() {
+    this.waitingDialog = false;
+    this.sendDeleteQueue();
+},
+sendDeleteQueue() {
+    axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-delete-queue`, null, { 
+        params: this.getOrderData
+    });
+    
 },
 selectLectureGroup(group) {
-    this.selectedLectureGroup = group
-
+    this.selectedLectureGroup = group;
     console.log(this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
 },
+
 async submitApplication() {
 
     this.token = localStorage.getItem('token');
@@ -462,31 +567,62 @@ async submitApplication() {
     this.memberName = localStorage.getItem('name');
 
     console.log(this.lectureInfo.lectureType);
-    // LECTURE 타입 처리
+
+    // LECTURE 신청 로직
     if (this.lectureInfo.lectureType === "LECTURE") {
+    
         const requestData = {
             lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID
             memberId: this.memberId, // 요청할 때 필요한 memberId
             memberName: this.memberName, // 요청할 때 필요한 memberName
         };
-        console.log(requestData);
 
         try {
-            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-apply`, null, { 
+            // 대기열에 넣기
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-add-queue`, null, { 
                 params: requestData // 쿼리 파라미터로 전달
             });
-            this.snackbar = { show: true, message: "강의 신청이 완료되었습니다.", color: "success" };
-            this.closeApplyModal();
+            console.log("this.rank:" + this.rank);
+            this.waitingDialog = true;  // 대기열 모달 열기
 
-            // location.reload(); // 페이지 새로 고침
+            this.getOrderData = {
+                lectureGroupId: this.selectedLectureGroup.lectureGroupId,
+                memberId: this.memberId,
+            };
+
+            try {
+                while(this.rank !== 0 && this.rank !== -1) {
+                    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-get-order`, { 
+                        params: this.getOrderData
+                    });
+
+                    this.rank = response.data.result;
+                    console.log("현재 대기열 순위: " + this.rank);
+
+                    // 3초 대기
+                    await new Promise(resolve => setTimeout(resolve, 3000)); 
+                }
+
+                this.closeWaitingDialog();
+                // 결제 로직 실행
+                this.confirmPayment();
+
+            } catch (error) {
+                this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+                this.closeApplyModal();
+                this.waitingDialog = false;
+            }
+
         } catch (error) {
-            alert(error.response.data.error_message);
-            console.error("강의 신청 중 오류가 발생했습니다:", error);
-            this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" };
+            this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+            this.closeApplyModal();
+            this.waitingDialog = false;
         }
-        return; 
+
+        
     }
-    // LESSON 타입 처리
+
+    // LESSON 신청 로직
     else if (this.lectureInfo.lectureType === "LESSON") {
 
         // 필수 입력 값 체크
@@ -494,12 +630,13 @@ async submitApplication() {
             this.snackbar = { show: true, message: "시작일, 종료일, 위치를 입력해 주세요.", color: "error" };
             return;
         }
-
+        console.log(this.location + this.detailAddress)
         const requestData = {
             lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID
             startDate: this.startDate, // 시작일
             endDate: this.endDate, // 종료일
             location: this.location, // 강의 위치
+            detailAddress: this.detailAddress, // 강의 위치
         };
 
         try {
@@ -514,20 +651,76 @@ async submitApplication() {
         } catch (error) {
             alert(error.response.data.error_message);
             console.error("강의 신청 중 오류가 발생했습니다:", error);
-            this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" }; // Snackbar 사용
+            this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" };
         }
     }
 },
 checkAndSelectGroup(group) {
-        console.log('강의 그룹 상태:', group.isAvailable, '잔여석:', group.remaining);
-        
-        if (group.isAvailable !== 'N' && group.remaining > 0) {
-            this.selectLectureGroup(group);
-        } else {
-            console.log('선택할 수 없는 강의 그룹입니다.');
-        }
+    console.log('강의 그룹 상태:', group.isAvailable, '잔여석:', group.remaining);
+    
+    if (group.isAvailable !== 'N' && group.remaining > 0) {
+        this.selectLectureGroup(group);
+    } else {
+        console.log('선택할 수 없는 강의 그룹입니다.');
     }
+},
+confirmPayment() {
+    this.paymentModalTitle = `${this.lectureInfo.title} 결제하시겠습니까?`;
+    this.paymentModalContents = "결제를 진행하려면 결제 버튼을 클릭하세요.";
+    this.showPaymentModal = true; // 결제 확인 모달을 엶
+},
+async proceedPayment() {
+    this.showPaymentModal = false; // 모달 닫기
+    try {
+        this.initiatePayment(); // 결제 진행
+    } catch (error) {
+        console.error('결제 요청 중 오류 발생:', error);
+    }
+},
+initiatePayment() {
 
+    const IMP = window.IMP;  // 아임포트 전역 객체
+    IMP.init("imp00575764"); // 아임포트 상점 고유코드로 초기화
+
+
+    const paymentData = {
+        pg: "html5_inicis", // 결제 PG사
+        pay_method: "card", // 결제 방법
+        merchant_uid: `merchant_${new Date().getTime()}`, // 주문번호
+        name: this.lectureInfo.title, // 결제 내역
+        amount: this.selectedLectureGroup.price, // 결제 금액
+        buyer_email: jwtDecode(localStorage.getItem('token')).email,
+        buyer_name: jwtDecode(localStorage.getItem('token')).name,
+        buyer_tel: "",
+    };
+
+    this.closeApplyModal();
+    console.log(paymentData);
+
+    IMP.request_pay(paymentData, this.processPayment); // 결제 요청
+},
+async processPayment(rsp) {
+
+    console.log("processPayment");
+    try {
+        this.memberId = localStorage.getItem('id');
+        if (rsp.success) {
+            const data = {
+                impUid: rsp.imp_uid, // 아임포트 거래 고유번호
+                title: this.lectureInfo.title,
+                price: this.lectureInfo.price,
+                memberId: this.memberId,
+                lectureGroupId: this.selectedLectureGroup.lectureGroupId,
+            };
+            console.log(data);
+
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/complete`, data);
+            alert("결제가 완료되었습니다!");
+        }
+    } catch (error) {
+        console.log("결제 처리 중 오류 발생:", error);
+    }
+},
 }}
 </script>
 
@@ -644,6 +837,9 @@ td {
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
     opacity: 0;
 }
-
+.caution {
+    font-size: 14px;
+    color: red;
+}
 
 </style>

@@ -9,7 +9,7 @@
       style="background-color: #6c97fd; width: 200px; height: 50px; border: 1px solid #003366;" 
       color="white"
     >
-      <v-icon left>mdi-pencil</v-icon> <!-- 연필 아이콘 추가 -->
+      <v-icon left>mdi-pencil</v-icon>
       <b>리뷰 작성</b>
     </v-btn>
     

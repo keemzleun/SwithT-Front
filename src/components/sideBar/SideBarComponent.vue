@@ -159,7 +159,7 @@
               localStorage.setItem('paymentEvents', JSON.stringify(this.paymentEvents)); // 저장
             } 
             // 일반 알림 처리
-            else if (newEvent.messageType !== '결제요청' && !isDuplicateGeneral) {
+            else if (newEvent.messageType !== 'WAITING-SUCCESS' && newEvent.messageType !== '결제요청' && !isDuplicateGeneral) {
               this.generalEvents.push(newEvent);
               localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents)); // 저장
             }
@@ -202,6 +202,7 @@
             { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
             { title: '신청 내역', icon: 'assignment', route: '/tutee-applied-list'},
             { title: '내 정보', icon: 'person', route: '/member/mypage' },
+            { title: '내 결제내역', icon: 'payments', route: 'payments/list' },
           ];
         } else if (this.userRole === 'TUTOR') {
           this.menuItems = [

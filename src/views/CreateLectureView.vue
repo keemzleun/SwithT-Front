@@ -601,8 +601,26 @@ export default {
       this.snackbar.visible = true;
     },
     removeLectureGroup(index) {
+     const removedGroup = this.lectureGroups[index];
+
+      // 스케줄에서 삭제된 강의 그룹의 시간 슬롯 제거
+      removedGroup.timeSlots.forEach(slot => {
+        const startHour = this.hours.indexOf(slot.startTime);
+        const endHour = this.hours.indexOf(slot.endTime);
+        const day = slot.day;
+
+        // 해당 시간 슬롯을 null로 설정
+        if (this.schedule[day]) {
+          for (let i = startHour; i < endHour; i++) {
+            if (this.schedule[day][i] && this.schedule[day][i].name === removedGroup.name) {
+              delete this.schedule[day][i];
+            }
+          }
+        }
+      });
+
+      // 강의 그룹 리스트에서 삭제
       this.lectureGroups.splice(index, 1);
-      // 선택된 강의 그룹을 제거합니다.
     },
     removeTimeSlot(index) {
       this.currentLecture.timeSlots.splice(index, 1);

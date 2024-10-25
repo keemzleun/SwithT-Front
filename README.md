@@ -52,15 +52,16 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 ![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white)
 ![figma](https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
+![비쥬얼스튜디유배지](https://github.com/user-attachments/assets/cea0916b-0cd1-45b6-8419-8f509ac2f7dd)
+![인텔리제이이미지](https://github.com/user-attachments/assets/ea3e3db1-2d34-4cd4-99be-f41e1edaa9a5)
 
 
 ### DEVOPS
 <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white">
-![도커 이미지](https://github.com/user-attachments/assets/970506d7-8e77-46e8-835d-62dd8100fbd9)
-![RDS 이미지](https://github.com/user-attachments/assets/150b54dd-9016-4c4c-abd0-834adb4c8a6e)
-![도커](https://github.com/user-attachments/assets/cc2fd2bd-e334-4103-a163-6a4d9ee4cb2d)
-![쿠버네티스 이미지](https://github.com/user-attachments/assets/14513753-f725-45cc-8ecd-6f76cd034b4b)
 
+  ![도커 이미지](https://github.com/user-attachments/assets/970506d7-8e77-46e8-835d-62dd8100fbd9)
+  ![RDS 이미지](https://github.com/user-attachments/assets/150b54dd-9016-4c4c-abd0-834adb4c8a6e)
+  ![쿠버네티스 이미지](https://github.com/user-attachments/assets/14513753-f725-45cc-8ecd-6f76cd034b4b)
 
 
 <br/>

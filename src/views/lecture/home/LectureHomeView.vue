@@ -398,7 +398,7 @@
                         hide-details></v-switch> -->
                     <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
                     <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
-                        <v-radio label="공지사항으로 등록" :value="true" v-if="isTutor"></v-radio>
+                        <v-radio label="공지사항으로 등록" :value="true" v-if="istutor"></v-radio>
                         <v-radio label="게시글로 등록" :value="false"></v-radio>
                     </v-radio-group>
                     <!-- 제목  -->
@@ -427,7 +427,7 @@
 
                     <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
                     <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
-                        <v-radio label="공지사항으로 등록" :value="true" v-if="isTutor"></v-radio>
+                        <v-radio label="공지사항으로 등록" :value="true" v-if="istutor"></v-radio>
                         <v-radio label="게시글로 등록" :value="false"></v-radio>
                     </v-radio-group>
                     <!-- 제목  -->

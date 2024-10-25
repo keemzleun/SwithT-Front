@@ -146,3 +146,67 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 <img src="https://github.com/user-attachments/assets/2a5db18b-6b52-4f8a-a165-a7e0e77d4489" alt="튜터의 강의 그룹 수정"/>
 </details>
 <br/>
+
+### 튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인
+<details>
+<summary><b>튜티의 과외 신청</b></summary>
+<img src="https://github.com/user-attachments/assets/267beb74-6a7d-4296-9cac-22e4a2cb3125" alt="튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인"/>
+</details>
+<br/>
+<details>
+<summary><b>튜터 신청 승인</b></summary>
+<img src="https://github.com/user-attachments/assets/90359f2e-1eb8-4237-a761-ac308fa53f3d" alt="튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인"/>
+</details>
+<br/>
+<details>
+<summary><b>튜터 신청 승인 및 튜티 결제</b></summary>
+<img src="https://github.com/user-attachments/assets/90359f2e-1eb8-4237-a761-ac308fa53f3d" alt="튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인"/>
+</details>
+<br/>
+
+### 튜터의 과제 생성/조회/수정/삭제
+<details>
+<summary><b>튜터의 과제 생성</b></summary>
+<img src="https://github.com/user-attachments/assets/444ee043-4fc6-44a1-bd52-c98243d17984" alt="튜터의 과제 생성"/>
+</details>
+<br/>
+
+<details>
+<summary><b>튜터의 과제 수정</b></summary>
+<img src="https://github.com/user-attachments/assets/823296db-2072-40ae-b43e-cad6a6f8359d" alt="튜터의 과제 수정"/>
+</details>
+<br/>
+
+<details>
+<summary><b>튜터의 과제 삭제</b></summary>
+<img src="https://github.com/user-attachments/assets/8610dd5b-e38a-46f1-a2a3-32d5bbc75642" alt="튜터의 과제 삭제"/>
+</details>
+<br/>
+
+### 튜터의 게시글 생성/조회/수정/삭제
+<details>
+<summary><b>튜터의 게시글 생성</b></summary>
+<img src="https://github.com/user-attachments/assets/c6c971e6-20fb-4b40-b99c-7030624f77b7" alt="튜터의 게시글 생성"/>
+</details>
+
+<br/>
+
+<details>
+<summary><b>튜터의 게시글 수정</b></summary>
+<img src="https://github.com/user-attachments/assets/8b2bc19d-c4de-4f5d-9e94-74ad95111bf6" alt="튜터의 게시글 수정"/>
+</details>
+<br/>
+
+<details>
+<summary><b>튜터의 게시글 삭제</b></summary>
+<img src="https://github.com/user-attachments/assets/216776cc-13ae-4d3d-8ff8-881d324d5fdc" alt="튜터의 게시글 삭제"/>
+</details>
+<br/>
+
+### 댓글 생성/조회/수정/삭제
+<details>
+<summary><b>댓글 생성/조회/수정/삭제</b></summary>
+<img src="https://github.com/user-attachments/assets/41c6ee12-321b-489a-a957-216ab533f017" alt="댓글 생성/조회/수정/삭제/>
+</details>
+<br/>
+

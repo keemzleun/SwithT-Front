@@ -1,24 +1,37 @@
 <template>
-    <v-container fluid class="py-4 px-2 mt-15">
+    <v-container 
+    fluid class="py-4 px-2 mt-15"
+    :style="{ maxWidth: '1650px', maxHeight: '1400px', display: 'flex', flexDirection: 'column' }"
+    >
       <!-- 상단 출금 가능 금액과 예상 수익금 -->
-      <v-row class="mb-4 mt-15">
+      <v-row class="mb-4">
         <v-col cols="12" md="6">
-          <v-card class="pa-3">
-            <div class="text-h6">출금 가능한 금액</div>
+          <v-card 
+          class="pa-3"
+          :style="{ border: '1px solid lightgray', borderRadius: '20px' }"
+          >
+            <div class="text-h6">출금 가능 금액</div>
             <div class="text-h5 font-weight-bold">10,000,000원</div>
             <v-btn class="mt-2" color="primary" large>출금하기</v-btn>
           </v-card>
         </v-col>
         <v-col cols="12" md="6">
-          <v-card class="pa-3">
+          <v-card 
+          class="pa-3"
+          :style="{ border: '1px solid lightgray', borderRadius: '20px' }"
+          >
             <div class="text-h6">예상 수익금</div>
             <div class="text-h5 font-weight-bold">5,000,000원</div>
+            <div></div>
           </v-card>
         </v-col>
       </v-row>
   
       <!-- 그래프 (임의 더미 데이터) -->
-      <v-card class="pa-3 mb-4">
+      <v-card 
+      class="pa-3 mb-4"
+      :style="{ border: '1px solid lightgray', borderRadius: '20px' }"
+      >
         <div class="text-h6 mb-2">그래프 (입금 파란색, 출금 빨간색)</div>
         <div class="chart-container" style="position: relative; height: 35vh; width: 100%;">
           <canvas id="earningsChart"></canvas>

@@ -13,7 +13,7 @@
                         <transition name="fade">
                             <div style="display: flex; flex-wrap: wrap; gap: 8px">
                                 <div v-for="method in teachingMethods" :key="method.value"
-                                    :class="['custom-option', teachingMethod === method.value ? 'selected' : '']"
+                                    :class="['custom-option-disabled', teachingMethod === method.value ? 'selected' : '']"
                                     @click="teachingMethod === method.value && $event.stopPropagation()">
                                     {{ method.label }}
                                 </div>
@@ -73,45 +73,12 @@
                 </v-col>
             </v-row>
             
-            <!-- 강의 주소, 시작일, 종료일 -->
-            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
-                <v-col cols="3" class="d-flex align-center justify-center">
-                    <label>강의 주소</label>
-                </v-col>
-                <v-col cols="8">
-                    <v-row align="center">
-                        <v-col cols="2" class="align-left">
-                            <v-btn style="border: 1px solid #dee2e6; background-color: #f8f9fa; font-size: 14px" variant="outlined"
-                                @click="updateAddress()">주소 검색</v-btn>
-                        </v-col>
-                        <v-col class="align-center justify-center">
-                            <div class="text-left" style="font-weight: 700">{{ this.address }}</div>
-                        </v-col>
-                    </v-row>
-                    <v-row style="padding: 0 12px 10px;">
-                        <input v-model="detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" type="text"/>
-                    </v-row>
-                </v-col>
-            </v-row>
-            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
-                <v-col cols="3" class="d-flex align-center justify-center">
-                    <label>강의 기간</label>
-                </v-col>
-                <v-col cols="1">시작일</v-col>
-                <v-col cols="3">
-                    <input v-model="startDate" class="form-control" type="date" />
-                </v-col>
-                <v-col cols="1">종료일</v-col>
-                <v-col cols="3">
-                    <input v-model="endDate" class="form-control" type="date" />
-                </v-col>
-            </v-row>
 
             <!-- 강의 수정 버튼 -->
             <v-row class="form-group align-center">
                 <v-col cols="3"></v-col>
                 <v-col cols="8">
-                    <v-btn color="primary" @click="updateLecture">강의 수정</v-btn>
+                    <div class="edit-lecture" @click="updateLecture">강의 수정</div>
                 </v-col>
             </v-row>
         </v-form>
@@ -261,7 +228,7 @@ export default {
 
 <style scoped>
 .v-container {
-    margin: 60px 0;
+    margin: 60px auto;
     width: 70vw;
 }
 .custom-select-box {
@@ -277,10 +244,39 @@ export default {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
+.custom-option:hover {
+    transform: scale(1.05);
+}
 .custom-option.selected {
     border-color: #007bff;
     background-color: #e7f0ff;
     transform: scale(1.05);
+}
+.custom-option-disabled {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.custom-option-disabled.selected {
+    border-color: #76828e;
+    background-color: #dde0e5;
+}
+
+.edit-lecture {
+    background-color: #0d6efd;
+    color: #f5f5f5;
+    font-size: 16px;
+    font-weight: bold;
+    height: 50px;
+    width: 300px;
+    border-radius: 10px;
+    line-height: 50px;
+    margin-top: 120px;
+    transition: all 0.3s ease;
+}
+
+.edit-lecture:hover {
+  cursor: pointer;
+  transform: scale(1.05);
 }
 </style>

@@ -456,13 +456,13 @@ export default {
     submitLectureGroup() {
       // 모집 인원이 0인지 확인
       if (this.currentLecture.capacity <= 0) {
-        alert('모집인원은 0명이 될 수 없습니다.');
+        this.showSnackbar('모집인원은 0명이 될 수 없습니다.');
         return; // 조건에 맞지 않으면 함수 종료
       }
       // 강의 시간이 올바르게 입력되었는지 확인
       for (const timeSlot of this.currentLecture.timeSlots) {
         if (!timeSlot.day || !timeSlot.startTime || !timeSlot.endTime) {
-          alert('강의 시간, 요일, 시작 시간 및 종료 시간을 모두 입력해야 합니다.');
+          this.showSnackbar('모든 정보를 입력해야 합니다.');
           return; // 조건에 맞지 않으면 함수 종료
         }
       }
@@ -541,6 +541,11 @@ export default {
     },
 
     async createLecture() {
+ 
+      if (this.title === '' || this.contents === '' || this.field === '' || this.teachingMethod === ''){
+        this.showSnackbar('강의 정보를 입력해야 합니다.');
+        return; // 강의 그룹이 없을 경우 함수 종료
+      }
       if (this.lectureGroups.length === 0) {
         this.showSnackbar('강의 그룹을 추가해야 합니다.');
         return; // 강의 그룹이 없을 경우 함수 종료
@@ -600,7 +605,6 @@ export default {
         }
       } catch (e) {
         console.error('강의 생성 중 오류 발생:', e);
-
         this.showSnackbar('강의 생성에 실패했습니다. 다시 시도해주세요.', 'error');
       }
     },
@@ -777,10 +781,12 @@ td {
   border-radius: 10px;
   line-height: 50px;
   margin-top: 120px;
+  transition: all 0.3s ease;
 }
 
 .create-lecture:hover {
   cursor: pointer;
+  transform: scale(1.05);
 }
 
 .minus-btn:hover {

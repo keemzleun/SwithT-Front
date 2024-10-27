@@ -629,10 +629,17 @@ async submitApplication() {
     else if (this.lectureInfo.lectureType === "LESSON") {
 
         // 필수 입력 값 체크
-        if (!this.startDate || !this.endDate || !this.location) {
-            this.snackbar = { show: true, message: "시작일, 종료일, 위치를 입력해 주세요.", color: "error" };
+        if (!this.startDate || !this.location) {
+            this.snackbar = { show: true, message: "시작일과 수업 위치를 입력해 주세요.", color: "error" };
             return;
         }
+
+        // endDate를 startDate의 한 달 뒤로 설정
+        const start = new Date(this.startDate);
+        const end = new Date(start);
+        end.setMonth(start.getMonth() + 1); // 한 달 뒤로 설정
+        this.endDate = end.toISOString().split('T')[0]; // YYYY-MM-DD 형식으로 변환
+        
         console.log(this.location + this.detailAddress)
         const requestData = {
             lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID

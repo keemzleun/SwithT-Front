@@ -82,194 +82,217 @@
         <v-col cols="3" class="d-flex justify-center">
           <label style="margin-top: 40px;">강의 그룹</label>
         </v-col>
-
-        <!-- 시간표 -->
-        <v-col cols="2" class="d-flex justify-center" style="margin-right: 20px;">
-          <table border="3" class="time-table" >
-            <thead>
-              <tr>
-                <th>시간</th>
-                <th>월</th>
-                <th>화</th>
-                <th>수</th>
-                <th>목</th>
-                <th>금</th>
-                <th>토</th>
-                <th>일</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(hour, index) in hours" :key="index">
-                <td>{{ hour }}</td>
-                <td v-for="day in days" :key="day"
-                  :style="{ backgroundColor: schedule[day] && schedule[day][index] ? schedule[day][index].color : '' }">
-                  <div v-if="schedule[day] && schedule[day][index]" style="color: #fff; font-weight: bold;">
-                    {{ schedule[day][index].index }}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </v-col>
-
-        <v-col cols="6">
-          <!-- 강의 그룹 표시 -->
-          <div class="lecture-group-list">
-            <div v-if="lectureGroups.length === 0" style="text-align: center; color: #888; margin-top: 20px;">
-              생성한 강의 그룹이 없습니다
-            </div>
-            <div v-else>
-              <div v-for="(lectureGroup, index) in lectureGroups" :key="lectureGroup.name" class="lecture-group">
-                <v-row>
-                  <v-col cols="3" class="d-flex align-center justify-center">
-                    <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 순서 표시 -->
-                  </v-col>
-                  <v-col cols="7">
-                    <v-row>
-                      <v-col cols="4" class="d-flex align-center justify-center">
-                        <label style="font-size: 13px; color: #555;">강의료/인원</label>
-                      </v-col>
-                      <v-col class="d-flex align-center justify-start">
-                        {{ lectureGroup.fee }}원 (인원: {{ lectureGroup.capacity }})
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="4" class="d-flex align-center justify-center">
-                        <label style="font-size: 13px; color: #555;">강의 시간</label>
-                      </v-col>
-                      <v-col class="d-flex align-center justify-start">
-                        <div>
-                          <div v-for="(slot, slotIndex) in lectureGroup.timeSlots" :key="slotIndex">
-                            {{ slot.day }}요일 {{ slot.startTime }} ~ {{ slot.endTime }}
+        <v-col cols="8">
+          <v-row class="align-center justify-center">
+            <!-- 강의 그룹 표시 -->
+            <div class="lecture-group-list">
+              <div v-if="lectureGroups.length === 0" style="text-align: center; color: #888; margin: 20px;">
+                생성한 강의 그룹이 없습니다
+              </div>
+              <div v-else>
+                <div v-for="(lectureGroup, index) in lectureGroups" :key="lectureGroup.name" class="lecture-group">
+                  <v-row>
+                    <v-col cols="3" class="d-flex align-center justify-center">
+                      <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 순서 표시 -->
+                    </v-col>
+                    <v-col cols="7">
+                      <v-row>
+                        <v-col cols="4" class="d-flex align-center justify-center">
+                          <label style="font-size: 13px; color: #555;">강의 위치</label>
+                        </v-col>
+                        <v-col class="d-flex align-center justify-start">
+                          {{ lectureGroup.address }}{{ lectureGroup.detailAddress }}
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="4" class="d-flex align-center justify-center">
+                          <label style="font-size: 13px; color: #555;">강의기간</label>
+                        </v-col>
+                        <v-col class="d-flex align-center justify-start">
+                          {{ lectureGroup.startDate }} ~ {{ lectureGroup.endDate }}
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="4" class="d-flex align-center justify-center">
+                          <label style="font-size: 13px; color: #555;">강의료/인원</label>
+                        </v-col>
+                        <v-col class="d-flex align-center justify-start">
+                          {{ lectureGroup.fee }}원 (인원: {{ lectureGroup.capacity }})
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="4" class="d-flex align-center justify-center">
+                          <label style="font-size: 13px; color: #555;">강의 시간</label>
+                        </v-col>
+                        <v-col class="d-flex align-center justify-start">
+                          <div>
+                            <div v-for="(slot, slotIndex) in lectureGroup.timeSlots" :key="slotIndex">
+                              {{ slot.day }}요일 {{ slot.startTime }} ~ {{ slot.endTime }}
+                            </div>
                           </div>
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                  <v-col cols="2" class="d-flex align-center justify-center">
-                    <button @click="removeLectureGroup(index)" class="btn btn-danger btn-sm" style="margin: 0 10px;">
-                      <span class="mdi mdi-trash-can-outline" style="font-size: 20px"></span>
-                    </button>
-                  </v-col>
-                </v-row>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                    <v-col cols="2" class="d-flex align-center justify-center">
+                      <button @click="removeLectureGroup(index)" class="btn btn-danger btn-sm" style="margin: 0 10px;">
+                        <span class="mdi mdi-trash-can-outline" style="font-size: 20px"></span>
+                      </button>
+                    </v-col>
+                  </v-row>
+                </div>
               </div>
             </div>
-          </div>
+          </v-row>
+          <hr/>
 
-          <hr>
-
-          <div v-if="!showForm" @click="addLectureGroup" class="time-form time-add"
-            style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
-            <span class="material-icons-outlined" style="margin-right: 5px;">
-              add_box
-            </span>
-            <span style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
-              강의 그룹 생성
-            </span>
-          </div>
-
-          <!-- 강의 그룹 정보 입력 폼 -->
-          <div v-if="showForm" class="form">
-
-             <!-- 강의 주소, 시작일, 종료일 -->
-            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center" style="margin-top: 10px">
-              <v-col cols="3" class="d-flex align-center justify-center">
-                <label>강의 주소</label>
-              </v-col>
-              <v-col cols="9">
-                <v-row style="padding: 12px;" align="center">
-                  <v-btn style="border: 1px solid #ccc;" variant="outlined"
-                  @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
-                  <div style="margin-left: 10px; font-weight: 700;">{{ currentLecture.address }}</div>
+          <v-row>
+            <!-- 시간표 -->
+            <v-col cols="4" class="d-flex justify-center align-center">
+              <table border="3" class="time-table" >
+                <thead>
+                  <tr>
+                    <th>시간</th>
+                    <th>월</th>
+                    <th>화</th>
+                    <th>수</th>
+                    <th>목</th>
+                    <th>금</th>
+                    <th>토</th>
+                    <th>일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(hour, index) in hours" :key="index">
+                    <td>{{ hour }}</td>
+                    <td v-for="day in days" :key="day"
+                      :style="{ backgroundColor: schedule[day] && schedule[day][index] ? schedule[day][index].color : '' }">
+                      <div v-if="schedule[day] && schedule[day][index]" style="color: #fff; font-weight: bold;">
+                        {{ schedule[day][index].index }}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </v-col>
+    
+            <v-col cols="8">
+              <div v-if="!showForm" @click="addLectureGroup" class="time-form time-add"
+                style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
+                <span class="material-icons-outlined" style="margin-right: 5px;">
+                  add_box
+                </span>
+                <span style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
+                  강의 그룹 생성
+                </span>
+              </div>
+    
+              <!-- 강의 그룹 정보 입력 폼 -->
+              <div v-if="showForm" class="form">
+    
+                <!-- 강의 주소, 시작일, 종료일 -->
+                <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center" style="margin-top: 10px">
+                  <v-col cols="3" class="d-flex align-center justify-center">
+                    <label style="font-size: 15px">강의 주소</label>
+                  </v-col>
+                  <v-col cols="9">
+                    <v-row style="padding: 12px;" align="center">
+                      <v-btn style="border: 1px solid #ccc;" variant="outlined"
+                      @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
+                      <div style="margin-left: 10px; font-weight: 700;">{{ currentLecture.address }}</div>
+                    </v-row>
+                    <v-row style="padding: 0px 12px 12px;">
+                      <input v-model="currentLecture.detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" type="text" />
+                    </v-row>
+                  </v-col>
                 </v-row>
-                <v-row style="padding: 0px 12px 12px;">
-                  <input v-model="currentLecture.detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" type="text" />
+    
+                <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
+                  <v-col cols="3" class="d-flex align-center justify-center">
+                    <label style="font-size: 15px">강의 기간</label>
+                  </v-col>
+                  <v-col cols="4">
+                    <input v-model="currentLecture.startDate" class="form-control" type="date" />
+                  </v-col>
+                  <v-col cols="1">
+                    <span>~</span>
+                  </v-col>
+                  <v-col cols="4">
+                    <input v-model="currentLecture.endDate" class="form-control" type="date" />
+                  </v-col>
                 </v-row>
-              </v-col>
-            </v-row>
-
-            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
-              <v-col cols="3" class="d-flex align-center justify-center">
-                <label>강의 기간</label>
-              </v-col>
-              <v-col cols="4">
-                <input v-model="currentLecture.startDate" class="form-control" type="date" />
-              </v-col>
-              <v-col cols="1">
-                <span>~</span>
-              </v-col>
-              <v-col cols="4">
-                <input v-model="currentLecture.endDate" class="form-control" type="date" />
-              </v-col>
-            </v-row>
-
-            <v-row class="form-group align-center">
-              <v-col cols="3" class="d-flex align-center justify-center">
-                <label class="label-width">강의료</label>
-              </v-col>
-              <v-col cols="6">
-                <input v-model="currentLecture.fee" type="money" placeholder="강의료를 입력하세요"
-                  class="form-control input-width" />
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="3" class="d-flex align-center justify-center">
-                <label class="label-width">모집 인원</label>
-              </v-col>
-              <v-col cols="6">
-                <input v-model="currentLecture.capacity" :disabled="teachingMethod === 'LESSON'" type="number"
-                  placeholder="모집 인원을 입력하세요" class="form-control input-width" />
-              </v-col>
-            </v-row>
-
-            <!-- 시간 및 요일 추가 -->
-            <div v-for="(timeSlot, index) in currentLecture.timeSlots" :key="index" class="time-form">
-              <v-row>
-                <v-col cols="3" class="d-flex align-center justify-center">
-                  <label style="margin: 0 10px">강의 시간</label>
-                </v-col>
-                <v-col>
+    
+                <v-row class="form-group align-center">
+                  <v-col cols="3" class="d-flex align-center justify-center">
+                    <label class="label-width" style="font-size: 15px">강의료</label>
+                  </v-col>
+                  <v-col cols="6">
+                    <input v-model="currentLecture.fee" type="money" placeholder="강의료를 입력하세요"
+                      class="form-control input-width" />
+                  </v-col>
+                </v-row>
+    
+                <v-row>
+                  <v-col cols="3" class="d-flex align-center justify-center">
+                    <label class="label-width" style="font-size: 15px">모집 인원</label>
+                  </v-col>
+                  <v-col cols="6">
+                    <input v-model="currentLecture.capacity" :disabled="teachingMethod === 'LESSON'" type="number"
+                      placeholder="모집 인원을 입력하세요" class="form-control input-width" />
+                  </v-col>
+                </v-row>
+    
+                <!-- 시간 및 요일 추가 -->
+                <div v-for="(timeSlot, index) in currentLecture.timeSlots" :key="index" class="time-form">
                   <v-row>
-                    <div v-for="day in days" :key="day"
-                      :class="['custom-option', timeSlot.day === day ? 'selected' : '']" @click="timeSlot.day = day"
-                      style="margin: 0 3px">
-                      {{ day }}
-                    </div>
+                    <v-col cols="3" class="d-flex align-center justify-center">
+                      <label style="margin: 0 10px; font-size: 15px">강의 시간</label>
+                    </v-col>
+                    <v-col>
+                      <v-row>
+                        <div v-for="day in days" :key="day"
+                          :class="['custom-option-day', timeSlot.day === day ? 'selected' : '']" @click="timeSlot.day = day"
+                          style="margin: 0 3px">
+                          {{ day }}
+                        </div>
+                      </v-row>
+                      <v-row style="margin-top: 30px;">
+                        <select v-model="timeSlot.startTime" class="form-control" style="margin: 0 3px; width: 100px;">
+                          <option value="" disabled selected>시작 시간</option>
+                          <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
+                        </select>
+                        <span style="margin: 0 10px; font-weight: bold; font-size: 18px;">~</span>
+                        <select v-model="timeSlot.endTime" class="form-control" style="margin: 0 3px; width: 100px;">
+                          <option value="" disabled selected>종료 시간</option>
+                          <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
+                        </select>
+                      </v-row>
+                    </v-col>
+                    <v-col cols="2" class="d-flex align-center justify-center minus-btn">
+                      <span class="mdi mdi-minus-circle-outline" style="font-size: 25px; color: #666"
+                        @click="removeTimeSlot(index)"></span>
+                    </v-col>
                   </v-row>
-                  <v-row style="margin-top: 30px;">
-                    <select v-model="timeSlot.startTime" class="form-control" style="margin: 0 3px">
-                      <option value="" disabled selected>시작 시간</option>
-                      <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
-                    </select>
-                    <span style="margin: 0 10px; font-weight: bold; font-size: 18px;">~</span>
-                    <select v-model="timeSlot.endTime" class="form-control" style="margin: 0 3px;">
-                      <option value="" disabled selected>종료 시간</option>
-                      <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
-                    </select>
-                  </v-row>
-                </v-col>
-                <v-col cols="2" class="d-flex align-center justify-center minus-btn">
-                  <span class="mdi mdi-minus-circle-outline" style="font-size: 25px; color: #666"
-                    @click="removeTimeSlot(index)"></span>
-                </v-col>
-              </v-row>
-            </div>
-
-            <div @click="addTimeSlot" class="time-form time-add"
-              style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
-              <span class="material-icons-outlined" style="margin-right: 5px;">
-                add_box
-              </span>
-              <span style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
-                강의 시간 추가
-              </span>
-            </div>
-            <v-row class="justify-end" style="padding: 0 10px;">
-              <div @click="submitLectureGroup" class="submit-group">그룹 생성</div>
+                </div>
+    
+                <div @click="addTimeSlot" class="time-form time-add"
+                  style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
+                  <span class="material-icons-outlined" style="margin-right: 5px;">
+                    add_box
+                  </span>
+                  <span style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
+                    강의 시간 추가
+                  </span>
+                </div>
+                <v-row class="justify-end" style="padding: 0 10px;">
+                  <div @click="submitLectureGroup" class="submit-group">그룹 생성</div>
+                </v-row>
+              </div>
+            </v-col>
             </v-row>
-          </div>
-        </v-col>
+          </v-col>
+        
+
+        
       </v-row>
       <v-row class="justify-center" style="padding: 0 10px">
         <div @click="createLecture" class="create-lecture">개설 신청</div>
@@ -741,8 +764,27 @@ td {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
+.custom-option:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
 .custom-option.selected {
+  border-color: #007bff;
+  background-color: #e7f0ff;
+  transform: scale(1.05);
+}
+.custom-option-day {
+  padding: 7px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.custom-option-day:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+.custom-option-day.selected {
   border-color: #007bff;
   background-color: #e7f0ff;
   transform: scale(1.05);

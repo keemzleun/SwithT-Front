@@ -45,7 +45,8 @@
                                             <strong>강의료</strong>
                                           </v-col>
                                           <v-col class="d-flex align-center justify-start" style="padding: 10px">
-                                            {{ formatPrice(group.price) }}원
+                                            <span v-if="lectureInfo?.lectureType === 'LESSON'" style="margin-right: 7px;">1개월 </span>
+                                             {{ formatPrice(group.price) }}원
                                           </v-col>
                                         </v-row>
                                         <v-row>
@@ -173,7 +174,7 @@
                           </tr>
                         </tbody>
                     </table>
-                    <v-btn v-if="isLogin === true" @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
+                    <v-btn v-if="isLogin === true &&  userRole === 'TUTEE'" @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
                 </aside>
             </v-col>
         </v-row>
@@ -220,10 +221,10 @@
                                     <label for="startDate" class="form-label">시작일</label>
                                     <input v-model="startDate" id="startDate" class="form-control" type="date" />
                                 </v-col>
-                                <v-col>
+                                <!-- <v-col>
                                     <label for="endDate" class="form-label">종료일</label>
                                     <input v-model="endDate" class="form-control" type="date" />
-                                </v-col>
+                                </v-col> -->
                             </v-row>
                             <v-row>
                                 <v-col>
@@ -300,6 +301,7 @@ export default {
   data() {
     return {
     isLogin: false,
+    userRole: null,
       activeTab: 'lecture-info',
       isApplyModalOpen: false, // 모달 열림 상태
       availableLectureGroups: [],
@@ -343,6 +345,7 @@ export default {
     const token = localStorage.getItem('token');
     if (token) {
       this.isLogin = true;
+      this.userRole = localStorage.getItem('role');
     }
   },
   async mounted() {
@@ -744,7 +747,7 @@ async processPayment(rsp) {
     border-radius: 10px;
     padding: 30px 5px;
     margin-top: 60px; /* 화면 상단과 40px 거리 */
-    top: 40px;
+    top: 60px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 

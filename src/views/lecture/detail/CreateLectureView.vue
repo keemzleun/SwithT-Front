@@ -73,37 +73,7 @@
         </v-col>
       </v-row>
 
-      <!-- 강의 주소, 시작일, 종료일 -->
-      <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
-        <v-col cols="3" class="d-flex align-center justify-center">
-          <label>강의 주소</label>
-        </v-col>
-        <v-col cols="1">
-          <v-btn style="border: 1px solid #ccc;" variant="outlined" class="ml-3"
-            @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
-        </v-col>
-
-        <v-col cols="8" class="align-center">
-          <v-row class="align-center">
-          <div class="text-left ml-2 mr-2 align-center">{{ this.address }}</div>
-          <input v-model="detailAddress" class="form-control detail-width" placeholder="상세주소를 입력해주세요" type="text" />
-        </v-row>
-        </v-col>
-      </v-row>
-      <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
-        <v-col cols="3" class="d-flex align-center justify-center">
-          <label>강의 기간</label>
-        </v-col>
-        <v-col cols="1">시작일</v-col>
-        <v-col cols="3">
-          <input v-model="startDate" class="form-control" type="date" />
-        </v-col>
-        <v-col cols="1">종료일</v-col>
-        <v-col cols="3">
-          <input v-model="endDate" class="form-control" type="date" />
-        </v-col>
-      </v-row>
-
+     
     </v-form>
 
 
@@ -114,8 +84,8 @@
         </v-col>
 
         <!-- 시간표 -->
-        <v-col cols="2" class="d-flex justify-center">
-          <table border="3" style="border: 1px solid green; border-collapse: collapse; height: 555px;">
+        <v-col cols="2" class="d-flex justify-center" style="margin-right: 20px;">
+          <table border="3" class="time-table" >
             <thead>
               <tr>
                 <th>시간</th>
@@ -143,7 +113,6 @@
         </v-col>
 
         <v-col cols="6">
-
           <!-- 강의 그룹 표시 -->
           <div class="lecture-group-list">
             <div v-if="lectureGroups.length === 0" style="text-align: center; color: #888; margin-top: 20px;">
@@ -189,7 +158,6 @@
 
           <hr>
 
-
           <div v-if="!showForm" @click="addLectureGroup" class="time-form time-add"
             style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
             <span class="material-icons-outlined" style="margin-right: 5px;">
@@ -203,20 +171,53 @@
           <!-- 강의 그룹 정보 입력 폼 -->
           <div v-if="showForm" class="form">
 
+             <!-- 강의 주소, 시작일, 종료일 -->
+            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center" style="margin-top: 10px">
+              <v-col cols="3" class="d-flex align-center justify-center">
+                <label>강의 주소</label>
+              </v-col>
+              <v-col cols="9">
+                <v-row style="padding: 12px;" align="center">
+                  <v-btn style="border: 1px solid #ccc;" variant="outlined"
+                  @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
+                  <div style="margin-left: 10px; font-weight: 700;">{{ currentLecture.address }}</div>
+                </v-row>
+                <v-row style="padding: 0px 12px 12px;">
+                  <input v-model="currentLecture.detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" type="text" />
+                </v-row>
+              </v-col>
+            </v-row>
+
+            <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
+              <v-col cols="3" class="d-flex align-center justify-center">
+                <label>강의 기간</label>
+              </v-col>
+              <v-col cols="4">
+                <input v-model="currentLecture.startDate" class="form-control" type="date" />
+              </v-col>
+              <v-col cols="1">
+                <span>~</span>
+              </v-col>
+              <v-col cols="4">
+                <input v-model="currentLecture.endDate" class="form-control" type="date" />
+              </v-col>
+            </v-row>
+
             <v-row class="form-group align-center">
               <v-col cols="3" class="d-flex align-center justify-center">
                 <label class="label-width">강의료</label>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="6">
                 <input v-model="currentLecture.fee" type="money" placeholder="강의료를 입력하세요"
                   class="form-control input-width" />
               </v-col>
             </v-row>
+
             <v-row>
               <v-col cols="3" class="d-flex align-center justify-center">
                 <label class="label-width">모집 인원</label>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="6">
                 <input v-model="currentLecture.capacity" :disabled="teachingMethod === 'LESSON'" type="number"
                   placeholder="모집 인원을 입력하세요" class="form-control input-width" />
               </v-col>
@@ -321,6 +322,10 @@ export default {
         name: '',
         fee: 0,
         capacity: 0,
+        address: '', // 주소 추가
+        detailAddress: '', // 상세주소 추가
+        startDate: null, // 시작일 추가
+        endDate: null, // 종료일 추가
         timeSlots: [
           { day: '', startTime: '', endTime: '' }
         ]
@@ -374,7 +379,7 @@ export default {
         // eslint-disable-next-line no-undef
         new daum.Postcode({
           oncomplete: (data) => {
-            this.address = data?.roadAddress;
+            this.currentLecture.address = data?.roadAddress;
 
             // 주소 검색한 거 기반으로 위도 경도
             // 좌표 검색을 위해 Kakao 지도 Geocoder 사용
@@ -415,6 +420,10 @@ export default {
         name: '',
         fee: 0,
         capacity: 1,
+        address: '', // 주소 추가
+        detailAddress: '', // 상세주소 추가
+        startDate: null, // 시작일 추가
+        endDate: null, // 종료일 추가
         timeSlots: [{ day: '', startTime: '', endTime: '' }]
       };
     },
@@ -550,10 +559,10 @@ export default {
         lectureGroupReqDtos: this.lectureGroups.map(group => ({
           price: (group.fee && group.fee.replace(/,/g, '')) || '0',
           limitPeople: group.capacity,
-          address: this.address,
-          detailAddress:this.detailAddress,
-          startDate: this.startDate,
-          endDate: this.endDate,
+          address: group.address,
+          detailAddress:group.detailAddress,
+          startDate: group.startDate,
+          endDate: group.endDate,
           groupTimeReqDtos: group.timeSlots.map(slot => ({
             // 요일을 영어로 변환
             lectureDay: this.convertDayToEnglish(slot.day),
@@ -655,6 +664,12 @@ export default {
 .section {
   margin: 50px 0;
 }
+.time-table {
+  position: sticky;
+  top: 40px;
+  border-collapse: collapse;
+  height: 555px;
+}
 
 table {
   width: 20%;
@@ -685,17 +700,12 @@ td {
 
 }
 
-
 .lecture-group {
   border: 1px solid #cdcdcd;
-  /* 각 그룹의 테두리 */
   padding: 10px;
-  /* 안쪽 여백 */
   margin-bottom: 20px;
   border-radius: 5px;
-  /* 모서리 둥글게 */
   background-color: #f9f9f9;
-  /* 배경 색상 */
 }
 
 .time-form {
@@ -721,12 +731,6 @@ td {
 }
 
 .custom-option {
-  /* padding: 7px 12px;
-  border: 1px solid #cdcdcd;
-  border-radius: 3px;
-  cursor: pointer;
-  background-color: #f5f5f5;
-  color: #7d7d7d; */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -736,24 +740,16 @@ td {
 
 .custom-option.selected {
   border-color: #007bff;
-  /* 선택된 경우의 테두리 색상 */
   background-color: #e7f0ff;
-  /* 선택된 경우의 배경 색상 */
   transform: scale(1.05);
-  /* 선택된 경우 살짝 확대 */
-  /* border-color: #0d6efd;
-    background-color: white;
-    color: #0d6efd; */
 }
 
 .label-width {
   width: 120px;
-  /* 원하는 너비로 조정 */
 }
 
 .input-width {
   width: 100px;
-  /* 원하는 너비로 조정 */
 }
 
 .submit-group {
@@ -781,10 +777,6 @@ td {
   border-radius: 10px;
   line-height: 50px;
   margin-top: 120px;
-}
-.detail-width {
-  width: 400px;
-  /* 원하는 너비로 조정 */
 }
 
 .create-lecture:hover {

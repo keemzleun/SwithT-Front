@@ -38,6 +38,8 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
 ![socketdotio](https://img.shields.io/badge/Socketdotio-010101?style=for-the-badge&logo=socketddotio&logoColor=white)
 <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+<img src="https://img.shields.io/badge/KAFKA-02303A?style=for-the-badge&logo=&logoColor=white">
+
 
 ### FRONTEND
 ![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)

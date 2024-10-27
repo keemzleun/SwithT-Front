@@ -21,7 +21,7 @@
             <!-- 출금 가능 금액 -->
             <v-col class="text-center">
               <div class="text-h6" :style="{ color: '#1A237E' }"><strong>출금 가능 금액</strong></div>
-              <div class="text-h4 font-weight-bold">10,000,000원</div>
+              <div class="text-h4 font-weight-bold">{{ formatMoney(memberInfo.availableMoney) }}원</div>
               <v-btn class="mt-2" color="primary" large outlined>출금하기</v-btn>
             </v-col>
 
@@ -62,31 +62,25 @@
 
     <!-- 탭 메뉴 -->
     <v-tabs
-    v-model="tab"
-    grow
-    background-color="primary"
-    :style="{
-      backgroundColor: 'white', 
-      border: '1px solid lightgray', 
-      borderRadius: '6px'
-    }"
-  >
-    <!-- 전체 탭 텍스트 크기 및 중앙 정렬 -->
-    <v-tab                      
-    :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
-      <strong>전체</strong>
-    </v-tab>
-  
-    <!-- 수익 목록 탭 텍스트 크기 및 중앙 정렬 -->
-    <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
-      <strong>수익 목록</strong>
-    </v-tab>
-  
-    <!-- 출금 목록 탭 텍스트 크기 및 중앙 정렬 -->
-    <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
-      <strong>출금 목록</strong>
-    </v-tab>
-  </v-tabs>
+      v-model="tab"
+      grow
+      background-color="primary"
+      :style="{
+        backgroundColor: 'white', 
+        border: '1px solid lightgray', 
+        borderRadius: '6px'
+      }"
+    >
+      <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
+        <strong>전체</strong>
+      </v-tab>
+      <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
+        <strong>수익 목록</strong>
+      </v-tab>
+      <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
+        <strong>출금 목록</strong>
+      </v-tab>
+    </v-tabs>
 
     <!-- 데이터 테이블 -->
     <v-tabs-items v-model="tab">
@@ -115,17 +109,25 @@ import {
 } from "chart.js";
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import axios from "axios";
 
 export default {
+  async created() {
+    const response = await axios.get(
+      `${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`
+    );
+    this.memberInfo = response.data.result;
+    console.log(this.memberInfo);
+  },
   data() {
     return {
+      memberInfo: {},
       tab: 0,
       headers: [
         { text: "날짜", value: "date" },
         { text: "수익/출금 항목", value: "description" },
         { text: "금액", value: "amount" },
       ],
-      // 더미 데이터 추가
       allData: [
         { date: "24/09/12", description: "정산금 출금", amount: "-2,000,000" },
         { date: "24/09/11", description: "최고의 고등 수학 과외", amount: "500,000" },
@@ -140,26 +142,9 @@ export default {
         { date: "24/09/02", description: "정산금 출금", amount: "-800,000" },
         { date: "24/09/01", description: "수학 과외 수익", amount: "200,000" },
       ],
-      incomeData: [
-        { date: "24/09/11", description: "최고의 고등 수학 과외", amount: "500,000" },
-        { date: "24/09/09", description: "영어 과외 수익", amount: "300,000" },
-        { date: "24/09/06", description: "영어 과외 수익", amount: "600,000" },
-        { date: "24/09/04", description: "과학 과외 수익", amount: "400,000" },
-        { date: "24/09/01", description: "수학 과외 수익", amount: "200,000" },
-      ],
-      withdrawalData: [
-        { date: "24/09/12", description: "정산금 출금", amount: "-2,000,000" },
-        { date: "24/09/10", description: "정산금 출금", amount: "-3,000,000" },
-        { date: "24/09/08", description: "정산금 출금", amount: "-1,500,000" },
-        { date: "24/09/07", description: "정산금 출금", amount: "-1,200,000" },
-        { date: "24/09/05", description: "정산금 출금", amount: "-500,000" },
-        { date: "24/09/03", description: "정산금 출금", amount: "-700,000" },
-        { date: "24/09/02", description: "정산금 출금", amount: "-800,000" },
-      ],
     };
   },
   computed: {
-    // 선택한 탭에 따라 필터링된 데이터를 반환
     filteredData() {
       if (this.tab === 1) {
         return this.incomeData;
@@ -167,6 +152,12 @@ export default {
         return this.withdrawalData;
       }
       return this.allData;
+    },
+  },
+  methods: {
+    formatMoney(value) {
+      // 숫자를 쉼표로 구분하는 형식으로 변환
+      return value ? value.toLocaleString() : '0';
     },
   },
   mounted() {

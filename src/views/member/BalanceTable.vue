@@ -277,11 +277,7 @@ export default {
       ],
       allData: [
         { date: "24/09/12", description: "정산금 출금", amount: "-2,000,000" },
-        {
-          date: "24/09/11",
-          description: "최고의 고등 수학 과외",
-          amount: "500,000",
-        },
+        { date: "24/09/11", description: "최고의 고등 수학 과외", amount: "500,000" },
         { date: "24/09/10", description: "정산금 출금", amount: "-3,000,000" },
         { date: "24/09/09", description: "영어 과외 수익", amount: "300,000" },
         { date: "24/09/08", description: "정산금 출금", amount: "-1,500,000" },
@@ -293,16 +289,30 @@ export default {
         { date: "24/09/02", description: "정산금 출금", amount: "-800,000" },
         { date: "24/09/01", description: "수학 과외 수익", amount: "200,000" },
       ],
+      incomeData: [
+        { date: "24/09/11", description: "최고의 고등 수학 과외", amount: "500,000" },
+        { date: "24/09/09", description: "영어 과외 수익", amount: "300,000" },
+        { date: "24/09/06", description: "영어 과외 수익", amount: "600,000" },
+        { date: "24/09/04", description: "과학 과외 수익", amount: "400,000" },
+        { date: "24/09/01", description: "수학 과외 수익", amount: "200,000" },
+      ],
+      withdrawalData: [
+        { date: "24/09/12", description: "정산금 출금", amount: "-2,000,000" },
+        { date: "24/09/10", description: "정산금 출금", amount: "-3,000,000" },
+        { date: "24/09/08", description: "정산금 출금", amount: "-1,500,000" },
+        { date: "24/09/07", description: "정산금 출금", amount: "-1,200,000" },
+        { date: "24/09/05", description: "정산금 출금", amount: "-500,000" },
+      ],
     };
   },
   computed: {
     filteredData() {
       if (this.tab === 1) {
-        return this.incomeData;
+        return this.incomeData; // 수익 목록
       } else if (this.tab === 2) {
-        return this.withdrawalData;
+        return this.withdrawalData; // 출금 목록
       }
-      return this.allData;
+      return this.allData; // 전체 목록
     },
     formattedAvailableMoney() {
       return this.formatMoney(this.memberInfo.availableMoney);
@@ -316,7 +326,6 @@ export default {
       return value ? value.toLocaleString() : "0";
     },
     updateRemainingMoney() {
-      // 출금 요청 금액에서 10%를 뺀 금액 계산
       const requestedAmount = this.withdrawAmount || 0;
       this.remainingMoney = requestedAmount * 0.9;
     },
@@ -328,20 +337,20 @@ export default {
 
       try {
         const dto = {
-          amount: this.withdrawAmount, // 입력받은 금액으로 출금 요청
-          requestTime: new Date().toISOString(), // ISO 형식으로 변환
+          amount: this.withdrawAmount, 
+          requestTime: new Date().toISOString(),
         };
 
         await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/withdrawal`,
           dto
         );
-        alert("출금 요청 완료"); // 출금 성공 시 메시지 출력
-        this.showModal = false; // 모달 닫기
+        alert("출금 요청 완료");
+        this.showModal = false;
         window.location.reload();
       } catch (error) {
         console.error(error);
-        alert("출금 요청 중 오류가 발생했습니다."); // 출금 실패 시 메시지 출력
+        alert("출금 요청 중 오류가 발생했습니다.");
       }
     },
   },

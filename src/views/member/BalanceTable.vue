@@ -20,20 +20,34 @@
           <v-row>
             <!-- 출금 가능 금액 -->
             <v-col class="text-center">
-              <div class="text-h6" :style="{ color: '#1A237E' }"><strong>출금 가능 금액</strong></div>
-              <div class="text-h4 font-weight-bold">{{ formatMoney(memberInfo.availableMoney) }}원</div>
-              <v-btn class="mt-2" color="primary" large outlined>출금하기</v-btn>
+              <div class="text-h6" :style="{ color: '#1A237E' }">
+                <strong>출금 가능 금액</strong>
+              </div>
+              <div class="text-h4 font-weight-bold">
+                {{ formatMoney(memberInfo.availableMoney) }}원
+              </div>
+              <v-btn
+                class="mt-2"
+                color="primary"
+                large
+                outlined
+                @click="showModal = true"
+              >
+                출금하기
+              </v-btn>
             </v-col>
 
             <!-- 세로 구분선 -->
-            <v-divider 
+            <v-divider
               vertical
               :style="{ borderRightWidth: '2px', borderColor: 'lightgray' }"
             ></v-divider>
 
             <!-- 예상 수익금 -->
             <v-col class="text-center">
-              <div class="text-h6" :style="{ color: '#1A237E' }"><strong>예상 수익금</strong></div>
+              <div class="text-h6" :style="{ color: '#1A237E' }">
+                <strong>예상 수익금</strong>
+              </div>
               <div class="text-h4 font-weight-bold">5,000,000원</div>
             </v-col>
           </v-row>
@@ -49,7 +63,9 @@
           elevation="3"
           :style="{ borderRadius: '12px' }"
         >
-          <div class="text-h5 mb-4 " :style="{ color: 'black' }"><strong>매출 차트</strong></div>
+          <div class="text-h5 mb-4" :style="{ color: 'black' }">
+            <strong>매출 차트</strong>
+          </div>
           <div
             class="chart-container"
             style="display: flex; justify-content: center; position: relative; height: 35vh; width: 100%;"
@@ -66,18 +82,45 @@
       grow
       background-color="primary"
       :style="{
-        backgroundColor: 'white', 
-        border: '1px solid lightgray', 
-        borderRadius: '6px'
+        backgroundColor: 'white',
+        border: '1px solid lightgray',
+        borderRadius: '6px',
       }"
     >
-      <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
+      <v-tab
+        :style="{
+          color: 'black',
+          padding: '12px 16px',
+          fontSize: '18px',
+          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+        }"
+      >
         <strong>전체</strong>
       </v-tab>
-      <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
+      <v-tab
+        :style="{
+          color: 'black',
+          padding: '12px 16px',
+          fontSize: '18px',
+          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+        }"
+      >
         <strong>수익 목록</strong>
       </v-tab>
-      <v-tab :style="{ color: 'black', padding: '12px 16px', fontSize: '18px', textAlign: 'center', display: 'flex', justifyContent: 'center' }">
+      <v-tab
+        :style="{
+          color: 'black',
+          padding: '12px 16px',
+          fontSize: '18px',
+          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+        }"
+      >
         <strong>출금 목록</strong>
       </v-tab>
     </v-tabs>
@@ -94,10 +137,41 @@
         ></v-data-table>
       </v-tab-item>
     </v-tabs-items>
+
+    <!-- 출금 모달 -->
+    <v-dialog v-model="showModal" max-width="500px">
+      <v-card
+        style="border-radius: 20px"
+      >
+        <v-card-title class="d-flex justify-center text-h5"><strong>출금 요청</strong></v-card-title>
+        <v-card-text>
+          <v-form ref="withdrawalForm">
+            <v-text-field
+              label="출금할 금액"
+              v-model="withdrawAmount"
+              required
+              variant="outlined"
+              clearable
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="d-flex justify-center mb-5">
+          <v-btn 
+          style="background-color: #6c97fd; width: 40px; height: 30px"
+          color="black" 
+          text @click="handleWithdrawal">확인</v-btn>
+          <v-btn 
+          style="background-color: #82D691; width: 40px; height: 30px"
+          color="black" 
+          text @click="showModal = false">취소</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import axios from "axios";
 import {
   Chart,
   CategoryScale,
@@ -109,7 +183,6 @@ import {
 } from "chart.js";
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-import axios from "axios";
 
 export default {
   async created() {
@@ -123,6 +196,8 @@ export default {
     return {
       memberInfo: {},
       tab: 0,
+      showModal: false, // 모달 상태
+      withdrawAmount: '', // 출금 요청 금액
       headers: [
         { text: "날짜", value: "date" },
         { text: "수익/출금 항목", value: "description" },
@@ -156,8 +231,31 @@ export default {
   },
   methods: {
     formatMoney(value) {
-      // 숫자를 쉼표로 구분하는 형식으로 변환
-      return value ? value.toLocaleString() : '0';
+      return value ? value.toLocaleString() : "0";
+    },
+    async handleWithdrawal() {
+      if (!this.withdrawAmount || this.withdrawAmount <= 0) {
+        alert("유효한 출금 금액을 입력하세요.");
+        return;
+      }
+
+      try {
+        const dto = {
+          amount: this.withdrawAmount, // 입력받은 금액으로 출금 요청
+          requestTime: new Date().toISOString(), // ISO 형식으로 변환
+        };
+
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/withdrawal`,
+          dto
+        );
+        console.log(response.data);
+        alert(response.data.message); // 출금 성공 시 메시지 출력
+        this.showModal = false; // 모달 닫기
+      } catch (error) {
+        console.error(error);
+        alert("출금 요청 중 오류가 발생했습니다."); // 출금 실패 시 메시지 출력
+      }
     },
   },
   mounted() {

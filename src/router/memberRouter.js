@@ -10,10 +10,15 @@ import MemberMyPage from "@/views/member/MemberMyPage.vue";
 import ReviewList from "@/views/review/ReviewList.vue";
 import ReviewCreateTest from "@/views/review/ReviewCreateTest.vue";
 import AdminLogin from "@/views/member/AdminLogin.vue"; 
-
+import BalanceTable from "@/views/member/BalanceTable.vue";
 
 import { jwtDecode } from 'jwt-decode'
 export const memberRouter = [
+    {
+        path: '/balance/table',
+        name: 'BalanceTable',
+        component: BalanceTable
+    },
     // ReviewCreateTest
     {
         path: '/review/test',

@@ -68,9 +68,15 @@
           </div>
           <div
             class="chart-container"
-            style="display: flex; justify-content: center; position: relative; height: 35vh; width: 100%;"
+            style="
+              display: flex;
+              justify-content: center;
+              position: relative;
+              height: 35vh;
+              width: 100%;
+            "
           >
-            <canvas id="earningsChart" style="width: 80%;"></canvas>
+            <canvas id="earningsChart" style="width: 80%"></canvas>
           </div>
         </v-card>
       </v-col>
@@ -140,30 +146,96 @@
 
     <!-- 출금 모달 -->
     <v-dialog v-model="showModal" max-width="500px">
-      <v-card
-        style="border-radius: 20px"
-      >
-        <v-card-title class="d-flex justify-center text-h5"><strong>출금 요청</strong></v-card-title>
+      <v-card style="border-radius: 12px">
+        <!-- 제목에 색상 추가 -->
+        <v-card-title
+          class="d-flex justify-center text-h5"
+          style="
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            background-color: #1a237e;
+            padding: 12px;
+            border-radius: 0px;
+          "
+        >
+          출금 요청
+        </v-card-title>
+
         <v-card-text>
           <v-form ref="withdrawalForm">
-            <v-text-field
-              label="출금할 금액"
-              v-model="withdrawAmount"
-              required
-              variant="outlined"
-              clearable
-            ></v-text-field>
+            <!-- 출금 가능 금액 (v-text-field 모양, 읽기 전용) -->
+            <v-row class="mb-1" align="center">
+              <v-col class="text-left mt-15" cols="12">
+                <v-text-field
+                  label="출금 가능 금액"
+                  v-model="formattedAvailableMoney"
+                  readonly
+                  variant="outlined"
+                  outlined
+                  style="border-radius: 8px; width: 100%;"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+        
+            <!-- 출금 요청 금액 입력 -->
+            <v-row align="center">
+              <v-col class="text-left" cols="12">
+                <v-text-field
+                  label="출금할 금액"
+                  v-model="withdrawAmount"
+                  required
+                  variant="outlined"
+                  clearable
+                  @input="updateRemainingMoney"
+                  style="border-radius: 8px; width: 100%;"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+        
+            <!-- 출금 예정 금액 (v-text-field 모양, 읽기 전용) -->
+            <v-row class="mb-10" align="center">
+              <v-col class="text-left" cols="12">
+                <v-text-field
+                  label="출금 예정 금액"
+                  v-model="formattedRemainingMoney"
+                  readonly
+                  outlined
+                  style="border-radius: 8px; width: 100%;"
+                  variant="outlined"
+                ></v-text-field>
+              </v-col>
+            </v-row>
           </v-form>
         </v-card-text>
-        <v-card-actions class="d-flex justify-center mb-5">
-          <v-btn 
-          style="background-color: #6c97fd; width: 40px; height: 30px"
-          color="black" 
-          text @click="handleWithdrawal">확인</v-btn>
-          <v-btn 
-          style="background-color: #82D691; width: 40px; height: 30px"
-          color="black" 
-          text @click="showModal = false">취소</v-btn>
+
+        <!-- 확인/취소 버튼 -->
+        <v-card-actions class="d-flex justify-center mt-4">
+          <v-btn
+            style="
+              background-color: #6c97fd;
+              width: 100px;
+              height: 40px;
+              border-radius: 8px;
+              color: white;
+            "
+            @click="handleWithdrawal"
+          >
+            확인
+          </v-btn>
+          <v-btn
+            style="
+              background-color: #82d691;
+              width: 100px;
+              height: 40px;
+              border-radius: 8px;
+              color: white;
+              margin-left: 16px;
+            "
+            @click="showModal = false"
+          >
+            취소
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -190,14 +262,14 @@ export default {
       `${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`
     );
     this.memberInfo = response.data.result;
-    console.log(this.memberInfo);
   },
   data() {
     return {
       memberInfo: {},
       tab: 0,
       showModal: false, // 모달 상태
-      withdrawAmount: '', // 출금 요청 금액
+      withdrawAmount: "", // 출금 요청 금액
+      remainingMoney: 0, // 출금 예정 금액
       headers: [
         { text: "날짜", value: "date" },
         { text: "수익/출금 항목", value: "description" },
@@ -205,7 +277,11 @@ export default {
       ],
       allData: [
         { date: "24/09/12", description: "정산금 출금", amount: "-2,000,000" },
-        { date: "24/09/11", description: "최고의 고등 수학 과외", amount: "500,000" },
+        {
+          date: "24/09/11",
+          description: "최고의 고등 수학 과외",
+          amount: "500,000",
+        },
         { date: "24/09/10", description: "정산금 출금", amount: "-3,000,000" },
         { date: "24/09/09", description: "영어 과외 수익", amount: "300,000" },
         { date: "24/09/08", description: "정산금 출금", amount: "-1,500,000" },
@@ -228,10 +304,21 @@ export default {
       }
       return this.allData;
     },
+    formattedAvailableMoney() {
+      return this.formatMoney(this.memberInfo.availableMoney);
+    },
+    formattedRemainingMoney() {
+      return this.formatMoney(this.remainingMoney);
+    },
   },
   methods: {
     formatMoney(value) {
       return value ? value.toLocaleString() : "0";
+    },
+    updateRemainingMoney() {
+      // 출금 요청 금액에서 10%를 뺀 금액 계산
+      const requestedAmount = this.withdrawAmount || 0;
+      this.remainingMoney = requestedAmount * 0.9;
     },
     async handleWithdrawal() {
       if (!this.withdrawAmount || this.withdrawAmount <= 0) {
@@ -245,13 +332,13 @@ export default {
           requestTime: new Date().toISOString(), // ISO 형식으로 변환
         };
 
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_BASE_URL}/withdrawal`,
+        await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/member-service/withdrawal`,
           dto
         );
-        console.log(response.data);
-        alert(response.data.message); // 출금 성공 시 메시지 출력
+        alert("출금 요청 완료"); // 출금 성공 시 메시지 출력
         this.showModal = false; // 모달 닫기
+        window.location.reload();
       } catch (error) {
         console.error(error);
         alert("출금 요청 중 오류가 발생했습니다."); // 출금 실패 시 메시지 출력

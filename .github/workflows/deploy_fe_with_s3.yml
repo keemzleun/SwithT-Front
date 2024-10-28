@@ -33,6 +33,7 @@ jobs:
       - name: clear s3 bucket
         run: aws s3 rm s3://www.switht.co.kr/ --recursive
 
+
       #s3에 dist폴더 내의 파일들을 copy해서 넣기
       - name: deploy to s3
         run: aws s3 cp ./dist s3://www.switht.co.kr/ --recursive

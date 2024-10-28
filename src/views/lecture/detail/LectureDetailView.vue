@@ -336,6 +336,7 @@ export default {
       paymentModalContents: '',
       queueRank: -1,
       getOrderData: null,
+      lectureGroupId: null,
     };
   },
   created() {
@@ -558,6 +559,7 @@ sendDeleteQueue() {
 selectLectureGroup(group) {
     this.selectedLectureGroup = group;
     console.log(this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
+    this.lectureGroupId = group.lectureGroupId;
 },
 
 async submitApplication() {
@@ -567,6 +569,10 @@ async submitApplication() {
     this.memberName = localStorage.getItem('name');
 
     console.log(this.lectureInfo.lectureType);
+
+    if (this.selectedLectureGroup) {
+      this.lectureGroupId = this.selectedLectureGroup.lectureGroupId; // 선택된 강의 그룹 ID를 다시 확인 및 설정
+    }
 
     // LECTURE 신청 로직
     if (this.lectureInfo.lectureType === "LECTURE") {
@@ -714,7 +720,7 @@ async processPayment(rsp) {
                 title: this.lectureInfo.title,
                 price: this.lectureInfo.price,
                 memberId: this.memberId,
-                lectureGroupId: this.selectedLectureGroup.lectureGroupId,
+                lectureGroupId: this.lectureGroupId,
             };
             console.log(data);
 

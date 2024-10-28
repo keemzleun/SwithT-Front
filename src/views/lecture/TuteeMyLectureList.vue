@@ -20,7 +20,7 @@
             <v-row class="lessons-container">
                 <v-col v-for="lecture in lectures" :key="lecture.id" cols="4" class="mb-4">
                     <div @click="clickLectureImage(lecture.lectureGroupId)" class="lesson-card"
-                    :class="{ 'terminated-lecture': lecture.status === 'TERMINATE'}">
+                        :class="{ 'terminated-lecture': lecture.status === 'TERMINATE' }">
                         <img :src="lecture.lectureImage" alt="강의 썸네일" class="lecture-image" />
                         <br>
                         <v-chip v-if="lecture.lectureType === 'LESSON'" color="primary" class="mr-2">과외</v-chip>
@@ -28,16 +28,17 @@
                         <span class="lecture-title">
                             {{ lecture.title }}
                         </span>
-                        
+
                         <br>
                         {{ lecture.startDate }} ~ {{ lecture.endDate }}
 
-                        <v-btn 
-            class="review-button" 
-            color="blue"
-        >
-            리뷰작성
-        </v-btn>
+
+                        <v-btn @click="showModal"
+                            style="background-color: #6c97fd; width: 100px; height: 50px; border: 1px solid #003366;"
+                            color="white" class="review-button">
+                            <v-icon left>mdi-pencil</v-icon>
+                            <b>리뷰 작성</b>
+                        </v-btn>
                     </div>
                 </v-col>
             </v-row>
@@ -106,12 +107,7 @@ export default {
 </script>
 
 <style scoped>
-.lecture-image {
-    width: 250px;
-    height: 200px;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
+
 
 .custom-border {
     border: 2px solid #cccccc;
@@ -119,7 +115,7 @@ export default {
     box-shadow: none !important;
 }
 
-.lecture-title{
+.lecture-title {
     font-size: 15px;
     font-weight: bold;
 }
@@ -150,6 +146,20 @@ export default {
 .terminated-lecture:hover .review-button {
     display: inline-block;
     opacity: 1;
+    
+
 }
 
+
+  .thumbnail-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .lecture-image {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
 </style>

@@ -174,7 +174,7 @@
                           </tr>
                         </tbody>
                     </table>
-                    <v-btn v-if="isLogin === true &&  userRole === 'TUTEE'" @click="openApplyModal" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
+                    <v-btn v-if="isLogin === true &&  userRole === 'TUTEE'" @click="openApplyModal" class="btn-transition" style="width: 90%; margin: 20px 0 10px; background-color: #0d6efd; color: #fff; font-weight: 700;">신청하기</v-btn>
                 </aside>
             </v-col>
         </v-row>
@@ -191,7 +191,7 @@
                     :key="group.lectureGroupId" 
                     @click="checkAndSelectGroup(group)"  
                     :class="[
-                        'custom-option', 
+                        'custom-option' ,'btn-transition', 
                         { 
                             'selected': selectedLectureGroup && selectedLectureGroup.lectureGroupId === group.lectureGroupId, 
                             'disabled-group': group.isAvailable === 'N' || group.remaining === 0 
@@ -242,9 +242,9 @@
             </v-card-text>
             <v-card-actions style="justify-content: flex-end;">
                 <transition name="fade">
-                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication();">신청하기</v-btn>
+                    <v-btn v-if="selectedLectureGroup" class="btn-transition" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication();">신청하기</v-btn>
                 </transition>
-                <v-btn @click="closeApplyModal">취소</v-btn>
+                <v-btn @click="closeApplyModal" class="btn-transition">취소</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -252,8 +252,15 @@
     <!-- 대기열 모달 -->
     <v-dialog v-model="waitingDialog" persistent max-width="600px">
         <v-card style="padding: 40px 20px 50px; border-radius: 10px; text-align: center;">
-            <v-card-title class="headline">대기열 상태</v-card-title>
-            <v-card-text>
+            <div>
+                <span class="material-icons btn-transition" @click="confirmExitQueue" style="cursor: pointer; float: right; margin-right: 10px;">
+                    close
+                </span>
+            </div>
+            <div class="spinner-grow text-primary" role="status" style="margin: 20px auto;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <v-card-text style="font-size: 20px;">
                 
                 <div v-if="queueStatusMessage">{{ queueStatusMessage }}</div> <!-- 대기열 상태 메시지 표시 -->
                 
@@ -284,6 +291,9 @@
 
 <script>
 /* global kakao */
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 
 import axios from 'axios';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
@@ -331,6 +341,7 @@ export default {
             color: ""
         },
       waitingDialog: false,
+      isExitingQueue: false,  // 사용자가 자발적으로 대기열을 벗어나려고 할 때 이를 추적하는 불리언 변수
       rank: null,
       queueStatusMessage: '', // 대기열 상태 메시지
       showPaymentModal: false, // 모달 표시 여부
@@ -414,6 +425,7 @@ export default {
         const id = this.$route.params.id; // URL에서 강의 ID 가져오기
         const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-info/${id}`);
         const data = response.data;
+        console.log(data);
 
         if (data.result && Array.isArray(data.result) && data.result.length > 0) {
           // 강의 그룹 데이터를 lectureGroups에 저장
@@ -546,21 +558,28 @@ closeApplyModal() {
     this.lectureLocation = '';
     this.location = null;
     this.detailAddress=null;
-    
 },
 closeWaitingDialog() {
     this.waitingDialog = false;
     this.sendDeleteQueue();
 },
+confirmExitQueue(){
+    if (confirm("대기열을 벗어나시겠습니까?")) {
+        this.isExitingQueue = true;  // 플래그 설정
+        this.closeWaitingDialog();
+        this.closeApplyModal();
+        this.snackbar = { show: true, message: "강의 신청을 취소하였습니다.", color: "success" };
+    }
+},
 sendDeleteQueue() {
     axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-delete-queue`, null, { 
         params: this.getOrderData
     });
-    
 },
 selectLectureGroup(group) {
     this.selectedLectureGroup = group;
     console.log("선택한 강의 그룹 아이디:" + this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
+    console.log("선택한 강의 그룹 남은 인원:" + this.selectedLectureGroup.remaining);
 },
 
 async submitApplication() {
@@ -585,6 +604,7 @@ async submitApplication() {
             await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-add-queue`, null, { 
                 params: requestData // 쿼리 파라미터로 전달
             });
+
             console.log("this.rank:" + this.rank);
             this.waitingDialog = true;  // 대기열 모달 열기
 
@@ -593,8 +613,9 @@ async submitApplication() {
                 memberId: this.memberId,
             };
 
+            
             try {
-                while(this.rank !== 0 && this.rank !== -1) {
+                while(!this.isExitingQueue && this.rank !== 0 && this.rank !== -1) {
                     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-get-order`, { 
                         params: this.getOrderData
                     });
@@ -606,18 +627,23 @@ async submitApplication() {
                     await new Promise(resolve => setTimeout(resolve, 3000)); 
                 }
 
-                this.closeWaitingDialog();
-                // 결제 로직 실행
-                this.confirmPayment();
+                if (!this.isExitingQueue) {
+                    this.closeWaitingDialog();
+                    this.confirmPayment();
+                }
 
             } catch (error) {
-                this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+                if (!this.isExitingQueue) {  // 의도된 종료가 아닐 때만 오류 처리
+                    this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+                }
                 this.closeApplyModal();
                 this.waitingDialog = false;
             }
 
         } catch (error) {
-            this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+            if (!this.isExitingQueue) {  // 의도된 종료가 아닐 때만 오류 처리
+                    this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
+                }
             this.closeApplyModal();
             this.waitingDialog = false;
         }
@@ -639,7 +665,7 @@ async submitApplication() {
         const end = new Date(start);
         end.setMonth(start.getMonth() + 1); // 한 달 뒤로 설정
         this.endDate = end.toISOString().split('T')[0]; // YYYY-MM-DD 형식으로 변환
-        
+
         console.log(this.location + this.detailAddress)
         const requestData = {
             lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID
@@ -675,7 +701,7 @@ checkAndSelectGroup(group) {
     }
 },
 confirmPayment() {
-    this.paymentModalTitle = `${this.lectureInfo.title} 결제하시겠습니까?`;
+    this.paymentModalTitle = `<${this.lectureInfo.title}> 결제하시겠습니까?`;
     this.paymentModalContents = "결제를 진행하려면 결제 버튼을 클릭하세요.";
     this.showPaymentModal = true; // 결제 확인 모달을 엶
 },
@@ -851,5 +877,10 @@ td {
     font-size: 14px;
     color: red;
 }
-
+.btn-transition{
+    transition: all 0.3s ease;
+}
+.btn-transition:hover {
+    transform: scale(1.05);
+}
 </style>

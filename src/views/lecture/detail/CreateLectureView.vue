@@ -147,7 +147,7 @@
 
           <v-row>
             <!-- 시간표 -->
-            <v-col cols="4" class="d-flex justify-center align-center">
+            <v-col cols="4" class="d-flex">
               <table border="3" class="time-table" >
                 <thead>
                   <tr>
@@ -693,7 +693,7 @@ export default {
 }
 .time-table {
   position: sticky;
-  top: 40px;
+  top: 60px;
   border-collapse: collapse;
   height: 555px;
 }

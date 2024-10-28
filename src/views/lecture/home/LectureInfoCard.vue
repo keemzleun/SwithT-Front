@@ -15,7 +15,7 @@
                         </span>
                     </div>
                 </v-row>
-                <v-row class="d-flex align-center justify-start">
+                <v-row class="d-flex align-center justify-start mb-2">
                     <div class="title mr-2">{{ infoData.title }}</div>
 
                     <v-icon v-if="isTutor" @click="groupEditClick()">mdi-pencil</v-icon>

@@ -23,7 +23,7 @@
                             <hr/>
                             <div class="contents-title">강의 시간</div>
                             <div v-if="lectureInfo?.lectureType === 'LECTURE'" class="date-info" >
-                                <span style="font-weight: 800; margin-right: 10px;">📅 진행기간 </span> {{ lectureGroups[0]?.startDate }} ~ {{ lectureGroups[0]?.endDate }}
+                                <span style="font-weight: 800; margin-right: 10px; ">📅 진행기간 </span> {{ lectureGroups[0]?.startDate }} ~ {{ lectureGroups[0]?.endDate }}
                             </div>
                             <v-row v-for="(group, index) in lectureGroups" :key="index">
                                 <v-col>
@@ -822,6 +822,8 @@ td {
     border-radius: 50%;
 }
 .tutor-info {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    border: 1px solid #c2d0e7;
      background-color: #e1e8fa;
      border-radius: 10px;
      width: 80%;
@@ -830,7 +832,10 @@ td {
      text-align: left;
 }
 .date-info {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    border: 1px solid #c2d0e7;
     background-color: #d0e2ff;
+    
     border-radius: 10px;
     padding: 20px;
     margin: 20px 0;

@@ -1,13 +1,11 @@
 <template>
-    <v-container style="width: 70%; margin-top: 60px; margin-bottom: 20px;">
+    <v-container style="width: 60%; margin-top: 60px; margin-bottom: 20px;">
         <br>
         <br>
         <v-row justify="center">
             <v-col cols="4">
-                <v-card  style="height: 650px;">
-                    <v-card-title class="title-font-size">
-                        채팅방 리스트
-                    </v-card-title>
+                <div style="height: 650px;" class="v-card-custom">
+
                     <v-card-text class="chat-list-scroll">
                         <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id"
                             :class="{ 'selected-chat-room': chatRoomId === chatRoom.chatRoomId, 'custom-border': true }"
@@ -23,10 +21,10 @@
                             </v-card-text>
                         </v-card>
                     </v-card-text>
-                </v-card>
+                </div>
             </v-col>
             <v-col cols="8" v-if="chatRoomId === null || chatRoomId === ''">
-                <v-card class="chat-card">
+                <v-card class="chat-card v-card-custom">
                     <v-card-title class="title-font-size">
                         채팅방 선택하세요
                     </v-card-title>
@@ -34,7 +32,7 @@
             </v-col>
 
             <v-col cols="8" v-else>
-                <v-card class="chat-card">
+                <v-card class="chat-card v-card-custom">
                     <v-card-title class="title-font-size">
                         {{ chatRoomTitle }}
                     </v-card-title>
@@ -42,7 +40,7 @@
                     <v-card-text class="chat-content">
                         <v-row class="chat-messages">
 
-                            <div class="chat-history" ref="chatHistory">
+                            <div class="chat-history" ref="chatHistory" @scroll="onScrollUp">
                                 <div v-for="(msg, index) in chatHistory" :key="index" :class="getMessageClass(msg)">
                                     {{ msg.memberName }}
                                     <br>
@@ -55,12 +53,13 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-row class="chat-input mt-auto">
-                            <v-col cols="9">
-                                <input v-model="message" type="text" placeholder="Enter your message..."
-                                    class="w-100 custom-input" @keydown.enter="sendMessage" />
+                            <v-col cols="11" style="padding-right: 0px;">
+                                <input v-model="message" type="text" placeholder="..." class="w-100 custom-input"
+                                    @keydown.enter="sendMessage" />
                             </v-col>
-                            <v-col cols="3">
-                                <v-btn @click="sendMessage" class="w-100">Send Message</v-btn>
+                            <v-col cols="1" style="padding-left:0px;">
+                                <v-btn @click="sendMessage"><v-icon style="font-size: 30px;"
+                                        color="blue">mdi-send</v-icon></v-btn>
                             </v-col>
                         </v-row>
                     </v-card-actions>
@@ -93,17 +92,82 @@ export default {
             lectureType: null,
             topic: '',
 
+            size: 50,
+            currentPage: 0,
+            isLastPage: false,
+            isLoading: false,
+            isChange: false,
+
         };
 
     },
     created() {
+        //채팅방 목록
         this.showChatRoomList();
+
+        //채팅 내역
+        if (this.chatRoomId != '') {
+            this.getChatRoomLogs();
+        }
+
+        //websocket 연결
         this.connectWebSocket();
 
     },
-    
 
     methods: {
+        async getChatRoomLogs() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/chat/log/${this.chatRoomId}`, {
+                    params: {
+                        size: this.size,
+                        page: this.currentPage
+                    }
+                });
+
+                const olderMessages = response.data.result.content;
+                console.log(olderMessages);
+
+                if (olderMessages.length > 0) {
+                    this.chatHistory = [...olderMessages, ...this.chatHistory];
+                }else{
+                    this.isLastPage = true;
+                }
+                const chatHistoryElement = this.$refs.chatHistory;
+                const previousScrollHeight = chatHistoryElement.scrollHeight;
+                this.currentPage += 1;
+                this.isLoading = false;
+
+
+                this.$nextTick(() => {
+                    const newScrollHeight = chatHistoryElement.scrollHeight;
+                    chatHistoryElement.scrollTop = newScrollHeight - previousScrollHeight;
+                });
+
+
+            } catch (error) {
+                console.error("Failed to load more messages:", error);
+            }
+
+
+
+
+        },
+
+        async onScrollUp() {
+            const chatHistoryElement = this.$refs.chatHistory;
+
+            // Check if the user scrolled to the top
+            if ( !this.isChange &&chatHistoryElement.scrollTop === 0 && !this.isLoading && !this.isLastPage) {
+                this.isLoading = true;
+
+                // Load older messages
+                await this.getChatRoomLogs();
+
+            }
+            this.isChange = false;
+        },
+
 
         connectWebSocket() {
             if (this.chatRoomId != '') {
@@ -137,10 +201,9 @@ export default {
                     chatRoomId: this.chatRoomId
                 };
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/room/list`, { params });
-                
-                this.chatRoomList= response.data.result;
+
+                this.chatRoomList = response.data.result;
                 if (this.$route.query.chatRoomId != '') {
-                    console.log("정해짐");
                     this.setChatRoom(this.chatRoomList[0]);
                 }
 
@@ -158,11 +221,16 @@ export default {
             } else {
                 this.chatRoomTitle = chatRoom.chatRoomTitle;
             }
-
         },
 
         changeChatRoom(chatRoom) {
             this.disconnectWebSocket();
+            this.currentPage = 0;
+            this.isLastPage = false;
+            this.isLoading = false;
+            this.chatHistory = [];
+            this.isChange = true;
+
 
             this.chatRoomId = chatRoom.chatRoomId;
             console.log("chatRoom = " + this.chatRoomId);
@@ -171,7 +239,17 @@ export default {
             } else {
                 this.chatRoomTitle = chatRoom.chatRoomTitle;
             }
+
+            this.$nextTick(() => {
+                const chatHistoryElement = this.$refs.chatHistory;
+                if (chatHistoryElement) {
+                    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight; // Reset to bottom
+                }
+            });
+            this.getChatRoomLogs();
             this.connectWebSocket();
+
+
         },
 
         async onConnected(frame) {
@@ -179,6 +257,8 @@ export default {
             console.log('Connected: ' + frame);
 
             this.topic = '/topic/chat-' + this.chatRoomId;
+
+            
             //topic 구독
             this.stompClient.subscribe(this.topic, (message) => {
                 console.log('Received message: ' + message.body);
@@ -230,6 +310,7 @@ export default {
 
             // 메시지를 채팅이력에 추가
             this.chatHistory.push({
+                chatRoomId: parsedMessage.chatRoomId,
                 memberName: parsedMessage.memberName,
                 memberId: parsedMessage.memberId,
                 message: parsedMessage.message
@@ -259,7 +340,6 @@ export default {
 </script>
 <style scoped>
 .selected-chat-room {
-
     box-shadow: none !important;
     background-color: #6C97FD !important;
     color: white !important;
@@ -274,9 +354,17 @@ export default {
     background-color: #ffffff;
     margin-bottom: 10px;
     text-align: left;
+
+}
+
+.v-card-custom {
+    border: 2px solid #D9D9D9;
+    border-radius: 8px;
+    box-shadow: none !important;
 }
 
 .chat-card {
+
     height: 650px;
     width: 90%;
     display: flex;
@@ -384,16 +472,16 @@ export default {
 }
 
 .chat-list-scroll {
-    height: calc(650px - 56px);
-    overflow-y: auto; 
+    height: calc(650px - 12px);
+    overflow-y: auto;
     padding: 10px;
     scrollbar-width: none;
 
-  }
+}
 
 
-  .title-font-size{
-    font-size: 30px;
+.title-font-size {
+    font-size: 25px;
     font-weight: bold;
-  }
+}
 </style>

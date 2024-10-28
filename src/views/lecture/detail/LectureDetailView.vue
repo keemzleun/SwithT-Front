@@ -301,10 +301,86 @@ import { jwtDecode } from 'jwt-decode'
 
 
 export default {
-    components: {
-        LectureDetailInfoComponent,
-        ReviewListComponent,
-        YesOrNoModal,
+
+  components: {
+    LectureDetailInfoComponent,
+    ReviewListComponent,
+    YesOrNoModal,
+  },
+  data() {
+    return {
+    isLogin: false,
+      activeTab: 'lecture-info',
+      isApplyModalOpen: false, // 모달 열림 상태
+      availableLectureGroups: [],
+      selectedLectureGroup: null,
+      startDate: null,
+      endDate: null,
+      location:null,
+      detailAddress : null,
+      days: ['월', '화', '수', '목', '금', '토', '일'],
+      hours: [
+        '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+        '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+        '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
+      ],
+      schedule: {},
+      lectureInfo: null,
+      lectureGroups: [], // 강의 그룹 데이터
+      lectureLocation: '', // 강의 위치
+      tutorInfo: null,
+      tutorId: null,
+      lectureId : this.$route.params.id,
+      memberId: null,
+      memberName: null,
+      snackbar: {
+            show: false,
+            message: "",
+            color: ""
+        },
+      waitingDialog: false,
+      rank: null,
+      queueStatusMessage: '', // 대기열 상태 메시지
+      showPaymentModal: false, // 모달 표시 여부
+      paymentModalTitle: '',
+      paymentModalContents: '',
+      queueRank: -1,
+      getOrderData: null,
+      lectureGroupId: null,
+    };
+  },
+  created() {
+    this.fetchLectureGroupInfo();
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.isLogin = true;
+    }
+  },
+  async mounted() {
+    await this.fetchLectureDetail(); // 강의 세부 정보를 먼저 가져옵니다.
+    await this.fetchTutorInfo(); // 이후 강사 정보를 가져옵니다.
+    this.loadDaumPostcodeScript();
+    this.loadKakaoMapScript();
+  },
+  
+  methods: {
+    loadDaumPostcodeScript() {
+      const script = document.createElement('script');
+      script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      script.onload = () => {
+        this.isDaumScriptLoaded = true;
+      };
+      document.head.appendChild(script);
+    },
+    loadKakaoMapScript() {
+      const script = document.createElement('script');
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=03a055c21377bee26ab1559dedf4af6f&libraries=services&autoload=false`;
+      script.onload = () => {
+        window.kakao.maps.load(() => {
+          this.isKakaoScriptLoaded = true;
+        });
+      };
+      document.head.appendChild(script);
     },
     data() {
         return {
@@ -534,25 +610,79 @@ export default {
             } catch (error) {
                 console.error('강사 정보를 가져오는 데 실패했습니다:', error);
             }
-        },
-        convertGender(gender) {
-            return gender === 'MAN' ? '남성' : '여성';
-        },
-        formatPrice(value) {
-            if (!value) return '0';
-            return new Intl.NumberFormat('ko-KR').format(value);
-        },
-        openApplyModal() {
-            this.isApplyModalOpen = true;
-        },
-        closeApplyModal() {
-            this.isApplyModalOpen = false;
-            this.selectedLectureGroup = null;
-            this.startDate = null;
-            this.endDate = null;
-            this.lectureLocation = '';
-            this.location = null;
-            this.detailAddress = null;
+        });
+        return schedule;
+},
+getRandomColor() {
+    const colors = ['#d0e2ff', '#9ec5fe', '#6ea8fe', '#3d8bfd', '#0d6efd', '#2f6fd4', '#bad2f8', '#abc3ea', '#7fa3dd', '#5982c4', '#426caf'];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+},
+async fetchTutorInfo() {
+    try {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/public-infoGet/${this.tutorId}`);
+    this.tutorInfo = response.data.result; // 강사 정보를 저장
+    console.log(this.tutorInfo);
+    } catch (error) {
+    console.error('강사 정보를 가져오는 데 실패했습니다:', error);
+    }
+},
+convertGender(gender) {
+    return gender === 'MAN' ? '남성' : '여성';
+},
+formatPrice(value) {
+    if (!value) return '0';
+    return new Intl.NumberFormat('ko-KR').format(value);
+},
+openApplyModal() {
+    this.isApplyModalOpen = true;
+},
+closeApplyModal() {
+    this.isApplyModalOpen = false;
+    this.selectedLectureGroup = null;
+    this.startDate = null;
+    this.endDate = null;
+    this.lectureLocation = '';
+    this.location = null;
+    this.detailAddress=null;
+    
+},
+closeWaitingDialog() {
+    this.waitingDialog = false;
+    this.sendDeleteQueue();
+},
+sendDeleteQueue() {
+    axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-delete-queue`, null, { 
+        params: this.getOrderData
+    });
+    
+},
+selectLectureGroup(group) {
+    this.selectedLectureGroup = group;
+    console.log(this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
+    this.lectureGroupId = group.lectureGroupId;
+},
+
+async submitApplication() {
+
+    this.token = localStorage.getItem('token');
+    this.memberId = localStorage.getItem('id');
+    this.memberName = localStorage.getItem('name');
+
+    console.log(this.lectureInfo.lectureType);
+
+    if (this.selectedLectureGroup) {
+      this.lectureGroupId = this.selectedLectureGroup.lectureGroupId; // 선택된 강의 그룹 ID를 다시 확인 및 설정
+    }
+
+    // LECTURE 신청 로직
+    if (this.lectureInfo.lectureType === "LECTURE") {
+    
+        const requestData = {
+            lectureGroupId: this.selectedLectureGroup.lectureGroupId, // 선택된 강의 그룹 ID
+            memberId: this.memberId, // 요청할 때 필요한 memberId
+            memberName: this.memberName, // 요청할 때 필요한 memberName
+        };
 
         },
         closeWaitingDialog() {
@@ -629,6 +759,13 @@ export default {
                     this.waitingDialog = false;
                 }
 
+                this.closeWaitingDialog();
+                if (this.selectedLectureGroup.price === 0) {
+                    this.processFreeLesson();
+                } else {
+                    // 결제 로직 실행
+                    this.confirmPayment();
+                }
 
             }
 
@@ -693,15 +830,78 @@ export default {
             IMP.init("imp00575764"); // 아임포트 상점 고유코드로 초기화
 
 
-            const paymentData = {
-                pg: "html5_inicis", // 결제 PG사
-                pay_method: "card", // 결제 방법
-                merchant_uid: `merchant_${new Date().getTime()}`, // 주문번호
-                name: this.lectureInfo.title, // 결제 내역
-                amount: this.selectedLectureGroup.price, // 결제 금액
-                buyer_email: jwtDecode(localStorage.getItem('token')).email,
-                buyer_name: jwtDecode(localStorage.getItem('token')).name,
-                buyer_tel: "",
+        try {
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-apply`, requestData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            this.snackbar = { show: true, message: "강의 신청이 완료되었습니다.", color: "success" };
+            this.closeApplyModal();
+            // location.reload(); // 페이지 새로 고침
+        } catch (error) {
+            alert(error.response.data.error_message);
+            console.error("강의 신청 중 오류가 발생했습니다:", error);
+            this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" };
+        }
+    }
+},
+checkAndSelectGroup(group) {
+    console.log('강의 그룹 상태:', group.isAvailable, '잔여석:', group.remaining);
+    
+    if (group.isAvailable !== 'N' && group.remaining > 0) {
+        this.selectLectureGroup(group);
+    } else {
+        console.log('선택할 수 없는 강의 그룹입니다.');
+    }
+},
+confirmPayment() {
+    this.paymentModalTitle = `${this.lectureInfo.title} 결제하시겠습니까?`;
+    this.paymentModalContents = "결제를 진행하려면 결제 버튼을 클릭하세요.";
+    this.showPaymentModal = true; // 결제 확인 모달을 엶
+},
+async proceedPayment() {
+    this.showPaymentModal = false; // 모달 닫기
+    try {
+        this.initiatePayment(); // 결제 진행
+    } catch (error) {
+        console.error('결제 요청 중 오류 발생:', error);
+    }
+},
+initiatePayment() {
+
+    const IMP = window.IMP;  // 아임포트 전역 객체
+    IMP.init("imp00575764"); // 아임포트 상점 고유코드로 초기화
+
+
+    const paymentData = {
+        pg: "html5_inicis", // 결제 PG사
+        pay_method: "card", // 결제 방법
+        merchant_uid: `merchant_${new Date().getTime()}`, // 주문번호
+        name: this.lectureInfo.title, // 결제 내역
+        amount: this.selectedLectureGroup.price, // 결제 금액
+        buyer_email: jwtDecode(localStorage.getItem('token')).email,
+        buyer_name: jwtDecode(localStorage.getItem('token')).name,
+        buyer_tel: "",
+    };
+
+    this.closeApplyModal();
+    console.log(paymentData);
+
+    IMP.request_pay(paymentData, this.processPayment); // 결제 요청
+},
+async processPayment(rsp) {
+
+    console.log("processPayment");
+    try {
+        this.memberId = localStorage.getItem('id');
+        if (rsp.success) {
+            const data = {
+                impUid: rsp.imp_uid, // 아임포트 거래 고유번호
+                title: this.lectureInfo.title,
+                price: this.lectureInfo.price,
+                memberId: this.memberId,
+                lectureGroupId: this.lectureGroupId,
             };
 
             this.closeApplyModal();
@@ -732,7 +932,19 @@ export default {
             }
         },
     }
-}
+
+},
+async processFreeLesson(){
+    console.log("무료 강연")
+    const lectureGroupId = this.selectedLectureGroup.lectureGroupId
+    try{
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/after-paid?lectureGroupId=${lectureGroupId}&memberId=${this.memberId}`);
+        console.log("신청됨", response.data)
+    } catch(error){
+        console.log("결제 처리 중 오류 발생:", error);
+    }
+},
+}}
 </script>
 
 

@@ -37,7 +37,7 @@
         <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange"></v-pagination>
 
         <YesOrNoModal
-        v-model="yesOrNoModal" 
+        v-model:dialog="yesOrNoModal"
         @confirmed="handleYesBtn"
         @update:dialog="yesOrNoModal = $event"
         :icon=this.icon

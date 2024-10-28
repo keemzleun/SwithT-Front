@@ -95,6 +95,10 @@ export default {
 </script>
 
 <style scoped>
+.v-container {
+    margin-top: 60px;
+    width: 70vw;
+}
 .header {
     font-weight: bold;
     border-bottom: 2px solid #ccc;

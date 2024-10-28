@@ -7,9 +7,9 @@
   <v-app>
     <SidebarComponent/>
     <HeaderComponent/>  
-      <v-container fluid class="custom-container">
+      <!-- <v-container fluid class="custom-container"> -->
         <routerView />
-      </v-container>
+      <!-- </v-container> -->
     <FooterComponent />
   </v-app>
 </template>

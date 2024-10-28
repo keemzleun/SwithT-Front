@@ -629,7 +629,7 @@ async submitApplication() {
 
                 if (!this.isExitingQueue) {
                     this.closeWaitingDialog();
-                    this.confirmPayment();
+                    this.confirmPayment();  
                 }
 
             } catch (error) {
@@ -700,6 +700,7 @@ checkAndSelectGroup(group) {
         console.log('선택할 수 없는 강의 그룹입니다.');
     }
 },
+
 confirmPayment() {
     this.paymentModalTitle = `<${this.lectureInfo.title}> 결제하시겠습니까?`;
     this.paymentModalContents = "결제를 진행하려면 결제 버튼을 클릭하세요.";
@@ -717,7 +718,6 @@ initiatePayment() {
 
     const IMP = window.IMP;  // 아임포트 전역 객체
     IMP.init("imp00575764"); // 아임포트 상점 고유코드로 초기화
-
 
     const paymentData = {
         pg: "html5_inicis", // 결제 PG사

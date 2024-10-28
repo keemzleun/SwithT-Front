@@ -262,6 +262,14 @@ export default {
       `${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`
     );
     this.memberInfo = response.data.result;
+    const chartWithdrawalResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/chart/withdrawal`);
+    console.log("chartWithdrawal"+JSON.stringify(chartWithdrawalResponse));
+    const chartWBalanceResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/chart/balance`);
+    console.log("chartWBalance"+JSON.stringify(chartWBalanceResponse));
+    const withDrawalListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/list/balance`);
+    console.log("withDrawalList",JSON.stringify(withDrawalListResponse));
+    const BalanceListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/list/withdrawal`);
+    console.log("BalanceList",JSON.stringify(BalanceListResponse))
   },
   data() {
     return {

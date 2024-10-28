@@ -194,12 +194,12 @@ export default {
     redirectToGoogle(role) {
       Cookies.set("role", role); // 쿠키에 role 저장
       window.location.href =
-        "http://localhost:8080/member-service/oauth2/authorization/google";
+        "https://server.switht.co.kr/member-service/oauth2/authorization/google";
     },
     redirectToKakao(role) {
       Cookies.set("role", role); // 쿠키에 role 저장
       window.location.href =
-        "http://localhost:8080/member-service/oauth2/authorization/kakao";
+        "https://server.switht.co.kr/member-service/oauth2/authorization/kakao";
     },
   },
 };

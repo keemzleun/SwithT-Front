@@ -74,7 +74,8 @@
       </v-row> -->
 
       <!-- 강의 주소, 시작일, 종료일 -->
-      <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
+      <!-- <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center"> -->
+      <v-row class="form-group align-center">
         <v-col cols="3" class="d-flex align-center justify-center">
           <label>강의 주소</label>
         </v-col>
@@ -86,9 +87,9 @@
         <v-col cols="8" class="align-center">
           <v-row class="align-center">
             <div class="text-left mr-2 align-center">{{ this.address }}</div>
-          <input  type="text" v-model="detailAddress" placeholder="상세주소를 입력해주세요"  class="form-control detail-width" >
+            <input type="text" v-model="detailAddress" placeholder="상세주소를 입력해주세요" class="form-control detail-width">
           </v-row>
-          
+
           <!-- <input v-model="address" class="form-control" placeholder="강의 주소를 입력해주세요" type="text" /> -->
         </v-col>
       </v-row>
@@ -116,7 +117,7 @@
         </v-col>
 
         <!-- 시간표 -->
-        <!-- <v-col cols="2" class="d-flex justify-center">
+        <v-col cols="2" class="d-flex justify-center">
           <table border="3" style="border: 1px solid green; border-collapse: collapse; height: 555px;">
             <thead>
               <tr>
@@ -142,7 +143,7 @@
               </tr>
             </tbody>
           </table>
-        </v-col> -->
+        </v-col>
 
         <v-col cols="6">
 
@@ -290,7 +291,7 @@ export default {
     return {
       lectureGroupId: 0,
       address: null,
-      detailAddress:"",
+      detailAddress: "",
       startDate: null,
       endDate: null,
       userName: null,
@@ -335,6 +336,8 @@ export default {
   mounted() {
     this.loadDaumPostcodeScript();
     this.loadKakaoMapScript();
+    this.coloringSchedule();
+
   },
   async created() {
     const route = useRoute();
@@ -347,13 +350,16 @@ export default {
     const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-home/${this.lectureGroupId}`)
     console.log(response)
     this.address = response.data.result.address;
-    this.detailAddress=response.data.result.detailAddress;
+    this.detailAddress = response.data.result.detailAddress;
     this.startDate = response.data.result.startDate;
     this.endDate = response.data.result.endDate;
     this.currentLecture.fee = response.data.result.price;
     this.currentLecture.capacity = response.data.result.limitPeople;
     this.currentLecture.timeSlots = response.data.result.lectureGroupTimes;
     this.teachingMethod = response.data.result.lectureType;
+    console.log("timeslot", this.currentLecture.timeSlots)
+    this.coloringSchedule();
+
   },
   methods: {
     changeDay(day) {
@@ -391,6 +397,54 @@ export default {
         case '일':
           return 'SUNDAY';
       }
+    },
+    coloringSchedule() {
+      console.log('스케줄 객체 상태:', this.schedule);
+      
+      const color = this.getRandomColor();
+      let hasOverlap = false; // 겹치는 시간대를 체크하는 플래그
+      console.log(this.currentLecture?.timeSlots)
+      for (const timeSlot of this.currentLecture.timeSlots) {
+        const startHour = this.hours.indexOf(timeSlot.startTime); // 시작 시간의 인덱스
+        const endHour = this.hours.indexOf(timeSlot.endTime);     // 종료 시간의 인덱스
+        const day = this.changeDay(timeSlot.lectureDay);                                 // 요일 정보
+        console.log("스케쥴 왜 안 들어오지"+startHour,endHour,day)
+
+        // 시간이 겹치는지 확인
+        if (this.isOverlapping(day, startHour, endHour)) {
+          hasOverlap = true; // 겹치면 플래그 설정
+          break;
+        }
+      }
+
+      // 겹치는 강의 시간이 있으면 중단
+      if (hasOverlap) {
+        alert('겹치는 강의 시간이 존재합니다. 다른 시간을 선택해주세요.');
+        return;
+      }
+
+      // 겹치는 시간이 없는 경우에만 시간표에 색상과 강의 정보를 추가
+      console.log(this.currentLecture.timeSlots)
+      for (const timeSlot of this.currentLecture.timeSlots) {
+        console.log("헤이 왜 안 나와"+JSON.stringify(timeSlot))
+        const startHour = this.hours.indexOf(timeSlot.startTime);
+        const endHour = this.hours.indexOf(timeSlot.endTime);
+        const day = this.changeDay(timeSlot.lectureDay);
+
+        // 해당 요일이 비어있으면 초기화
+        if (!this.schedule[day]) {
+          this.schedule[day] = {};
+        }
+
+        // 강의 시간대에 강의 정보와 색상 추가
+        for (let i = startHour; i <= endHour; i++) {
+          this.schedule[day][i] = {
+            name: this.lectureGroupId,
+            color: color, // 이 부분에서 무작위로 선택한 색상 할당
+          };
+        }
+      }
+      console.log('스케줄 업데이트 완료:', this.schedule);
     },
     loadDaumPostcodeScript() {
       const script = document.createElement('script');
@@ -479,7 +533,7 @@ export default {
         return false;
       }
 
-      for (let i = startHour; i <= endHour; i++) {
+      for (let i = startHour; i < endHour; i++) {
         if (this.schedule[day][i]) {
           return true;
         }
@@ -519,6 +573,7 @@ export default {
         const startHour = this.hours.indexOf(timeSlot.startTime);
         const endHour = this.hours.indexOf(timeSlot.endTime);
         const day = timeSlot.lectureDay;
+        console.log("스케쥴 왜 안 들어오지"+startHour,endHour,day)
 
         // 겹치는 시간 확인
         if (this.isOverlapping(day, startHour, endHour)) {
@@ -551,16 +606,24 @@ export default {
       }
       const body = {
         address: this.address,
-        detailAddress:this.detailAddress,
+        detailAddress: this.detailAddress,
         price: (this.currentLecture.fee && this.currentLecture.fee.replace(/,/g, '')) || '0',
         limitPeople: this.currentLecture.capacity,
         startDate: this.startDate,
         endDate: this.endDate,
         groupTimeReqDtos: this.currentLecture.timeSlots
       }
-      const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/lecture-group/${this.lectureGroupId}`, body)
 
-      console.log(response)
+      try {
+        const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/lecture-group/${this.lectureGroupId}`, body)
+        if (response) this.showSnackbar('강의 그룹이 성공적으로 수정되었습니다!', 'success')
+      }
+      catch (e) {
+        const errorMessage = e.response.data.error_message;
+        if (errorMessage) this.showSnackbar(errorMessage, 'error');
+        else this.showSnackbar('강의 생성에 실패했습니다. 다시 시도해주세요.', 'error');
+      }
+
       this.$router.push(`/lecture-home/${this.lectureGroupId}`);
 
       // this.lectureGroups.push({ ...this.currentLecture }); // 강의 목록에 추가
@@ -660,6 +723,7 @@ export default {
 
         this.showSnackbar('강의 생성에 실패했습니다. 다시 시도해주세요.', 'error');
       }
+      console.log('스케줄 업데이트 완료:', this.schedule);
     },
     showSnackbar(message, color) {
       this.snackbar.message = message;
@@ -805,6 +869,7 @@ td {
   width: 100px;
   /* 원하는 너비로 조정 */
 }
+
 .detail-width {
   width: 400px;
   /* 원하는 너비로 조정 */
@@ -853,9 +918,11 @@ td {
 .create-lecture:hover {
   cursor: pointer;
 }
+
 .delete-lecture:hover {
   cursor: pointer;
 }
+
 .minus-btn:hover {
   cursor: pointer;
 }

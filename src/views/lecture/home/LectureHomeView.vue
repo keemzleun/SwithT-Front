@@ -64,13 +64,19 @@
                                     <v-card-subtitle>지금까지 학습 한 내용과 진도율을 확인해보세요</v-card-subtitle>
                                 </v-card-item>
                                 <v-card-text>
-                                    <div class="chartDoughnut" v-if="isDataLoaded">
-                                        <DoughnutChart :totalDayCount="infoData?.totalDayCount"
-                                            :pastDayCount="infoData?.pastDayCount" />
+                                    <div v-if="infoData?.totalDayCount">
+                                        <div class="chartDoughnut" v-if="isDataLoaded">
+                                            <DoughnutChart :totalDayCount="infoData?.totalDayCount"
+                                                :pastDayCount="infoData?.pastDayCount" />
+                                        </div>
+                                        <div v-else>
+                                            <!-- 데이터가 로드되기 전까지는 로딩 메시지 또는 스피너를 보여줌 -->
+                                            <v-progress-circular color="primary" indeterminate></v-progress-circular>
+                                        </div>
                                     </div>
-                                    <div v-else>
-                                        <!-- 데이터가 로드되기 전까지는 로딩 메시지 또는 스피너를 보여줌 -->
-                                        <v-progress-circular color="primary" indeterminate></v-progress-circular>
+                                    <div v-else class="text-center"
+                                    style="height: 170px; display: flex; align-items: center; justify-content: center; font-size:large;">
+                                        아직 시작되지 않았습니다.
                                     </div>
                                 </v-card-text>
                             </v-card>

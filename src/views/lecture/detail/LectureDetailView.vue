@@ -255,9 +255,7 @@
             </v-card-text>
             <v-card-actions style="justify-content: flex-end;">
                 <transition name="fade">
-                    <v-btn v-if="selectedLectureGroup"
-                        style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;"
-                        @click="submitApplication(); closeApplyModal();">신청하기</v-btn>
+                    <v-btn v-if="selectedLectureGroup" style="background-color: #0d6efd; color: #fff; font-weight: 700; margin-right: 10px;" @click="submitApplication();">신청하기</v-btn>
                 </transition>
                 <v-btn @click="closeApplyModal">취소</v-btn>
             </v-card-actions>

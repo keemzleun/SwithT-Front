@@ -604,8 +604,12 @@ async submitApplication() {
                 }
 
                 this.closeWaitingDialog();
-                // 결제 로직 실행
-                this.confirmPayment();
+                if (this.selectedLectureGroup.price === 0) {
+                    this.processFreeLesson();
+                } else {
+                    // 결제 로직 실행
+                    this.confirmPayment();
+                }
 
             } catch (error) {
                 this.snackbar = { show: true, message: "강의 신청 중 오류가 발생했습니다", color: "error" };
@@ -718,6 +722,16 @@ async processPayment(rsp) {
             alert("결제가 완료되었습니다!");
         }
     } catch (error) {
+        console.log("결제 처리 중 오류 발생:", error);
+    }
+},
+async processFreeLesson(){
+    console.log("무료 강연")
+    const lectureGroupId = this.selectedLectureGroup.lectureGroupId
+    try{
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/after-paid?lectureGroupId=${lectureGroupId}&memberId=${this.memberId}`);
+        console.log("신청됨", response.data)
+    } catch(error){
         console.log("결제 처리 중 오류 발생:", error);
     }
 },

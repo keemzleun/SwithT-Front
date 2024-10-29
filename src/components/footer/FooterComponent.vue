@@ -20,7 +20,11 @@ export default {
       },
       {
         name:'About', url:'/'
-      }] };
+      },
+      {
+        name:'Admin', url:'/admin'
+      },
+    ] };
   },
 };
 </script>

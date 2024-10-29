@@ -637,9 +637,8 @@ async submitApplication() {
                 }
 
                 if (!this.isExitingQueue) {
-                    this.closeWaitingDialog();
-                    this.confirmPayment();  
-
+                    this.confirmPayment(); 
+                    this.closeWaitingDialog(); 
                 }
 
             } catch (error) {
@@ -734,7 +733,7 @@ initiatePayment() {
         pay_method: "card", // 결제 방법
         merchant_uid: `merchant_${new Date().getTime()}`, // 주문번호
         name: this.lectureInfo.title, // 결제 내역
-        amount: this.selectedLectureGroup.price, // 결제 금액
+        amount: this.price, // 결제 금액
         buyer_email: jwtDecode(localStorage.getItem('token')).email,
         buyer_name: jwtDecode(localStorage.getItem('token')).name,
         buyer_tel: "",
@@ -754,7 +753,7 @@ async processPayment(rsp) {
             const data = {
                 impUid: rsp.imp_uid, // 아임포트 거래 고유번호
                 title: this.lectureInfo.title,
-                price: this.lectureInfo.price,
+                price: this.price,
                 memberId: this.memberId,
                 lectureGroupId: this.lectureGroupId,
             };

@@ -194,12 +194,12 @@ export default {
     redirectToGoogle(role) {
       Cookies.set("role", role); // 쿠키에 role 저장
       window.location.href =
-        `${process.env.VUE_APP_API_BASE_URL}/oauth2/authorization/google`;
+        `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/google`;
     },
     redirectToKakao(role) {
       Cookies.set("role", role); // 쿠키에 role 저장
       window.location.href = 
-        `${process.env.VUE_APP_API_BASE_URL}/oauth2/authorization/kakao`;
+        `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/kakao`;
     },
   },
 };

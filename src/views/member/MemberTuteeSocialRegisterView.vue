@@ -149,6 +149,10 @@ export default {
     this.role = Cookies.get("role");
     console.log("role 출력!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     console.log(this.role);
+    console.log("토큰 출력!!!!!!!!!!!!!!!!!!!!!")
+    console.log(Cookies.get("accessToken"));
+    console.log(Cookies.get("refreshToken"));
+
     this.loadDaumPostcodeScript();
     this.loadKakaoMapScript();
   },

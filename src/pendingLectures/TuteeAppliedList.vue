@@ -294,6 +294,10 @@ export default {
 </script>
 
 <style scoped>
+.v-container {
+    width: 70vw;
+    margin-top: 60px;
+}
 .header {
     font-weight: bold;
     border-bottom: 2px solid #ccc;

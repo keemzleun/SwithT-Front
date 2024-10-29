@@ -126,7 +126,8 @@ export const memberRouter = [
                     next('/member/main');  // 토큰이 유효하지 않을 경우 로그인 페이지로 리다이렉트
                 }
             } else {
-                next('/member/main');  // 쿠키에 토큰이 없을 경우 로그인 페이지로 리다이렉트
+                console.log("여기냐?2");
+                next('/member/home');  // 쿠키에 토큰이 없을 경우 로그인 페이지로 리다이렉트
             }
         }
     },

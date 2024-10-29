@@ -28,7 +28,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => response,
   async error => {
-      if (error.response && error.response.status === 500 || error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
           
           const refreshToken = localStorage.getItem('refreshToken');
           

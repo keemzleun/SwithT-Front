@@ -147,6 +147,8 @@ export default {
     // 쿠키에서 id와 role 값을 가져와서 셋팅
     this.id = Cookies.get("memberId");
     this.role = Cookies.get("role");
+    console.log("role 출력!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    console.log(this.role);
     this.loadDaumPostcodeScript();
     this.loadKakaoMapScript();
   },

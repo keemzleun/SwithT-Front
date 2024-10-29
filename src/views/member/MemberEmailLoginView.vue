@@ -46,7 +46,7 @@
               </span>
               <v-text-field
               :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-              
+              clearable
               class="mt-2"
               variant="outlined"
               label="Password"
@@ -97,7 +97,7 @@
                 </span>
                 <v-text-field
                 :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-                
+                clearable
                 class="mt-2"
                 variant="outlined"
                 label="Password"
@@ -194,4 +194,8 @@ a {
 a:hover {
   text-decoration: underline; /* 마우스가 올라가면 언더라인 표시 */
 }
+::v-deep .v-input__icon--clear {
+  margin-right: 10px; /* clearable 아이콘 간격 */
+}
+
 </style>

@@ -211,7 +211,7 @@
             { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
             { title: '신청 내역', icon: 'assignment', route: '/tutor-applied-list'},
             { title: '리뷰 관리', icon: 'rate_review' },
-            { title: '정산금 관리', icon: 'monetization_on' },
+            { title: '정산금 관리', icon: 'monetization_on', route: '/balance/table' },
             { title: '내 정보', icon: 'person', route: '/member/mypage' },
           ];
         } else if (this.userRole === 'ADMIN') {
@@ -258,15 +258,28 @@
       async goToAlertDetail(event) {
         const messageType = event.messageType;
         this.eventId = event.id;
-  
+
+        // 결제 알림의 경우 리다이렉트
         if (messageType === '결제요청') {
           try {
-            this.$router.push('/tutee-applied-list'); // 결제 알림의 경우 리다이렉트
+            this.$router.push('/tutee-applied-list');
           } catch (error) {
             console.error('결제 처리 중 오류 발생:', error);
           }
         }
-  
+
+        // 일반 알림 중 강의 승인일 경우 리다이렉트
+        if (messageType === '강의 승인') {
+          try {
+            // 강의 승인 알림일 경우 /tutor-lecture-list로 이동
+            this.$router.push('/tutor-lecture-list');
+            this.generalEvents = this.generalEvents.filter(e => e.id !== this.eventId);
+            localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents));
+          } catch (error) {
+            console.error('강의 승인 알림 처리 중 오류 발생:', error);
+          }
+        }
+
         this.alertDialogSSE = false;
       },
       setAlertCount() {

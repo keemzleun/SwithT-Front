@@ -15,7 +15,7 @@
                         </span>
                     </div>
                 </v-row>
-                <v-row class="d-flex align-center justify-start">
+                <v-row class="d-flex align-center justify-start mb-2">
                     <div class="title mr-2">{{ infoData.title }}</div>
 
                     <v-icon v-if="isTutor" @click="groupEditClick()">mdi-pencil</v-icon>
@@ -24,10 +24,10 @@
 
                 <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()">mdi-chat</v-icon>
                 </div>
-                <div class="detailInfo">시작 일자 : {{ infoData.startDate }}</div>
+                <div class="detailInfo">시작 일자 : {{ infoData.startDate ?? "아직 입력되지 않았습니다." }}</div>
                 <div class="detailInfo">강의 일정 : </div>
                 <div v-html="lectureSchedules" class="detailInfo"></div>
-                <div class="detailInfo">위치 : {{ infoData.address }} {{infoData.detailAddress}}<v-icon @click="showMap()">mdi-google-maps</v-icon>
+                <div class="detailInfo">위치 : {{ infoData.address }} {{infoData.detailAddress=="" ? "아직 입력되지 않았습니다.":infoData.detailAddress}}<v-icon @click="showMap()" v-if="infoData.address">mdi-google-maps</v-icon>
                 </div>
 
             </v-col>

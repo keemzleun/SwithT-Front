@@ -38,6 +38,8 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
 ![socketdotio](https://img.shields.io/badge/Socketdotio-010101?style=for-the-badge&logo=socketddotio&logoColor=white)
 <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+<img src="https://img.shields.io/badge/KAFKA-02303A?style=for-the-badge&logo=&logoColor=white">
+
 
 ### FRONTEND
 ![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
@@ -106,4 +108,130 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 ![image](https://github.com/user-attachments/assets/ed49326c-394d-4333-900d-2fd50ceb51cf)
 ![image](https://github.com/user-attachments/assets/97da9fba-f566-4d39-8244-5a86e6e5dfa6)
 ![image](https://github.com/user-attachments/assets/70bc7cbb-cf28-4c26-97e2-a2c9ca8edc63)
+
+
+<br/>
+
+## 📝UI/UX 단위 테스트 결과서
+### 회원 가입 및 로그인 화면
+<details>
+<summary><b>로그인 화면 진입 & 탭 전환</b></summary>
+    
+  ![로그인 화면 진입 탭 전환 ](https://github.com/user-attachments/assets/1509c0d4-1a95-42d5-8d10-b21d363914f0)
+  ![TUTOR 회원가입](https://github.com/user-attachments/assets/521ac644-a6a1-48cb-9091-db7b12d516e5)
+  ![TUTEE 회원가입 및 로그인](https://github.com/user-attachments/assets/edc95f62-d68e-41ed-9042-773ad4c527f2)
+
+</details>
+<br/>
+
+### 소셜 로그인 및 회원가입
+<details>
+<summary><b>구글 로그인 화면 진입 & 탭 전환</b></summary>
+  
+  ![카카오 소셜 로그인](https://github.com/user-attachments/assets/743c9ec5-65ea-4417-adf7-566f9b01977f)
+
+</details>
+<br/>
+
+
+
+
+### 튜터 강의 개설
+<details>
+<summary><b>튜터 강의 개설</b></summary>
+<img src="https://github.com/user-attachments/assets/c6d6bccd-8803-4d61-9922-b145da657801" alt="튜터 강의 개설"/>
+</details>
+<br/>
+
+### 튜터 과외 개설
+<details>
+<summary><b>튜터 과외 개설</b></summary>
+<img src="https://github.com/user-attachments/assets/60beff98-9f61-4af6-a847-a143c69381fa" alt="튜터 과외 개설"/>
+</details>
+<br/>
+
+
+### 어드민 강의 과외 승인
+<details>
+<summary><b>어드민 강의 과외 승인</b></summary>
+<img src="https://github.com/user-attachments/assets/872808f8-b692-4bc8-85c8-d04314ac38a0" alt="어드민 강의 과외 승인"/>
+</details>
+<br/>
+
+### 튜터의 개설된 강의 과외 리스트 확인 및 해당 그룹 확인
+<details>
+<summary><b>튜터의 개설된 강의 과외 리스트 확인 및 해당 그룹 확인</b></summary>
+<img src="https://github.com/user-attachments/assets/45e9b50b-6aa8-4a70-9023-5abfa44bcc54" alt="어드민 강의 과외 승인"/>
+</details>
+<br/>
+
+### 튜터의 강의 그룹 수정
+<details>
+<summary><b>튜터의 강의 그룹 수정</b></summary>
+<img src="https://github.com/user-attachments/assets/2a5db18b-6b52-4f8a-a165-a7e0e77d4489" alt="튜터의 강의 그룹 수정"/>
+</details>
+<br/>
+
+### 튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인
+<details>
+<summary><b>튜티의 과외 신청</b></summary>
+<img src="https://github.com/user-attachments/assets/267beb74-6a7d-4296-9cac-22e4a2cb3125" alt="튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인"/>
+</details>
+<br/>
+<details>
+<summary><b>튜터 신청 승인</b></summary>
+<img src="https://github.com/user-attachments/assets/90359f2e-1eb8-4237-a761-ac308fa53f3d" alt="튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인"/>
+</details>
+<br/>
+<details>
+<summary><b>튜터 신청 승인 및 튜티 결제</b></summary>
+<img src="https://github.com/user-attachments/assets/90359f2e-1eb8-4237-a761-ac308fa53f3d" alt="튜티의 과외 신청 및 튜터의 신청 승인 및 튜티의 결제 알림 확인"/>
+</details>
+<br/>
+
+### 튜터의 과제 생성/조회/수정/삭제
+<details>
+<summary><b>튜터의 과제 생성</b></summary>
+<img src="https://github.com/user-attachments/assets/444ee043-4fc6-44a1-bd52-c98243d17984" alt="튜터의 과제 생성"/>
+</details>
+<br/>
+
+<details>
+<summary><b>튜터의 과제 수정</b></summary>
+<img src="https://github.com/user-attachments/assets/823296db-2072-40ae-b43e-cad6a6f8359d" alt="튜터의 과제 수정"/>
+</details>
+<br/>
+
+<details>
+<summary><b>튜터의 과제 삭제</b></summary>
+<img src="https://github.com/user-attachments/assets/8610dd5b-e38a-46f1-a2a3-32d5bbc75642" alt="튜터의 과제 삭제"/>
+</details>
+<br/>
+
+### 튜터의 게시글 생성/조회/수정/삭제
+<details>
+<summary><b>튜터의 게시글 생성</b></summary>
+<img src="https://github.com/user-attachments/assets/c6c971e6-20fb-4b40-b99c-7030624f77b7" alt="튜터의 게시글 생성"/>
+</details>
+
+<br/>
+
+<details>
+<summary><b>튜터의 게시글 수정</b></summary>
+<img src="https://github.com/user-attachments/assets/8b2bc19d-c4de-4f5d-9e94-74ad95111bf6" alt="튜터의 게시글 수정"/>
+</details>
+<br/>
+
+<details>
+<summary><b>튜터의 게시글 삭제</b></summary>
+<img src="https://github.com/user-attachments/assets/216776cc-13ae-4d3d-8ff8-881d324d5fdc" alt="튜터의 게시글 삭제"/>
+</details>
+<br/>
+
+### 댓글 생성/조회/수정/삭제
+<details>
+<summary><b>댓글 생성/조회/수정/삭제</b></summary>
+<img src="https://github.com/user-attachments/assets/41c6ee12-321b-489a-a957-216ab533f017" alt="댓글 생성/조회/수정/삭제/>
+</details>
+<br/>
 

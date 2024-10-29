@@ -349,6 +349,7 @@ export default {
       paymentModalContents: '',
       queueRank: -1,
       getOrderData: null,
+      lectureGroupId: null,
     };
   },
   created() {
@@ -578,8 +579,12 @@ sendDeleteQueue() {
 },
 selectLectureGroup(group) {
     this.selectedLectureGroup = group;
-    console.log("선택한 강의 그룹 아이디:" + this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
+    console.log(this.selectedLectureGroup.lectureGroupId) // 잘 들어옴
+    this.lectureGroupId = group.lectureGroupId;
+    this.price = group.price;
     console.log("선택한 강의 그룹 남은 인원:" + this.selectedLectureGroup.remaining);
+    console.log("선택한 강의 그룹 가격:" + this.price);
+
 },
 
 async submitApplication() {
@@ -589,6 +594,10 @@ async submitApplication() {
     this.memberName = localStorage.getItem('name');
 
     console.log(this.lectureInfo.lectureType);
+
+    if (this.selectedLectureGroup) {
+      this.lectureGroupId = this.selectedLectureGroup.lectureGroupId; // 선택된 강의 그룹 ID를 다시 확인 및 설정
+    }
 
     // LECTURE 신청 로직
     if (this.lectureInfo.lectureType === "LECTURE") {
@@ -630,6 +639,7 @@ async submitApplication() {
                 if (!this.isExitingQueue) {
                     this.closeWaitingDialog();
                     this.confirmPayment();  
+
                 }
 
             } catch (error) {
@@ -746,7 +756,7 @@ async processPayment(rsp) {
                 title: this.lectureInfo.title,
                 price: this.lectureInfo.price,
                 memberId: this.memberId,
-                lectureGroupId: this.selectedLectureGroup.lectureGroupId,
+                lectureGroupId: this.lectureGroupId,
             };
             console.log(data);
 
@@ -754,6 +764,16 @@ async processPayment(rsp) {
             alert("결제가 완료되었습니다!");
         }
     } catch (error) {
+        console.log("결제 처리 중 오류 발생:", error);
+    }
+},
+async processFreeLesson(){
+    console.log("무료 강연")
+    const lectureGroupId = this.selectedLectureGroup.lectureGroupId
+    try{
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/after-paid?lectureGroupId=${lectureGroupId}&memberId=${this.memberId}`);
+        console.log("신청됨", response.data)
+    } catch(error){
         console.log("결제 처리 중 오류 발생:", error);
     }
 },

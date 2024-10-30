@@ -2,7 +2,7 @@
     <LectureDetailInfoComponent 
         :lectureId=this.lectureId
         />
-    <v-container width="50%"  style="margin-top: 60px;">
+    <v-container width="70vw"  style="margin-top: 60px;">
         
         
         <!-- <v-row justify="center">
@@ -20,32 +20,84 @@
         </v-row> -->
 
         <v-row>
-            <v-col>
-                <div class="lecture-groups">
-                    <div>
-                        <div v-for="group in lectureGroupList" :key="group.lectureGroupId" class="lecture-group">
-                              <span v-for="time in group.groupTimes" :key="time.groupTimeId">
-                                <p><strong>요일:</strong> {{ time.lectureDay }}</p>
-                                <p><strong>시작 시간:</strong> {{ time.startTime }}</p>
-                                <p><strong>종료 시간:</strong> {{ time.endTime }}</p>
-                            </span>
-                          <p><strong>강의 그룹 ID:</strong> {{ group.lectureGroupId }}</p>
-                          <p><strong>주소:</strong> {{ group.address || '주소 없음' }}</p>
-                          <p><strong>상세 주소:</strong> {{ group.detailAddress }}</p>
-                          <p><strong>가격:</strong> {{ group.price }} 원</p>
-                          <p><strong>남은 자리:</strong> {{ group.remaining }}</p>
-                          <p><strong>시작 날짜:</strong> {{ group.startDate || '미정' }}</p>
-                          <p><strong>종료 날짜:</strong> {{ group.endDate || '미정' }}</p>
-                          <p><strong>사용 가능 여부:</strong> {{ group.isAvailable === 'Y' ? '사용 가능' : '사용 불가' }}</p>
-                          
-                         
-                        </div>
-                      </div>
-
+            <v-col cols="6">
+                    <div class="lecture-group-info">
+                        <div v-for="(group, index) in lectureGroupList" :key="group.lectureGroupId">
+                            
+                        <v-row>
+                            <v-col cols="3" class="align-center justify-center">
+                                <div>
+                                    <div class="tag">
+                                        {{ getLectureGroupStatus(group) }}
+                                    </div>
+                                </div>
+                                
+                                <div style="font-size: 18px; font-weight: 700;">그룹 {{index + 1}}</div>
+                            </v-col>
+                            <v-col cols="9" class="align-center justify-center">
+                                <v-row class="align-center" style="height: 100%; padding: 12px">
+                                    <div class="group-time">
+                                        <div v-for="time in group.groupTimes" :key="time.groupTimeId">
+                                            <strong>{{ convertDayToKorean(time.lectureDay) }}</strong> {{ formatTime(time.startTime) }}~{{ formatTime(time.endTime) }}
+                                        </div>
+                                    </div>
+                                        <!-- 조건에 따른 정보 표시 -->
+                                    <template v-if="showAdditionalInfo(group)">
+                                        <span><strong>주소:</strong> {{ group.address || '미정' }}{{ group.detailAddress }}</span><br/>
+                                        <span><strong>기간:</strong> {{ group.startDate }} ~ {{ group.endDate || '미정' }}</span>
+                                    </template>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                           
+                    </div>
                 </div>
             </v-col>
-            <v-col>
-
+            <v-col cols="6">
+                <v-row>
+                    <div class="list-title">최신 게시글</div>
+                    <div class="list-style">
+                        
+                        <v-row>
+                            <v-col cols="2"></v-col>
+                            <v-col cols="5"><strong>제목</strong></v-col>
+                            <v-col cols="2"><strong>작성자</strong></v-col>
+                            <v-col cols="3"><strong>작성시간</strong></v-col>
+                        </v-row>
+                        <hr>
+                        <span v-for="(item, index) in posts" :key="item.id" class="list-item">
+                            <v-row>
+                                <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
+                                <v-col cols="5" style="padding: 10px 0"><span class="item-title">{{ item.title }}</span></v-col>
+                                <v-col cols="2" style="padding: 10px 0">{{ item.memberName || '알 수 없음' }}</v-col>
+                                <v-col cols="3" style="padding: 10px 0">{{ formatRelativeTime(item.createdTime) }}</v-col>
+                            </v-row>
+                          </span>
+                    </div>
+                </v-row>
+                <v-row>
+                    <div class="list-title">곧 마감되는 과제</div>
+                    <div class="list-style">
+                       
+                        <v-row>
+                            <v-col cols="2"></v-col>
+                            <v-col cols="5"><strong>과제</strong></v-col>
+                            <v-col cols="5"><strong>마감일</strong></v-col>
+                        </v-row>
+                        <hr>
+                        <span v-for="(item, index) in assignments" :key="item.id" class="list-item">
+                            <v-row>
+                                <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
+                                <v-col cols="5" style="padding: 10px 0">{{ item.title }}</v-col>
+                                <v-col cols="5" style="padding: 10px 0">{{ item.endDate }}</v-col>
+                            </v-row>
+                            <p><strong>{{ index + 1 }}</strong></p>
+                            <!-- <p><strong>{{ item.lectureGroupId }}</strong></p> -->
+                            <p><strong>{{ item.title }}</strong></p>
+                            <p><strong>{{ item.endDate }}</strong></p>
+                          </span>
+                    </div>
+                </v-row>
             </v-col>
         </v-row>
 
@@ -165,15 +217,25 @@ export default {
     },
     data() {
         return {
-            lectureGroupList: []
+            lectureId: null,
+            lectureGroupList: [],
+            posts: [], // 게시글 리스트
+            assignments: [], // 과제 리스트
+            // tab: 'POSTS', // 탭 상태
+            lectureType: '',
+            lectureStatue: '',
         }
     },
     created() {
             this.lectureId = this.$route.query.lectureId;
             this.lectureType = this.$route.query.lectureType;
             this.lectureStatus = this.$route.query.lectureStatus;
-    
+
             console.log(this.lectureId, this.lectureType, this.lectureStatus);
+
+            this.fetchLectureGroups();
+            this.fetchPostsByLectureId();
+            this.fetchAssignmentsByLectureId();
 
     },
     mounted() {
@@ -194,8 +256,102 @@ export default {
                 console.error("강의 그룹 정보를 불러오는 중 오류 발생:", error);
             }
         },
-        
-    }
+        async fetchPostsByLectureId() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board-list/${this.lectureId}`);
+                console.log(response)
+                if (response.status === 200) {
+                    this.posts = response.data.result;
+                } else {
+                    console.error("게시글 정보를 불러오는 중 오류 발생:", response.data.message);
+                }
+            } catch (error) {
+                console.error("게시글 정보를 불러오는 중 오류 발생:", error);
+            }
+        },
+        async fetchAssignmentsByLectureId() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment-list/${this.lectureId}`);
+
+                console.log(response)
+                if (response.status === 200) {
+                    this.assignments = response.data.result;
+                } else {
+                    console.error("과제 정보를 불러오는 중 오류 발생:", response.data.message);
+                }
+            } catch (error) {
+                console.error("과제 정보를 불러오는 중 오류 발생:", error);
+            }
+        },
+        formatTime(time) {
+            // 시간에서 앞의 5자리만 잘라서 반환 (HH:MM)
+            return time.substring(0, 5);
+        },
+        formatPrice(value) {
+            if (!value)  return '재능기부';
+            return new Intl.NumberFormat('ko-KR').format(value)+'원';
+        },
+        convertDayToKorean(day) {
+            const daysInKorean = {
+                MONDAY: '월요일',
+                TUESDAY: '화요일',
+                WEDNESDAY: '수요일',
+                THURSDAY: '목요일',
+                FRIDAY: '금요일',
+                SATURDAY: '토요일',
+                SUNDAY: '일요일'
+            };
+            return daysInKorean[day] || day;
+        },  
+        getLectureGroupStatus(group) {
+            const now = new Date();
+            const start = new Date(group.startDate);
+            const end = group.endDate ? new Date(group.endDate) : null;
+
+            if (this.lectureType === 'LESSON') {
+                if (group.isAvailable === 'N') {
+                    return '진행중';
+                } else if (group.isAvailable === 'Y') {
+                    return '모집중';
+                } else if (end && now > end) {
+                    return '종료';
+                }
+            } else {
+                if (now < start) {
+                    return '모집중';
+                } else if (now >= start && (!end || now < end)) {
+                    return '진행중';
+                } else {
+                    return '종료';
+                }
+            }
+            return '상태 알 수 없음';
+        },
+        showAdditionalInfo(group) {
+            const status = this.getLectureGroupStatus(group);
+            if (this.lectureType === 'LESSON') {
+                return status !== '모집중';
+            }
+            return true; // LECTURE인 경우 항상 추가 정보를 보여줌
+        },
+        formatRelativeTime(createdTime) {
+            const now = new Date();
+            const createdDate = new Date(createdTime);
+            const diffInSeconds = Math.floor((now - createdDate) / 1000);
+
+            if (diffInSeconds < 60) {
+                return `${diffInSeconds}초 전`;
+            } else if (diffInSeconds < 3600) { // 1시간 이내
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes}분 전`;
+            } else if (diffInSeconds < 86400) { // 24시간 이내
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours}시간 전`;
+            } else { // 24시간 이후
+                return createdDate.toLocaleDateString(); // 날짜 형식으로 반환
+            }
+        }
+    },
 }
 
 //     data() {
@@ -352,5 +508,50 @@ export default {
 </script>
 
 <style scoped>
+.tag {
+    background-color: #6C97FD;
+    width: 65px;
+    border-radius: 15px;
+    margin: 10px auto;
+    color: #fff;
+    font-weight: 700;
+}
+.group-time {
 
+    width: 100%;
+    background-color: #f9f9f9;
+    border: 1px solid #cdcdcd;
+    border-radius: 2px;
+    font-weight: 700;
+
+}
+.lecture-group-info {
+    border: 1px solid #cdcdcd;
+    padding: 20px 30px 30px;
+    margin: 20px;
+    border-radius: 5px;
+}
+.list-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 30px;
+}
+.list-style {
+    width: 100%;
+    height: 200px;  /*나중에 없애기*/
+    padding: 20px 30px;
+    margin: 10px 10px 40px;
+    border-radius: 5px;
+    border: 1px solid #cdcdcd;
+}
+.item-title {
+    display: inline-block;
+    width: 100%;
+    border-radius: 10px;
+}
+.item-title:hover {
+    cursor: pointer;
+    background-color: #f3f2f2;
+
+}
 </style>

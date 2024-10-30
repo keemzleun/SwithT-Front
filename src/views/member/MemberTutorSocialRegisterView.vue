@@ -180,6 +180,11 @@ export default {
   mounted() {
     // 쿠키에서 id와 role 값을 가져와서 셋팅
     this.id = Cookies.get("memberId");
+
+    console.log("마운트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+Cookies.get("memberId"));
+    console.log(Cookies.get("memberId"));
+    console.log(this.id);
+
     this.role = Cookies.get("role");
     this.loadDaumPostcodeScript();
     this.loadKakaoMapScript();
@@ -207,12 +212,17 @@ export default {
           role: this.role,
           education: this.education,
           profileImage: this.profileImage,
+          
         };
+        console.log("214라인!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.log(this.id);
 
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/member/AddInfoUpdate`,
           updateDate
         );
+        console.log("219라인!!!!!!!!!!!!!!!!!!!!!!!!!"+Cookies.get("memberId"));
+        console.log(Cookies.get("memberId"));
 
         console.log("추가 정보 입력 성공");
 
@@ -228,6 +238,11 @@ export default {
 
         this.$router.push("/member/welcome");
       } catch (e) {
+        console.log("catch부분!!!!!!!!!!!!!!!!!!!!!!!!!"+Cookies.get("memberId"));
+        console.log(this.id);
+        console.log(Cookies.get("memberId"));
+
+
         const error_message =
           e.response?.data?.error_message ||
           "추가정보 입력 중 오류가 발생했습니다.";

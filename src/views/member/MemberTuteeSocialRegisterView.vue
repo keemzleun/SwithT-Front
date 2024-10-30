@@ -147,6 +147,12 @@ export default {
     // 쿠키에서 id와 role 값을 가져와서 셋팅
     this.id = Cookies.get("memberId");
     this.role = Cookies.get("role");
+    console.log("role 출력!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    console.log(this.role);
+    console.log("토큰 출력!!!!!!!!!!!!!!!!!!!!!")
+    console.log(Cookies.get("accessToken"));
+    console.log(Cookies.get("refreshToken"));
+
     this.loadDaumPostcodeScript();
     this.loadKakaoMapScript();
   },
@@ -179,7 +185,7 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/member-service/member/AddInfoUpdate`,
           updateDate
         );
-
+        console.log("this.id : "+this.id);
         console.log("추가 정보 입력 성공");
 
         const token = response.data.result.token;

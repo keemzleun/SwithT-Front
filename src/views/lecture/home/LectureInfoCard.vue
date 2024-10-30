@@ -22,7 +22,7 @@
                     <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn>
                 </v-row>
 
-                <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()">mdi-chat</v-icon>
+                <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()" v-if="!isTutor">mdi-chat</v-icon>
                 </div>
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate ?? "아직 입력되지 않았습니다." }}</div>
                 <div class="detailInfo">강의 일정 : </div>
@@ -409,7 +409,11 @@ export default {
 .avgScore {
     font-size: 1.5rem;
 }
-
+.thumbnail img {
+    border-radius: 8px;
+    height: 300px;
+    object-fit: contain;
+}
 .thumbnail img {
     width: 80%;
     border-radius: 8px;
@@ -431,16 +435,10 @@ export default {
     justify-content: flex-start;
     align-items: flex-start;
 }
-
-.thumbnail-image {
-    width: 100%;
-    /* 너비를 고정 */
-    height: 100%;
-    /* 높이를 고정 */
-    border-radius: 100%;
-    /* 동그랗게 만듦 */
-    object-fit: cover;
-    /* 이미지가 잘리지 않게 설정 */
+.thumbnail img {
+    border-radius: 8px;
+    height: 300px;
+    object-fit: contain;
 }
 
 .pa-4 {

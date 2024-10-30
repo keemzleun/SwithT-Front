@@ -75,7 +75,7 @@
                                         </div>
                                     </div>
                                     <div v-else class="text-center"
-                                    style="height: 170px; display: flex; align-items: center; justify-content: center; font-size:large;">
+                                        style="height: 170px; display: flex; align-items: center; justify-content: center; font-size:large;">
                                         아직 시작되지 않았습니다.
                                     </div>
                                 </v-card-text>
@@ -172,10 +172,51 @@
             <v-tabs-window-item value="notice">
                 <v-row justify="space-between">
                     <v-col class="ml-5" cols="5">
-                        <v-btn :class="onlyNotice ? 'active' : 'inactive'" rounded
-                            @click="onlyNotice = !onlyNotice; onlyNoticeClick();">
-                            {{ onlyNotice ? "전체 보기" : "공지사항만 보기" }}
+                        <v-btn variant="outlined" elevation="0" rounded @click="onlyNoticeClick()">
+                            {{ onlyNotice ? "전체" : "공지사항만" }}
                         </v-btn>
+                        <!-- <v-menu v-model="menu" class="mb-10" attach offset-y>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on" outlined elevation="0">
+                                    {{ onlyNotice ? "공지사항만 보기" : "전체 보기" }}
+                                    <v-icon right>mdi-menu-down</v-icon>
+                                </v-btn>
+                            </template>
+                            <v-list>
+                                <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">전체
+                                    보기</v-list-item>
+                                <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">공지사항만
+                                    보기</v-list-item>
+                            </v-list>
+                        </v-menu> -->
+                        <!-- @click="menu=!menu; onlyNotice = !onlyNotice; onlyNoticeClick();"> -->
+
+                        <!-- <v-btn outlined rounded elevation="0" @click="menu = !menu;">
+                            {{ onlyNotice ? "전체 보기" : "공지사항만 보기" }}
+                            <v-icon right>mdi-menu-down</v-icon>
+                            <v-menu activator="menu">
+                                <v-list>
+                                    <v-list-item @click="onlyNotice = false; onlyNoticeClick();">
+                                        <v-list-item-title>전체 보기</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item @click="onlyNotice = true; onlyNoticeClick();">
+                                        <v-list-item-title>공지사항만 보기</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </v-btn> -->
+                        <!-- <select>
+                            <option @click="onlyNotice = false; onlyNoticeClick();">전체 보기</option>
+                            <option @click="onlyNotice = true; onlyNoticeClick();">공지사항만 보기</option>
+                        </select> -->
+                        <!-- <v-select
+                        :items="selectOptions"  
+                        variant="outlined"
+                        rounded
+                        label="보기 옵션 선택"
+                        @change="onlyNoticeClick()" 
+                      >
+                      </v-select> -->
                     </v-col>
                     <v-col class="mr-15" cols="5"><v-btn rounded color="#90CDFF"
                             @click="noticeCreateModal = true"><v-icon>mdi-plus</v-icon></v-btn></v-col>
@@ -619,6 +660,8 @@ export default {
             noticeDrawer: false,
             isAuthor: false,
             onlyNotice: false,
+            menu: false,
+            selectOptions: [ "전체 보기","공지사항만 보기"],
 
         };
     },
@@ -693,7 +736,14 @@ export default {
             this.execDaumPostcode();
             this.mapModal = true;
         },
+        setNoticeView(isNoticeOnly) {
+            this.onlyNotice = isNoticeOnly;  // 공지사항만 보기 상태 설정
+            this.menu = false;  // 메뉴 닫기
+            this.onlyNoticeClick();  // 공지사항 또는 전체 데이터를 불러오는 로직
+        },
         async onlyNoticeClick() {
+            if(this.onlyNotice == true) this.onlyNotice = false;
+            else this.onlyNotice=true;
             let params = {
                 size: this.noticePageSize,
                 page: this.page,

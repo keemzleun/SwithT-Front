@@ -143,6 +143,8 @@
         let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/subscribe`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
+
+        console.log(sse + "sse 프론트 콘솔");
   
         sse.addEventListener('notification', (event) => {
           console.log('Notification event received:', event);

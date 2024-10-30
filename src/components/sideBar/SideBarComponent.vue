@@ -290,6 +290,7 @@
       selectTab(tab) {
         this.selectedTab = tab;
       },
+      
     },
   };
   </script>  
@@ -302,6 +303,7 @@
   padding: 20px;
   position: fixed;
   z-index: 2 !important;
+  top: 0;
   right: 0;
 }
 .profile {

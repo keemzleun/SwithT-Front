@@ -1,48 +1,93 @@
 <template>
   <div class="calendar-wrapper">
     <div class="sidebar">
-      <!-- 오늘의 일정 -->
-      <div class="today-schedule">
-        <h3>오늘의 일정</h3>
+      <!-- <div class="today-schedule " v-if="sortedTodayEvents.length!=0">
+        <h5><strong>오늘의 일정</strong></h5>
+        <v-row v-for="event in sortedTodayEvents" :key="event.id">
+        <v-card
+        variant="outlined"
+        class="mx-auto mb-3 mt-1"
+        color="surface-variant"
+        max-width="344"
+        :subtitle="event.title+' - ' +formatTime(event.start)"
+      >
+      </v-card>
+    </v-row>
+    <v-row>
+      <v-card
+      variant="outlined"
+      class="mx-auto mb-3 mt-1"
+      color="surface-variant"
+      max-width="344"
+      :subtitle="'체크체크'+' - ' + '09:33'"
+    >
+    </v-card>
+    </v-row>
+    <v-row>
+      <v-card
+      variant="outlined"
+      class="mx-auto mb-3 mt-1"
+      color="surface-variant"
+      max-width="344"
+      :subtitle="'체크체크'+' - ' + '09:33'"
+    >
+    </v-card>
+    </v-row>
+    <v-row>
+      <v-card
+      variant="outlined"
+      class="mx-auto mb-3 mt-1"
+      color="surface-variant"
+      max-width="344"
+      :subtitle="'체크체크'+' - ' + '09:33'"
+    >
+    </v-card>
+    </v-row>
+
+      </div> -->
+
+      <div class="today-schedule text-left ml-15" v-if="sortedTodayEvents.length!=0">
+        <h5><strong>오늘의 일정</strong></h5>
+        <ul  style="list-style: none; padding: 0; margin: 0;">
+          <li v-for="event in sortedTodayEvents" :key="event.id">
+            <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
+            <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
+            <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
+            {{ event.title }} ( {{ formatTime(event.start) }} )</li>
+            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
+            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
+            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
+            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
+        </ul>
+      </div>
+      <div class="week-alert-schedule" v-if="sortedWeekAlertEvents.length!=0">
+        <h5><strong>주간 알림 일정</strong></h5>
         <ul style="list-style: none; padding: 0; margin: 0;">
-          <li v-for="event in sortedTodayEvents" :key="event.id">{{ event.title }} - {{ formatTime(event.start) }}</li>
+          <li v-for="event in sortedWeekAlertEvents" :key="event.id">
+            <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
+            <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
+            <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
+            {{ event.title }} - {{
+            formatWeekAlertTime(event.start) }}</li>
         </ul>
       </div>
 
-      <!-- 이번 주 알림 일정 -->
-      <div class="week-alert-schedule">
-        <h3>주간 알림 일정</h3>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li v-for="event in sortedWeekAlertEvents" :key="event.id">{{ event.title }} - {{ formatWeekAlertTime(event.start) }}</li>
-        </ul>
-      </div>
 
-      <!-- 그룹별 일정 색상 설명 -->
-      <div class="group-color-info">
-        <h3>그룹 색상 설명</h3>
-        <ul>
-          <li><span class="color-box" style="background-color: #82B1FF;"></span> 수업 일정</li>
-          <li><span class="color-box" style="background-color: #FF8F00;"></span> 과제 일정</li>
-          <li><span class="color-box" style="background-color: #FFF490;"></span> 개인 일정</li>
-        </ul>
-      </div>
     </div>
 
     <!-- 메인 캘린더 -->
     <v-container class="calendar-container">
+      <div class="d-flex flex-row-reverse mb-5">
+        <span class="color-box" style="background-color: #82B1FF;"><v-tooltip location="top" activator="parent">수업 일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #FF8F00;"><v-tooltip location="top" activator="parent">과제 일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #FFF490;"><v-tooltip location="top" activator="parent">개인 일정</v-tooltip></span>
+      </div>
       <FullCalendar ref="fullCalendar" :options="calendarOptions" class="full-calender" />
-      <HandleScheduleModal
-        v-if="isModalVisible"
-        :selectedDate="selectedDate"
-        :selectedSchedule="selectedEvent"
-        :alertInfo="alertInfo"
-        @close="isModalVisible = false"
-        @scheduleSaved="handleScheduleSubmitted"
-        @scheduleDeleted="handleScheduleDeleted"
-        @saveAlert="handleSaveAlert"
-        @createAlert="handleCreateAlert"
-        @cancelAlert="handleCancelAlert"
-      />
+
+      <HandleScheduleModal v-if="isModalVisible" :selectedDate="selectedDate" :selectedSchedule="selectedEvent"
+        :alertInfo="alertInfo" @close="isModalVisible = false" @scheduleSaved="handleScheduleSubmitted"
+        @scheduleDeleted="handleScheduleDeleted" @saveAlert="handleSaveAlert" @createAlert="handleCreateAlert"
+        @cancelAlert="handleCancelAlert" />
     </v-container>
   </div>
 </template>
@@ -73,8 +118,11 @@ export default {
         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
         locale: koLocale,
-        events: [],
+        events: [
+          
+        ],
         datesSet: this.handleDatesSet,
+        height: 700,
         eventTimeFormat: {
           hour: 'numeric',
           minute: '2-digit',
@@ -175,9 +223,11 @@ export default {
           const customClass = schedule.alertYn === "Y" ? "alert-event" : "";
           let groupId = 3;
 
+          // 수업 일정
           if (schedule.lectureAssignmentId === null && schedule.lectureGroupId != null) {
             groupId = 1;
           } else if (schedule.lectureGroupId != null && schedule.lectureAssignmentId != null) {
+            // 과제 일정
             groupId = 2;
           }
 
@@ -188,7 +238,7 @@ export default {
             end,
             description: schedule.content,
             classNames: [customClass],
-            extendedProps: { 
+            extendedProps: {
               groupId,
               alertYn: schedule.alertYn
             },
@@ -215,6 +265,7 @@ export default {
         const allEvents = this.$refs.fullCalendar.getApi().getEvents();
 
         this.todayEvents = allEvents.filter(event => {
+          console.log("오늘 이벤트",event)
           const eventDate = new Date(event.start);
           eventDate.setHours(0, 0, 0, 0); // 이벤트 날짜도 00:00:00으로 설정 (로컬 타임존 기준)
           return eventDate.getTime() === today.getTime(); // 날짜를 비교하여 일치하는 이벤트만 필터링
@@ -309,7 +360,7 @@ export default {
     },
 
     // 일정 데이터가 모달에서 넘어왔을 때 처리
-    async handleScheduleSubmitted({scheduleData, alertData}) {
+    async handleScheduleSubmitted({ scheduleData, alertData }) {
       try {
         console.log("AlertData Parent Component", this.dataToSend)
         let response;
@@ -323,7 +374,7 @@ export default {
         // 스케줄 저장 후 반환된 ID를 알림 데이터에 사용
         const savedScheduleId = response.data.result || this.selectedEvent.id;
         console.log(console.log("alertData", alertData))
-        console.log("scheudleID",savedScheduleId)
+        console.log("scheudleID", savedScheduleId)
         if (alertData) {
           alertData.scheduleId = savedScheduleId; // 알림 데이터에 스케줄 ID 설정
           console.log("alertData", alertData)
@@ -422,7 +473,7 @@ export default {
 }
 
 .sidebar {
-  width: 350px;
+  width: 300px;
   background-color: #f5f5f5;
   padding: 10px;
   display: flex;
@@ -431,7 +482,7 @@ export default {
 }
 
 ::v-deep .fc-media-screen fc-direction-ltr fc-theme-standard {
-  height: 800px;
+  height: 700px;
 }
 
 /* 메인 캘린더 */
@@ -465,7 +516,7 @@ export default {
 /* FullCalendar 내부 스타일에 영향 주기 위해 deep 사용 */
 ::v-deep .fc-event {
   font-size: 15px !important;
-  color: black !important;
+  color: white !important;
 }
 
 ::v-deep .holiday-event {
@@ -474,22 +525,43 @@ export default {
   color: #B71C1C !important;
 }
 
-::v-deep .fc-prev-button, 
+::v-deep .fc-prev-button,
 ::v-deep .fc-next-button {
   background: none;
-  border: none;
-  font-size: 14px; /* 버튼 텍스트 크기 줄이기 */
+  border: none !important;
+  font-size: 14px;
+  /* 버튼 텍스트 크기 줄이기 */
   cursor: pointer;
-  color: #000;
-  padding: 4px 8px; /* 패딩 추가 */
-  width: 24px; /* 버튼 너비 */
-  height: 24px; /* 버튼 높이 */
+  color: #c2c2c2;
+  padding: 4px 8px;
+  /* 패딩 추가 */
+  width: 24px;
+  /* 버튼 너비 */
+  height: 24px;
+  /* 버튼 높이 */
 }
 
-::v-deep .fc-prev-button:hover, 
+::v-deep .fc-prev-button:hover,
 ::v-deep .fc-next-button:hover {
-  color: #000;
+  background: none;
+  border: none;
+  color: #000; /* Change text color on hover */
 }
+::v-deep .fc-prev-button:active,
+::v-deep .fc-next-button:active {
+  background: none !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important; 
+}
+
+::v-deep .fc-prev-button:focus,
+::v-deep .fc-next-button:focus {
+  outline: none !important;
+  border: none !important;
+}
+
 
 ::v-deep .fc-daygrid-day-number {
   color: #000;
@@ -500,4 +572,6 @@ export default {
   color: #000;
   text-decoration: none;
 }
+
+
 </style>

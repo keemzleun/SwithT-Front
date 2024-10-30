@@ -35,8 +35,12 @@
                     </v-col>
                     <v-col cols="2" class="text-center">{{ formatDate(lecture.createdTime) }}</v-col>
                     <v-col cols="2" class="text-center ml-5">
-                        <v-btn color="#82D691" @click="updateLectureStatus(lecture.id, 'ADMIT')"><strong>승인</strong></v-btn>
-                        <v-btn color="#6C97FD" class="ml-2" @click="updateLectureStatus(lecture.id, 'REJECT')"><strong>거절</strong></v-btn>
+                        <v-btn color="#6C97FD" @click="updateLectureStatus(lecture.id, 'ADMIT')">
+                            <strong>승인</strong>
+                        </v-btn>
+                        <v-btn color="#FD6C6C" class="ml-2" @click="updateLectureStatus(lecture.id, 'REJECT')">
+                            <strong>거절</strong>
+                        </v-btn>
                     </v-col>
                 </v-row>
             </v-col>
@@ -181,6 +185,10 @@ export default {
 </script>
 
 <style scoped>
+.v-container {
+    margin-top: 60px;
+    width: 70vw;
+}
 .header {
     font-weight: bold;
     border-bottom: 2px solid #ccc;
@@ -202,4 +210,5 @@ export default {
 .status-rejected {
     color: red;
 }
+
 </style>

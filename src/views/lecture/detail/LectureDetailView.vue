@@ -584,7 +584,7 @@ selectLectureGroup(group) {
     this.price = group.price;
     console.log("선택한 강의 그룹 남은 인원:" + this.selectedLectureGroup.remaining);
     console.log("선택한 강의 그룹 가격:" + this.price);
-    
+
 },
 
 async submitApplication() {

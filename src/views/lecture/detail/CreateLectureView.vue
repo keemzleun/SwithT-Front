@@ -91,11 +91,7 @@
               </div>
               <div v-else>
                 <div v-for="(lectureGroup, index) in lectureGroups" :key="lectureGroup.name" class="lecture-group">
-<<<<<<< HEAD:src/views/CreateLectureView.vue
                   <v-row class="fill-width">
-=======
-                  <v-row>
->>>>>>> 1c9d8960d28f3b47fb49c971bd75dae383d2c10e:src/views/lecture/detail/CreateLectureView.vue
                     <v-col cols="3" class="d-flex align-center justify-center">
                       <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 순서 표시 -->
                     </v-col>

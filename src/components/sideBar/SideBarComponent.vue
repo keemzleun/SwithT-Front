@@ -212,14 +212,12 @@
             { title: '내 강의', icon: 'book', route:'/tutor-lecture-list'},
             { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
             { title: '신청 내역', icon: 'assignment', route: '/tutor-applied-list'},
-            { title: '리뷰 관리', icon: 'rate_review' },
             { title: '정산금 관리', icon: 'monetization_on', route: '/balance/table' },
             { title: '내 정보', icon: 'person', route: '/member/mypage' },
           ];
         } else if (this.userRole === 'ADMIN') {
           this.menuItems = [
             { title: '승인 관리', icon: 'assignment', route: '/admin-applied-list' },
-            { title: '정산금 관리', icon: 'monetization_on' },
           ]
         }
       },

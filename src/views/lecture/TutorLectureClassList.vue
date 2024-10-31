@@ -3,53 +3,44 @@
         :lectureId=this.lectureId
         />
     <v-container width="70vw"  style="margin-top: 60px;">
-        
-        
-        <!-- <v-row justify="center">
-            <v-col cols="auto">
-                <v-tabs v-model="tab" color="black" slider-color="#6C97FD">
-                    <v-tab value="NOT_AVAILABLE_CLASS_LIST"
-                        v-if="lectureType === 'LESSON' && lectureStatus === 'ADMIT'">진행중인 수업</v-tab>
-                    <v-tab value="AVAILABLE_CLASS_LIST"
-                        v-if="lectureType === 'LESSON' && lectureStatus === 'ADMIT'">모집중인 수업</v-tab>
-
-                    <v-tab value="ALL_CLASS_LIST" v-if="lectureType === 'LECTURE'">전체 수업</v-tab>
-
-                </v-tabs>
-            </v-col>
-        </v-row> -->
 
         <v-row>
             <v-col cols="6">
-                    <div class="lecture-group-info">
-                        <div v-for="(group, index) in lectureGroupList" :key="group.lectureGroupId">
+                <div>
+                    <div v-for="(group, index) in lectureGroupList" :key="group.lectureGroupId">
+                        <div class="lecture-group-info">
+                            <v-row>
+                                <v-col>
+                                    <div align="left" justify="center">
+                                        <span class="tag" style="text-align:center;">
+                                            {{ getLectureGroupStatus(group) }}
+                                        </span>
+                                        <span style="font-size: 20px; font-weight: 700;">그룹 {{index + 1}}</span>
+                                    </div>
+                                </v-col>
+                                <v-col>
+                                    <div align="right" justify="center">
+                                        <span class="material-icons icon-btn" style="font-size: 40px;" @click="clickLessonApplyList(group.lectureGroupId, this.lectureType)">groups</span>
+                                        <span class="material-icons icon-btn"  style="font-size: 40px;" @click="clickLectureHome(group.lectureGroupId)">home</span>
+                                    </div>
+                                </v-col>
+                            </v-row>
                             
-                        <v-row>
-                            <v-col cols="3" class="align-center justify-center">
-                                <div>
-                                    <div class="tag">
-                                        {{ getLectureGroupStatus(group) }}
-                                    </div>
+                            <div class="group-time">
+                                <div v-for="time in group.groupTimes" :key="time.groupTimeId">
+                                    <strong>{{ convertDayToKorean(time.lectureDay) }}</strong> {{ formatTime(time.startTime) }}~{{ formatTime(time.endTime) }}
                                 </div>
-                                
-                                <div style="font-size: 18px; font-weight: 700;">그룹 {{index + 1}}</div>
-                            </v-col>
-                            <v-col cols="9" class="align-center justify-center">
-                                <v-row class="align-center" style="height: 100%; padding: 12px">
-                                    <div class="group-time">
-                                        <div v-for="time in group.groupTimes" :key="time.groupTimeId">
-                                            <strong>{{ convertDayToKorean(time.lectureDay) }}</strong> {{ formatTime(time.startTime) }}~{{ formatTime(time.endTime) }}
-                                        </div>
-                                    </div>
-                                        <!-- 조건에 따른 정보 표시 -->
-                                    <template v-if="showAdditionalInfo(group)">
-                                        <span><strong>주소:</strong> {{ group.address || '미정' }}{{ group.detailAddress }}</span><br/>
-                                        <span><strong>기간:</strong> {{ group.startDate }} ~ {{ group.endDate || '미정' }}</span>
-                                    </template>
-                                </v-row>
-                            </v-col>
-                        </v-row>
-                           
+                            </div>
+                                <!-- 조건에 따른 정보 표시 -->
+                            <template v-if="showAdditionalInfo(group)">  
+                                <div style="margin: 5px; text-align: right; font-size: 15px; color: #999;">
+                                    기간: {{ group.startDate }} ~ {{ group.endDate || '미정' }}
+                                </div>
+                            </template>
+                        </div>
+                        
+
+                        
                     </div>
                 </div>
             </v-col>
@@ -92,7 +83,6 @@
                                 <v-col cols="5" style="padding: 10px 0">{{ item.endDate }}</v-col>
                             </v-row>
                             <p><strong>{{ index + 1 }}</strong></p>
-                            <!-- <p><strong>{{ item.lectureGroupId }}</strong></p> -->
                             <p><strong>{{ item.title }}</strong></p>
                             <p><strong>{{ item.endDate }}</strong></p>
                           </span>
@@ -101,7 +91,7 @@
             </v-col>
         </v-row>
 
-        <v-card-text>
+        <!-- <v-card-text>
             <v-tabs-window v-model="tab">
                 <v-tabs-window-item value="NOT_AVAILABLE_CLASS_LIST">
                     <v-row v-for="lesson in notAvailableClassList" :key="lesson.id">
@@ -157,7 +147,6 @@
                                     <v-col cols="1" >
                                         <v-btn color="#82D691" style="font-size:18px;" @click="clickLessonApplyList(lesson.lectureGroupId, lesson.title)"
                                         class="white-text" small>모집중</v-btn>
-
                                     </v-col>
                                 </v-card-text>
                                 
@@ -204,7 +193,7 @@
                     </v-row>
                 </v-tabs-window-item>
             </v-tabs-window>
-        </v-card-text>
+        </v-card-text> -->
     </v-container>
 </template>
 
@@ -224,9 +213,10 @@ export default {
             // tab: 'POSTS', // 탭 상태
             lectureType: '',
             lectureStatue: '',
+            tuteeList: [],
         }
     },
-    created() {
+    async created() {
             this.lectureId = this.$route.query.lectureId;
             this.lectureType = this.$route.query.lectureType;
             this.lectureStatus = this.$route.query.lectureStatus;
@@ -235,7 +225,7 @@ export default {
 
             this.fetchLectureGroups();
             this.fetchPostsByLectureId();
-            this.fetchAssignmentsByLectureId();
+            this.fetchAssignmentsByLectureId();   
 
     },
     mounted() {
@@ -350,7 +340,15 @@ export default {
             } else { // 24시간 이후
                 return createdDate.toLocaleDateString(); // 날짜 형식으로 반환
             }
-        }
+        },
+        clickLessonApplyList(lectureGroupId, lectureType) {
+            console.log(lectureGroupId, "lectureGroup Id");
+            this.$router.push(`/lesson-apply-list?lectureGroupId=${lectureGroupId}&lectureType=${lectureType}&lectureId=${this.lectureId}`);
+
+        },
+        clickLectureHome(lectureGroupId){
+            this.$router.push(`/lecture-home/${lectureGroupId}`);
+        },
     },
 }
 
@@ -479,22 +477,7 @@ export default {
 //             }
 //         },
 
-//         clickLessonApplyList(lectureGroupId, title) {
-//             console.log(lectureGroupId, "lectureGroup Id");
-//             this.$router.push(`/lesson-apply-list?lectureGroupId=${lectureGroupId}&title=${title}&lectureId=${this.lectureId}`);
-
-//         },
-
-//         scrollPagination(){
-//             const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-//             if(isBottom && !this.isLastPage && !this.isLoading){
-//                 this.showLessonClassList();
-//             }
-//         },
-
-//        clickLectureHome(lectureGroupId){
-//         this.$router.push(`/lecture-home/${lectureGroupId}`);
-//        },
+//         c
 
 //        formatPrice(value) {
 //             if (!value)  return '재능기부';
@@ -509,25 +492,27 @@ export default {
 
 <style scoped>
 .tag {
+    display: inline-block;
     background-color: #6C97FD;
     width: 65px;
+    margin: 10px;
     border-radius: 15px;
-    margin: 10px auto;
     color: #fff;
     font-weight: 700;
 }
 .group-time {
-
     width: 100%;
     background-color: #f9f9f9;
     border: 1px solid #cdcdcd;
     border-radius: 2px;
     font-weight: 700;
+    padding: 10px;
+    margin: 10px 0;
 
 }
 .lecture-group-info {
     border: 1px solid #cdcdcd;
-    padding: 20px 30px 30px;
+    padding: 20px 30px;
     margin: 20px;
     border-radius: 5px;
 }
@@ -552,6 +537,18 @@ export default {
 .item-title:hover {
     cursor: pointer;
     background-color: #f3f2f2;
+
+}
+.icon-btn {
+    color: #666;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+
+}
+.icon-btn:hover {
+    cursor: pointer;
+    color: #0d6efd;
+    transform: scale(1.05);
 
 }
 </style>

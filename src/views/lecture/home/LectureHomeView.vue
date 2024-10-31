@@ -143,12 +143,12 @@
                                             <p>제출 마감 날짜: {{ assignment.endDate }}</p>
                                         </v-col>
 
-                                        <v-col cols="auto">
+                                        <!-- <v-col cols="auto">
                                             <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)"
                                                 v-if="this.istutor">
                                                 <v-icon>mdi-pencil</v-icon>
                                             </v-btn>
-                                        </v-col>
+                                        </v-col> -->
                                     </v-row>
                                 </v-card>
                             </v-col>
@@ -182,13 +182,13 @@
                                     <v-icon right>mdi-menu-down</v-icon>
                                 </v-btn>
                             </template>
-                            <v-list>
-                                <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">전체
-                                    보기</v-list-item>
-                                <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">공지사항만
-                                    보기</v-list-item>
-                            </v-list>
-                        </v-menu> -->
+<v-list>
+    <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">전체
+        보기</v-list-item>
+    <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">공지사항만
+        보기</v-list-item>
+</v-list>
+</v-menu> -->
                         <!-- @click="menu=!menu; onlyNotice = !onlyNotice; onlyNoticeClick();"> -->
 
                         <!-- <v-btn outlined rounded elevation="0" @click="menu = !menu;">
@@ -661,7 +661,7 @@ export default {
             isAuthor: false,
             onlyNotice: false,
             menu: false,
-            selectOptions: [ "전체 보기","공지사항만 보기"],
+            selectOptions: ["전체 보기", "공지사항만 보기"],
 
         };
     },
@@ -742,8 +742,8 @@ export default {
             this.onlyNoticeClick();  // 공지사항 또는 전체 데이터를 불러오는 로직
         },
         async onlyNoticeClick() {
-            if(this.onlyNotice == true) this.onlyNotice = false;
-            else this.onlyNotice=true;
+            if (this.onlyNotice == true) this.onlyNotice = false;
+            else this.onlyNotice = true;
             let params = {
                 size: this.noticePageSize,
                 page: this.page,
@@ -925,30 +925,29 @@ export default {
             this.assignmentId = null;
             const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
             this.urgentAssignment = urgentAssignmentResponse?.data?.result?.content;
+            const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
+            this.assignments = assignmentResponse?.data?.result?.content;
+            this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
+
         },
         async submitAssignmentCreate() {
-            try {
-                const endDate = this.assignmentDate.split('T')[0];
-                const endTime = this.assignmentDate.split('T')[1];
-                const body = {
-                    title: this.assignmentTitle,
-                    contents: this.assignmentContent,
-                    endDate,
-                    endTime
-                }
-                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body)
-
-                if (response) {
-                    const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
-                    this.assignments = assignmentResponse?.data?.result?.content;
-                    this.assignmentCreateModal = false;
-                    this.renewAssignment();
-
-                }
+            this.assignmentCreateModal = false;
+            const endDate = this.assignmentDate.split('T')[0];
+            const endTime = this.assignmentDate.split('T')[1];
+            const body = {
+                title: this.assignmentTitle,
+                contents: this.assignmentContent,
+                endDate,
+                endTime
             }
-            catch (e) {
-                console.log(e);
-            }
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body)
+            console.log(response);
+            const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
+            this.assignments = assignmentResponse?.data?.result?.content;
+            this.assignmentCreateModal = false;
+            this.renewAssignment();
+            this.handleAssignmentPageChange();
+
         },
         async viewAssignmentOpen(id) {
             this.renewAssignment();
@@ -997,6 +996,8 @@ export default {
             } catch (error) {
                 console.error('Error updating assignment:', error);
             }
+            this.renewAssignment();
+            this.handleAssignmentPageChange();
         },
         // todo : update reload 잘 해보기
         async fetchAssignments() {
@@ -1011,6 +1012,7 @@ export default {
                 this.assignmentUpdateModal = false;
             }
             this.renewAssignment();
+            this.handleAssignmentPageChange();
         },
 
         changeDay(day) {

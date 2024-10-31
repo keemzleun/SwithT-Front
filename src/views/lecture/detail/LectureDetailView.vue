@@ -754,7 +754,7 @@ async processPayment(rsp) {
             const data = {
                 impUid: rsp.imp_uid, // 아임포트 거래 고유번호
                 title: this.lectureInfo.title,
-                price: this.lectureInfo.price,
+                price: this.price,
                 memberId: this.memberId,
                 lectureGroupId: this.lectureGroupId,
             };

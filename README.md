@@ -123,6 +123,8 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 
 </details>
 <br/>
+
+
 ### 소셜 로그인 및 회원가입
 <details>
 <summary><b>구글 로그인 화면 진입 & 탭 전환</b></summary>

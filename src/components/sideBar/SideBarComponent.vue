@@ -250,11 +250,14 @@
           this.$router.push("/member/main"); //김민성 수정
       },
       logout() {
-              // 모든 쿠키 삭제
-    document.cookie.split(";").forEach(cookie => {
-        const [name] = cookie.split("=");
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+        const paths = ['/', '/member/explain', '/loginSuccess']; // 지정된 경로들
+
+document.cookie.split(";").forEach(cookie => {
+    const [name] = cookie.split("=");
+    paths.forEach(path => {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=${path};domain=yourdomain.com`;
     });
+});
         
           localStorage.clear();
           

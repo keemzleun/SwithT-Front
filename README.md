@@ -140,6 +140,9 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 
 </details>
 <br/>
+
+
+### 회원 정보 수정 기능
 <details>
 <summary><b>프로필 이미지 수정, 회원정보 수정</b></summary>
 

@@ -96,22 +96,25 @@
                       <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 순서 표시 -->
                     </v-col>
                     <v-col cols="7">
-                      <v-row>
-                        <v-col cols="4" class="d-flex align-center justify-center">
-                          <label style="font-size: 13px; color: #555;">강의 위치</label>
-                        </v-col>
-                        <v-col class="d-flex align-center justify-start">
-                          {{ lectureGroup.address }}{{ lectureGroup.detailAddress }}
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="4" class="d-flex align-center justify-center">
-                          <label style="font-size: 13px; color: #555;">강의기간</label>
-                        </v-col>
-                        <v-col class="d-flex align-center justify-start">
-                          {{ lectureGroup.startDate }} ~ {{ lectureGroup.endDate }}
-                        </v-col>
-                      </v-row>
+                      <div v-if="this.teachingMethod === 'LECTURE'">
+                        <v-row>
+                          <v-col cols="4" class="d-flex align-center justify-center">
+                            <label style="font-size: 13px; color: #555;">강의 위치</label>
+                          </v-col>
+                          <v-col class="d-flex align-center justify-start">
+                            {{ lectureGroup.address }}{{ lectureGroup.detailAddress }}
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="4" class="d-flex align-center justify-center">
+                            <label style="font-size: 13px; color: #555;">강의기간</label>
+                          </v-col>
+                          <v-col class="d-flex align-center justify-start">
+                            {{ lectureGroup.startDate }} ~ {{ lectureGroup.endDate }}
+                          </v-col>
+                        </v-row>
+                      </div>
+                      
                       <v-row>
                         <v-col cols="4" class="d-flex align-center justify-center">
                           <label style="font-size: 13px; color: #555;">강의료/인원</label>

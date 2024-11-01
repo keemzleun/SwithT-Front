@@ -826,7 +826,7 @@ td {
     height: 10px;
 }
 .groups-info {
-    border: 1px solid #f0efef;
+    border: 2px solid #f0efef;
     border-radius: 10px;
 }
 .contents-title {

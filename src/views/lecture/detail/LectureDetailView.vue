@@ -287,6 +287,15 @@
         yesBtnName="결제"
         @confirmed="proceedPayment"
      />
+
+     <AlertModal
+     v-model="alertModal" 
+     @update:dialog="alertModal = $event"
+     icon=mdi-alert-circle-outline
+     :title=this.alertModalTtile
+     :contents=this.alertModalContents
+     />
+
 </template>
 
 <script>
@@ -300,6 +309,7 @@ import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
 import YesOrNoModal from "@/components/YesOrNoModal.vue";
 import { jwtDecode } from 'jwt-decode'
+import AlertModal from '@/components/AlertModal.vue';
 
 
 export default {
@@ -307,6 +317,7 @@ export default {
     LectureDetailInfoComponent,
     ReviewListComponent,
     YesOrNoModal,
+    AlertModal
   },
   data() {
     return {
@@ -350,6 +361,10 @@ export default {
       queueRank: -1,
       getOrderData: null,
       lectureGroupId: null,
+
+      alertModal: false,
+      alertModalTtile: '',
+      alertModalContents: '',
     };
   },
   created() {
@@ -637,8 +652,8 @@ async submitApplication() {
                 }
 
                 if (!this.isExitingQueue) {
-                    if(this.price == 0){
-                        this.processFreeLesson
+                    if(this.price === 0){
+                        this.processFreeLesson();
                         this.closeWaitingDialog();
                     } else{
                         this.confirmPayment();  
@@ -765,7 +780,9 @@ async processPayment(rsp) {
             console.log(data);
 
             await axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/complete`, data);
-            alert("결제가 완료되었습니다!");
+            this.alertModalTtile = "결제 완료";
+            this.alertModalContents =  "결제가 완료되었습니다!";
+            this.alertModal = true;
         }
     } catch (error) {
         console.log("결제 처리 중 오류 발생:", error);
@@ -776,7 +793,12 @@ async processFreeLesson(){
     const lectureGroupId = this.selectedLectureGroup.lectureGroupId
     try{
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/after-paid?lectureGroupId=${lectureGroupId}&memberId=${this.memberId}`);
-        console.log("신청됨", response.data)
+        // console.log("신청됨", response.data)
+        this.alertModalTtile = response.data.status_message
+        this.alertModalContents = "강의 신청이 완료되었습니다!"
+        this.alertModal = true;
+        this.isApplyModalOpen = false;
+        // alert(response.data.status_message)
     } catch(error){
         console.log("결제 처리 중 오류 발생:", error);
     }

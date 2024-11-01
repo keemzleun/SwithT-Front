@@ -83,7 +83,7 @@
           <label style="margin-top: 40px;">강의 그룹</label>
         </v-col>
         <v-col cols="8">
-          <v-row class="align-center justify-center">
+          <div class="align-center" style="width: 100%;">
             <!-- 강의 그룹 표시 -->
             <div class="lecture-group-list">
               <div v-if="lectureGroups.length === 0" style="text-align: center; color: #888; margin: 20px;">
@@ -91,7 +91,7 @@
               </div>
               <div v-else>
                 <div v-for="(lectureGroup, index) in lectureGroups" :key="lectureGroup.name" class="lecture-group">
-                  <v-row class="fill-width">
+                  <v-row>
                     <v-col cols="3" class="d-flex align-center justify-center">
                       <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 순서 표시 -->
                     </v-col>
@@ -142,7 +142,7 @@
                 </div>
               </div>
             </div>
-          </v-row>
+          </div>
           <hr/>
 
           <v-row>

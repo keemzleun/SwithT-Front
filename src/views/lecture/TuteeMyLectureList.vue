@@ -6,7 +6,6 @@
         </v-row>
         <hr />
 
-
         <v-row justify="left">
             <v-col cols="1">
                 <v-btn color="#6C97FD" @click="changeStatus('ADMIT')">진행중</v-btn>
@@ -20,7 +19,8 @@
             <v-row class="lessons-container">
                 <v-col v-for="lecture in lectures" :key="lecture.id" cols="4" class="mb-4">
                     <div @click="clickLectureImage(lecture.lectureGroupId)" class="lesson-card"
-                        :class="{ 'terminated-lecture': lecture.status === 'TERMINATE' }">
+                         :class="{ 'terminated-lecture': lecture.status === 'TERMINATE' }">
+                        <div class="lecture-overlay" v-if="lecture.status === 'TERMINATE'"></div>
                         <img :src="lecture.lectureImage" alt="강의 썸네일" class="lecture-image" />
                         <br>
                         <v-chip v-if="lecture.lectureType === 'LESSON'" color="primary" class="mr-2">과외</v-chip>
@@ -32,10 +32,8 @@
                         <br>
                         {{ lecture.startDate }} ~ {{ lecture.endDate }}
 
-
-                        <v-btn @click="showModal"
-                            style="background-color: #6c97fd; width: 100px; height: 50px; border: 1px solid #003366;"
-                            color="white" class="review-button">
+                        <v-btn v-if="lecture.status === 'TERMINATE'" @click="showModal"
+                               class="review-button">
                             <v-icon left>mdi-pencil</v-icon>
                             <b>리뷰 작성</b>
                         </v-btn>
@@ -44,7 +42,6 @@
             </v-row>
         </v-card-text>
         <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange"></v-pagination>
-
     </v-container>
 </template>
 
@@ -60,14 +57,12 @@ export default {
             totalPages: 0,
             frontendPage: 1
         };
-
     },
     created() {
         this.showLectureList();
     },
 
     methods: {
-
         async showLectureList() {
             try {
                 let params = {
@@ -82,7 +77,6 @@ export default {
             } catch (e) {
                 console.log(e.response.data.error_message);
             }
-
         },
         changeStatus(changedStatus) {
             this.status = changedStatus;
@@ -100,15 +94,11 @@ export default {
                 this.$router.push(`/lecture-home/${lectureGroupId}`);
             }
         },
-
-
     }
 }
 </script>
 
 <style scoped>
-
-
 .custom-border {
     border: 2px solid #cccccc;
     border-radius: 8px;
@@ -120,46 +110,55 @@ export default {
     font-weight: bold;
 }
 
-
-
-.admit-color {
-    background-color: #90CDFF;
-}
-
 .lesson-card {
+    padding: 20px 30px;
     position: relative;
     overflow: hidden;
 }
+.lesson-card:hover {
+    cursor: pointer;
+}
+
+.lecture-overlay {
+    position: absolute;
+    border-radius: 10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.6;
+    background-color: rgba(193, 193, 193, 0.7);
+    z-index: 1;
+}
 
 .review-button {
-    display: none;
     position: absolute;
-    top: 50%;
+    top: 110px;
     left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
-}
-
-/* Show the review button on hover only if the lecture is terminated */
-.terminated-lecture:hover .review-button {
-    display: inline-block;
+    transform: translateX(-50%);
+    z-index: 2;
+    background-color: #f4f4f4;
+    width: 100px;
+    height: 50px;
+    border: 1px solid #c6c7c8;
     opacity: 1;
-    
-
 }
 
 
-  .thumbnail-container {
+.terminated-lecture .review-button {
+    display: inline-block;
+}
+
+.thumbnail-container {
     position: relative;
     display: inline-block;
-  }
+}
 
-  .lecture-image {
+.lecture-image {
     width: 250px;
     height: 200px;
     object-fit: cover;
     margin-bottom: 10px;
+    z-index: 0;
 }
 </style>

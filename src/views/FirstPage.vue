@@ -88,7 +88,7 @@
               :key="lecture.id"
               class="component"
               @click="goToLecture(lecture.id)"
-              style="flex: 1; max-width: 33%; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);"
+              style="flex: 1; max-width: 33%; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
               elevation="1"
             >
               <v-img
@@ -114,12 +114,12 @@
     </section>
     
 
-    <div class="ml-3">
+    <!-- <div class="ml-3">
       <v-card
       class="grow-card mb-8 ml-16 mr-5"
       style="margin: 0 auto; margin-top: 10px; border-radius: 10px; background-color: white; max-width: 1585px; border-color: #E0E0E0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.09);"
     >
-      <v-row no-gutters justify="center" align="center"> <!-- justify와 align을 중앙으로 설정 -->
+      <v-row no-gutters justify="center" align="center">
         <v-col cols="12" md="8">
           <v-card-text>
             <h2 style="font-size: 30px; font-weight: bold; color: #333;">
@@ -127,7 +127,7 @@
             </h2>
           </v-card-text>
         </v-col>
-        <v-col cols="12" md="4" style="display: flex; justify-content: center; align-items: center;"> <!-- 내부 콘텐츠도 중앙 정렬 -->
+        <v-col cols="12" md="4" style="display: flex; justify-content: center; align-items: center;">
           <v-img
             src="@/assets/learning_emoji.png"
             alt="학습 이모지"
@@ -139,11 +139,11 @@
       </v-row>
     </v-card>
     </div>
-      <!-- 새로운 v-card 추가 -->
+      새로운 v-card 추가 -->
 
 
 
-<div class="title text-start ml-16">👀 요즘 뜨는 강의</div>
+<div class="title text-start ml-16" style="margin-top: 40px">👀 요즘 뜨는 강의</div>
 
 <div class="lecture-list mr-15" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-center;">
   <div
@@ -151,7 +151,7 @@
     v-for="lecture in latestLectures"
     :key="lecture.id"
     @click="goToLecture(lecture.id)"
-    style="width: 375px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 8px;"
+    style="width: 375px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 8px;"
   >
     <img
       :src="getlectureImage(lecture)"
@@ -159,11 +159,11 @@
       class="lecture-image"
       style="border-radius: 15px 15px 0 0; width: 100%; height: 220px; object-fit: cover;"
     />
-    <div class="lecture-info" style="padding: 5px;">
+    <div class="lecture-info" >
       <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
       <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
       <span class="lecture-category">{{ getCategoryText(lecture.category) }}</span>
-      <div class="lecture-title" style="font-size: 20px; font-weight: bold; padding-top: 8px;">
+      <div class="lecture-title" style="font-size: 20px; font-weight: bold;">
         {{ lecture.title }}
       </div>
       <div class="lecture-tutor" style="font-size: 16px;">
@@ -331,7 +331,7 @@ export default {
 .recommendation {
   margin-top: 20px;
 }
-.recommendation .title {
+.title {
   font-size: 32px;
   font-weight: 700;
   text-align: left;
@@ -352,7 +352,7 @@ export default {
   transition: transform 0.1s;
 }
 .component:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 .lecture-image {
   width: 250px;
@@ -361,7 +361,7 @@ export default {
 }
 .lecture-info {
   text-align: left;
-  padding: 7px;
+  padding: 15px 20px 20px;
 }
 .tag {
   padding: 3px 8px;
@@ -383,7 +383,7 @@ export default {
 .lecture-title {
   font-size: 18px;
   font-weight: 700;
-  padding: 8px 3px 0;
+  padding: 3px;
 }
 .lecture-tutor {
   padding: 0 3px 0;

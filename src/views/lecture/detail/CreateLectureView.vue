@@ -83,7 +83,7 @@
           <label style="margin-top: 40px;">강의 그룹</label>
         </v-col>
         <v-col cols="8">
-          <v-row class="align-center justify-center">
+          <div class="align-center" style="width: 100%;">
             <!-- 강의 그룹 표시 -->
             <div class="lecture-group-list">
               <div v-if="lectureGroups.length === 0" style="text-align: center; color: #888; margin: 20px;">
@@ -91,27 +91,30 @@
               </div>
               <div v-else>
                 <div v-for="(lectureGroup, index) in lectureGroups" :key="lectureGroup.name" class="lecture-group">
-                  <v-row class="fill-width">
+                  <v-row>
                     <v-col cols="3" class="d-flex align-center justify-center">
                       <label>강의 그룹 {{ index + 1 }}</label> <!-- 강의 그룹 순서 표시 -->
                     </v-col>
                     <v-col cols="7">
-                      <v-row>
-                        <v-col cols="4" class="d-flex align-center justify-center">
-                          <label style="font-size: 13px; color: #555;">강의 위치</label>
-                        </v-col>
-                        <v-col class="d-flex align-center justify-start">
-                          {{ lectureGroup.address }}{{ lectureGroup.detailAddress }}
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="4" class="d-flex align-center justify-center">
-                          <label style="font-size: 13px; color: #555;">강의기간</label>
-                        </v-col>
-                        <v-col class="d-flex align-center justify-start">
-                          {{ lectureGroup.startDate }} ~ {{ lectureGroup.endDate }}
-                        </v-col>
-                      </v-row>
+                      <div v-if="this.teachingMethod === 'LECTURE'">
+                        <v-row>
+                          <v-col cols="4" class="d-flex align-center justify-center">
+                            <label style="font-size: 13px; color: #555;">강의 위치</label>
+                          </v-col>
+                          <v-col class="d-flex align-center justify-start">
+                            {{ lectureGroup.address }}{{ lectureGroup.detailAddress }}
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="4" class="d-flex align-center justify-center">
+                            <label style="font-size: 13px; color: #555;">강의기간</label>
+                          </v-col>
+                          <v-col class="d-flex align-center justify-start">
+                            {{ lectureGroup.startDate }} ~ {{ lectureGroup.endDate }}
+                          </v-col>
+                        </v-row>
+                      </div>
+                      
                       <v-row>
                         <v-col cols="4" class="d-flex align-center justify-center">
                           <label style="font-size: 13px; color: #555;">강의료/인원</label>
@@ -142,7 +145,7 @@
                 </div>
               </div>
             </div>
-          </v-row>
+          </div>
           <hr/>
 
           <v-row>

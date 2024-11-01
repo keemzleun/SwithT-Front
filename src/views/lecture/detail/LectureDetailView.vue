@@ -869,7 +869,6 @@ td {
 }
 .tutor-info {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-    border: 1px solid #c2d0e7;
      background-color: #e1e8fa;
      border-radius: 10px;
      width: 80%;
@@ -879,7 +878,6 @@ td {
 }
 .date-info {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-    border: 1px solid #c2d0e7;
     background-color: #d0e2ff;
     
     border-radius: 10px;

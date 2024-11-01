@@ -72,19 +72,18 @@
                        
                         <v-row>
                             <v-col cols="2"></v-col>
-                            <v-col cols="5"><strong>과제</strong></v-col>
-                            <v-col cols="5"><strong>마감일</strong></v-col>
+                            <v-col cols="4"><strong>과제</strong></v-col>
+                            <v-col cols="3"><strong>마감일</strong></v-col>
+                            <v-col cols="3"><strong>마감시간</strong></v-col>
                         </v-row>
                         <hr>
                         <span v-for="(item, index) in assignments" :key="item.id" class="list-item">
                             <v-row>
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
-                                <v-col cols="5" style="padding: 10px 0">{{ item.title }}</v-col>
-                                <v-col cols="5" style="padding: 10px 0">{{ item.endDate }}</v-col>
+                                <v-col cols="4" style="padding: 10px 0">{{ item.title }}</v-col>
+                                <v-col cols="3" style="padding: 10px 0">{{ item.endDate }}</v-col>
+                                <v-col cols="3" style="padding: 10px 0">{{ item.endTime }}</v-col>
                             </v-row>
-                            <p><strong>{{ index + 1 }}</strong></p>
-                            <p><strong>{{ item.title }}</strong></p>
-                            <p><strong>{{ item.endDate }}</strong></p>
                           </span>
                     </div>
                 </v-row>
@@ -523,7 +522,6 @@ export default {
 }
 .list-style {
     width: 100%;
-    height: 200px;  /*나중에 없애기*/
     padding: 20px 30px;
     margin: 10px 10px 40px;
     border-radius: 5px;

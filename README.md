@@ -133,6 +133,14 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 </details>
 <br/>
 
+<details>
+<summary><b>카카오 로그인</b></summary>
+
+  ![카카오 소셜 로그인](https://github.com/user-attachments/assets/d28f539a-b67d-4fbb-bfcf-bc830d771514)
+
+</details>
+<br/>
+
 
 
 

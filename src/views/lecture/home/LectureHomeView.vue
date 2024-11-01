@@ -696,7 +696,7 @@ export default {
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
             return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
         }, '');
-        const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`)
+        const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
         let params = {
             size: this.noticePageSize,

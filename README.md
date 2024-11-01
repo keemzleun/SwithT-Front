@@ -123,7 +123,6 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 
 </details>
 <br/>
-
 ### 소셜 로그인 및 회원가입
 <details>
 <summary><b>구글 로그인 화면 진입 & 탭 전환</b></summary>
@@ -132,12 +131,17 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 
 </details>
 <br/>
-
 <details>
 <summary><b>카카오 로그인</b></summary>
 
   ![카카오 소셜 로그인](https://github.com/user-attachments/assets/d28f539a-b67d-4fbb-bfcf-bc830d771514)
 
+</details>
+<br/>
+<details>
+<summary><b>프로필 이미지 수정, 회원정보 수정</b></summary>
+
+  ![프로필이미지수정 회원정보수정](https://github.com/user-attachments/assets/a36feeb5-cfa4-4147-9a36-889a29e8e750)
 </details>
 <br/>
 

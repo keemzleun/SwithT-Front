@@ -18,8 +18,8 @@
                 <v-row class="d-flex align-center justify-start mb-2">
                     <div class="title mr-2">{{ infoData.title }}</div>
 
-                    <v-icon v-if="isTutor" @click="groupEditClick()">mdi-pencil</v-icon>
-                    <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn>
+                    <v-icon v-if="isTutor" @click="clickChatRoom()">mdi-chat</v-icon>
+                    <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
                 </v-row>
 
                 <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()" v-if="!isTutor">mdi-chat</v-icon>

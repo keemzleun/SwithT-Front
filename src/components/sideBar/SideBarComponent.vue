@@ -72,7 +72,9 @@
   <script>
   import axios from "axios";
   import { EventSourcePolyfill } from 'event-source-polyfill'
-  
+  import Cookies from 'js-cookie';
+
+
   export default {
     data() {
       return {

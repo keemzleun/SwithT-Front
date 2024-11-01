@@ -637,8 +637,8 @@ async submitApplication() {
                 }
 
                 if (!this.isExitingQueue) {
-                    if(this.price == 0){
-                        this.processFreeLesson
+                    if(this.price === 0){
+                        this.processFreeLesson();
                         this.closeWaitingDialog();
                     } else{
                         this.confirmPayment();  
@@ -777,6 +777,7 @@ async processFreeLesson(){
     try{
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/after-paid?lectureGroupId=${lectureGroupId}&memberId=${this.memberId}`);
         console.log("신청됨", response.data)
+        alert(response.data.message)
     } catch(error){
         console.log("결제 처리 중 오류 발생:", error);
     }

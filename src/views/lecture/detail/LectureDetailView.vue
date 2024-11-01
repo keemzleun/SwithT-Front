@@ -637,8 +637,13 @@ async submitApplication() {
                 }
 
                 if (!this.isExitingQueue) {
-                    this.confirmPayment(); 
-                    this.closeWaitingDialog(); 
+                    if(this.price == 0){
+                        this.processFreeLesson
+                        this.closeWaitingDialog();
+                    } else{
+                        this.confirmPayment();  
+                        this.closeWaitingDialog();
+                    }
                 }
 
             } catch (error) {

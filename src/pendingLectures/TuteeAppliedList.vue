@@ -242,7 +242,6 @@ export default {
             IMP.request_pay(paymentData, this.processPayment); 
         },
         async processPayment(rsp) {
-            console.log("이상한거 호출")
             try {
                 this.memberId = localStorage.getItem('id');
                 if (rsp.success) {

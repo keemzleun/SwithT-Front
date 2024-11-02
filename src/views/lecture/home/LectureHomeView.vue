@@ -20,7 +20,7 @@
         <v-tabs-window v-model="tab">
             <!-- 대시보드 탭 -->
             <v-tabs-window-item value="dashboard">
-                <v-container>
+                <v-container style="width: 70vw; min-height: 500px;">
                     <v-row>
                         <!-- 과제 리스트 -->
                         <v-col cols="12" md="6">
@@ -30,21 +30,18 @@
                                 <v-card-text v-if="urgentAssignment.length">
                                     <v-row>
                                         <v-col cols="6"><strong>과제 제목</strong></v-col>
-                                        <v-col cols="3"><strong>시작일</strong></v-col>
-                                        <v-col cols="3"><strong>마감일</strong></v-col>
+                                        <v-col cols="6"><strong>기간</strong></v-col>
                                     </v-row>
                                     <hr>
-                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2">
+                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2 list-item">
                                         <v-col cols="6">{{ assignment.title }}</v-col>
-                                        <v-col cols="3">{{ assignment.startDate }}</v-col>
-                                        <v-col cols="3">{{ assignment.endDate }}</v-col>
+                                        <v-col cols="6">{{ assignment.startDate }}~{{ assignment.endDate }}</v-col>
                                     </v-row>
                                 </v-card-text>
                                 <v-card-text v-else>
                                     <v-row>
                                         <v-col cols="6"><strong>과제 제목</strong></v-col>
-                                        <v-col cols="3"><strong>시작일</strong></v-col>
-                                        <v-col cols="3"><strong>마감일</strong></v-col>
+                                        <v-col cols="6"><strong>시작일</strong></v-col>
                                     </v-row>
                                     <hr>
                                     <v-row class="mb-2">
@@ -90,136 +87,148 @@
 
             <!-- 과제 탭 -->
             <v-tabs-window-item value="assignment">
-                <v-card>
-                    <v-card-text>
-                        <v-row justify="end" class="mr-6">
-                            <v-col cols="5" class="mr-5"><v-btn rounded color="#90CDFF"
-                                    @click="renewAssignment(); assignmentCreateModal = true;"
-                                    v-if="this.istutor"><v-icon>mdi-plus</v-icon></v-btn></v-col>
-                        </v-row>
-
-                        <!-- 과제 목록 -->
-                        <v-row justify="center" v-if="assignments.length">
-                            <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
-                                class="text-left">
-                                <div class="box-style">
-                                    <v-row>
-                                        <v-col @click="viewAssignmentOpen(assignment.id)">
-                                            <h3>{{ assignment.title }}</h3>
-                                            <p>시작일: {{ assignment.startDate }}</p>
-                                            <p>마감일: {{ assignment.endDate }}</p>
-                                        </v-col>
-                                    </v-row>
+                <v-container style="width: 60vw; min-height: 500px;">
+                        <v-card-text>
+                            <v-btn rounded color="#6C97FD" style="font-weight: bold"
+                                @click="renewAssignment(); assignmentCreateModal = true;"
+                                v-if="this.istutor">
+                                과제 생성
+                                <!-- <v-icon>mdi-plus</v-icon> -->
+                            </v-btn>
+    
+                            <!-- 과제 목록 -->
+                            <div justify="center" v-if="assignments.length">
+                                <div cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
+                                    class="text-left">
+                                    <div class="box-style assignment-item" >
+                                            <v-row @click="viewAssignmentOpen(assignment.id)">
+                                                <v-col>
+                                                    <span v-if="daysRemaining(assignment.endDate) > 0 && daysRemaining(assignment.endDate) <= 3" 
+                                                        style="display: inline-block; background-color: #FD6C6C; color: #fff; font-weight: bold; padding: 5px 10px; border-radius: 15px;">
+                                                      마감 {{ daysRemaining(assignment.endDate) }}일 전
+                                                    </span>
+                                                    <span style="font-size: 20px; font-weight: 700; margin-left: 10px;">{{ assignment.title }}</span>
+                                                </v-col>
+                                                <v-col cols="3">
+                                                    <span style="font-size: 17px; right: 0;">
+                                                        기간: {{ assignment.startDate }}~{{ assignment.endDate }}
+                                                    </span>
+                                                </v-col>                                               
+                                            </v-row>
+                                    </div>
                                 </div>
-                            </v-col>
-                        </v-row>
-
-                        <!-- 과제가 없을 경우 표시할 내용 -->
-                        <v-row justify="center" v-else>
-                            <v-col cols="12" class="text-center">
-                                <div class="box-style" min-height="200px" width="80%">
-                                    <h3>등록된 과제가 없습니다</h3>
-                                </div>
-                            </v-col>
-                        </v-row>
-                        <v-pagination v-model="assignmentPage" :length="assignmentPages"
-                            @click="handleAssignmentPageChange()"></v-pagination>
-
-                    </v-card-text>
-                </v-card>
+                            </div>
+    
+                            <!-- 과제가 없을 경우 표시할 내용 -->
+                            <v-row justify="center" v-else>
+                                <v-col cols="12" class="text-center">
+                                    <div class="box-style" min-height="200px" width="80%">
+                                        <span style="font-size: 20pxl">등록된 과제가 없습니다</span>
+                                    </div>
+                                </v-col>
+                            </v-row>
+                            <v-pagination v-model="assignmentPage" :length="assignmentPages"
+                                @click="handleAssignmentPageChange()" style="margin-top:100px"></v-pagination>
+    
+                        </v-card-text>
+                </v-container>
+                
             </v-tabs-window-item>
             <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
-                <v-row justify="space-between">
-                    <v-col class="ml-5" cols="5">
-                        <v-btn variant="outlined" elevation="0" rounded @click="onlyNoticeClick()">
-                            {{ onlyNotice ? "전체" : "공지사항만" }}
-                        </v-btn>
+                <v-container style="width: 70vw; min-height: 500px;">
+                    <v-row>
+                        <v-col class="align-left" cols="5">
+                            <v-btn variant="outlined" elevation="0" rounded @click="onlyNoticeClick()">
+                                {{ onlyNotice ? "전체" : "공지사항만" }}
+                            </v-btn>
+                            
+                        </v-col>
+                        <v-col class="align-right" cols="5">
+                            <v-btn rounded color="#6C97FD" style="font-weight: bold"
+                                @click="noticeCreateModal = true">
+                                글 작성
+                                <!-- <v-icon>mdi-plus</v-icon> -->
+                            </v-btn>
                         
-                    </v-col>
-                    <v-col class="mr-15" cols="5"><v-btn rounded color="#90CDFF"
-                            @click="noticeCreateModal = true"><v-icon>mdi-plus</v-icon></v-btn></v-col>
-                </v-row>
-                <v-row justify="center">
-                    <v-col cols="8">
-                        <v-row class="header">
-                            <v-col cols="2">작성자</v-col>
-                            <v-col cols="2">분류</v-col>
-                            <v-col cols="5">제목</v-col>
-                            <v-col cols="3">작성 일자</v-col>
-                        </v-row>
-                    </v-col>
-                </v-row>
-
-                <!-- 공지사항 리스트 -->
-                <v-row justify="center">
-                    <v-col cols="8" v-if="notices.length">
-                        <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
-                            <v-col cols="2">{{ notice.memberName }}</v-col>
-                            <v-col cols="2">{{ changePostType(notice.type) }}</v-col>
-                            <v-col cols="5">{{ notice.title }}</v-col>
-                            <v-col cols="3">{{ notice.postDate }}</v-col>
-                        </v-row>
-                    </v-col>
-
-                    <!-- 공지사항이 없을 때 표시 -->
-                    <v-col cols="8" v-else class="text-center">
-                        <v-card class="pa-4 mb-3" min-height="200px">
-                            <h3>등록된 공지사항이 없습니다</h3>
-                        </v-card>
-                    </v-col>
-                </v-row>
-
-                <v-pagination v-model="noticePage" :length="noticePages"
-                    @click="handleNoticePageChange()" style="margin-top:100px"></v-pagination>
-
-
+                        </v-col>
+                    </v-row>
+                    <v-row justify="center">
+                        <v-col cols="8">
+                            <v-row class="header">
+                                <v-col cols="2">작성자</v-col>
+                                <v-col cols="2">분류</v-col>
+                                <v-col cols="5">제목</v-col>
+                                <v-col cols="3">작성 일자</v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+    
+                    <!-- 공지사항 리스트 -->
+                    <v-row justify="center">
+                        <v-col cols="8" v-if="notices.length">
+                            <v-row v-for="(notice) in notices" :key="notice.id" @click="noticeView(notice)" class="list-item" style="margin: 2px 0">
+                                <v-col cols="2">{{ notice.memberName }}</v-col>
+                                <v-col cols="2">{{ changePostType(notice.type) }}</v-col>
+                                <v-col cols="5">{{ notice.title }}</v-col>
+                                <v-col cols="3">{{ notice.postDate }}</v-col>
+                            </v-row>
+                        </v-col>
+    
+                        <!-- 공지사항이 없을 때 표시 -->
+                        <v-col cols="8" v-else class="text-center">
+                            <span style="font-size: 20px; color: #666; padding: 50px;">등록된 공지사항이 없습니다</span>
+                        </v-col>
+                    </v-row>
+    
+                    <v-pagination v-model="noticePage" :length="noticePages"
+                        @click="handleNoticePageChange()" style="margin-top:100px"></v-pagination>
+                </v-container>               
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
             <v-tabs-window-item value="tuteeList" v-if="this.isLecture && this.istutor">
-                <div class="box-style">
-                    <v-card-text>
-                        <!-- 튜티 리스트 -->
-                        <v-list width="30%" class="mx-auto" style="overflow: hidden;">
-                            <!-- 튜티가 있을 경우 리스트 출력 -->
-                            <template v-if="tutees.length">
-                                <v-list-item v-for="tutee in tutees" :key="tutee.id" justify="center"
-                                    class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
-                                    style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
-                                    variant="outlined">
-
-                                    <v-row>
-                                        <v-col>
-                                            <v-list-item-avatar>
-                                                <v-avatar size="50">
-                                                    <v-img :src="tutee.tuteeProfile" :alt="tutee.name" />
-                                                </v-avatar>
-                                            </v-list-item-avatar>
-                                        </v-col>
-                                        <v-col class="d-flex justify-center" style="align-items: center;">
-                                            <v-list-item-content>
-                                                <v-list-item-title class="tutee-name"
-                                                    style="font-weight:400; text-align: center;">
-                                                    <h5>{{ tutee.tuteeName }}</h5>
-                                                </v-list-item-title>
-                                            </v-list-item-content>
-                                        </v-col>
-                                    </v-row>
-                                </v-list-item>
-                            </template>
-
-                            <!-- 튜티가 없을 경우 메시지 출력 -->
-                            <v-row v-else justify="center">
-                                <v-col cols="12" class="text-center">
-
-                                        <h3>등록된 튜티가 없습니다</h3>
-
-                                </v-col>
-                            </v-row>
-                        </v-list>
-                    </v-card-text>
-                </div>
-
+                <v-container style="width: 70vw; min-height: 500px;">
+                    <div class="box-style">
+                        <v-card-text>
+                            <!-- 튜티 리스트 -->
+                            <v-list class="mx-auto" style="overflow: hidden;">
+                                <!-- 튜티가 있을 경우 리스트 출력 -->
+                                <template v-if="tutees.length">
+                                    <v-list-item v-for="tutee in tutees" :key="tutee.id" justify="center"
+                                        class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
+                                        style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
+                                        variant="outlined">
+    
+                                        <v-row>
+                                            <v-col>
+                                                <v-list-item-avatar>
+                                                    <v-avatar size="50">
+                                                        <v-img :src="tutee.tuteeProfile" :alt="tutee.name" />
+                                                    </v-avatar>
+                                                </v-list-item-avatar>
+                                            </v-col>
+                                            <v-col class="d-flex justify-center" style="align-items: center;">
+                                                <v-list-item-content>
+                                                    <v-list-item-title class="tutee-name"
+                                                        style="font-weight:400; text-align: center;">
+                                                        <h5>{{ tutee.tuteeName }}</h5>
+                                                    </v-list-item-title>
+                                                </v-list-item-content>
+                                            </v-col>
+                                        </v-row>
+                                    </v-list-item>
+                                </template>
+    
+                                <!-- 튜티가 없을 경우 메시지 출력 -->
+                                <v-row v-else justify="center">
+                                    <v-col cols="12" class="text-center">   
+                                            <h3>등록된 튜티가 없습니다</h3>
+                                    </v-col>
+                                </v-row>
+                            </v-list>
+                        </v-card-text>
+                    </div>
+                </v-container>
             </v-tabs-window-item>
         </v-tabs-window>
 
@@ -406,10 +415,7 @@
                         <v-icon v-if="isAuthor" class="mr-5"
                             @click="noticeDrawer = !noticeDrawer">mdi-dots-horizontal-circle-outline</v-icon>
                         <v-navigation-drawer location="right" v-if="noticeDrawer" v-model="noticeDrawer" temporary>
-
-
                             <v-list density="compact" nav>
-
                                 <v-list-item prepend-icon="mdi-pencil" title="수정"
                                     @click="noticeUpdateModal = true; noticeViewModal = false; noticeDrawer = !noticeDrawer;"></v-list-item>
 
@@ -444,7 +450,7 @@
                         <!-- </v-col> -->
                     </v-row>
                     <v-pagination v-model="commentPage" :length="commentPages"
-                        @click="handleCommentPageChange()"></v-pagination>
+                        @click="handleCommentPageChange()" style="margin-top:100px"></v-pagination>
                     <!-- 댓글 입력 폼 -->
                     <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
                     <h4 class="mt-6 mb-1 ml-6 mr-2" v-else>댓글 작성 </h4>
@@ -626,6 +632,13 @@ export default {
     },
 
     methods: {
+        // 마감일까지 남은 일수를 계산하는 메소드
+        daysRemaining(endDate) {
+            const today = new Date();
+            const end = new Date(endDate);
+            const diffTime = end - today;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 밀리초를 일수로 변환
+        },
         startSlider() {
             setInterval(() => {
                 this.currentNotice = (this.currentNotice + 1) % this.topNotice.length;
@@ -1108,5 +1121,18 @@ export default {
     padding: 30px 5px;
     margin-top: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+.assignment-item{
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+.assignment-item:hover {
+    transform: scale(1.03);
+    cursor: pointer;
+}
+.list-item:hover {
+    background-color: #e9e9e9;
+    border-radius: 5px;
+    cursor: pointer;
 }
 </style>

@@ -1,29 +1,30 @@
 <template>
   <div class="calendar-wrapper">
     <div class="sidebar">
+      
 
-      <div class="today-schedule text-left ml-15" v-if="sortedTodayEvents.length != 0">
-        <h5><strong>오늘의 일정</strong></h5>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li v-for="event in sortedTodayEvents" :key="event.id">
-            <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
-            <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
-            <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
-            {{ event.title }} ( {{ formatTime(event.start) }} )
-          </li>
-        </ul>
+      <div class="today-schedule text-left" v-if="sortedTodayEvents.length!=0">
+        <span style="font-size: 22px;"><strong>오늘의 일정</strong></span>
+        <div>
+            <div v-for="event in sortedTodayEvents" :key="event.id" style="list-style: none; margin-top: 20px; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+              <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
+              <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
+              <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
+              <span style="font-weight: 700;">{{ formatTime(event.start) }}</span> {{ event.title }} 
+            </div>
+         
+          </div>
       </div>
-      <div class="week-alert-schedule" v-if="sortedWeekAlertEvents.length != 0">
-        <h5><strong>주간 알림 일정</strong></h5>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li v-for="event in sortedWeekAlertEvents" :key="event.id">
-            <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
-            <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
-            <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
+      <div class="week-alert-schedule" v-if="sortedWeekAlertEvents.length!=0">
+        <span style="font-size: 22px;"><strong>주간 알림 일정</strong></span>
+          <div v-for="event in sortedWeekAlertEvents" :key="event.id" style="list-style: none; margin: 0; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+            <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
+            <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
+            <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
             {{ event.title }} - {{
-              formatWeekAlertTime(event.start) }}
-          </li>
-        </ul>
+            formatWeekAlertTime(event.start) }}
+          </div>
+
       </div>
 
 
@@ -482,9 +483,8 @@ export default {
 }
 
 .sidebar {
-  width: 300px;
-  background-color: #f5f5f5;
-  padding: 10px;
+  width: 350px;
+  padding: 10px 0 0 40px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -525,7 +525,7 @@ export default {
 /* FullCalendar 내부 스타일에 영향 주기 위해 deep 사용 */
 ::v-deep .fc-event {
   font-size: 15px !important;
-  color: white !important;
+  color: #555 !important;
 }
 
 ::v-deep .holiday-event {

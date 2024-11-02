@@ -80,7 +80,7 @@
                         <span v-for="(item, index) in assignments" :key="item.id" class="list-item">
                             <v-row>
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
-                                <v-col cols="4" style="padding: 10px 0">{{ item.title }}</v-col>
+                                <v-col cols="4" style="padding: 10px 0"><span class="item-title">{{ item.title }}</span></v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ item.endDate }}</v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ item.endTime }}</v-col>
                             </v-row>

@@ -17,8 +17,8 @@
                     <v-col>
                         <v-row class="header">
                             <v-col cols="1">순서</v-col>
-                            <v-col cols="6">강의명</v-col>
-                            <v-col cols="1">신청날짜</v-col>
+                            <v-col cols="5">강의명</v-col>
+                            <v-col cols="2">신청날짜</v-col>
                             <v-col cols="2"> </v-col>
                             <v-col cols="2">상태</v-col>
                         </v-row>
@@ -28,8 +28,8 @@
                     <v-col v-if="paymentLectures.length">
                         <v-row v-for="(lecture, index) in paymentLectures" :key="lecture.applyId" class="item">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="6" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
-                            <v-col cols="1">{{ formatDate(lecture.createdTime) }}</v-col>
+                            <v-col cols="5" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
+                            <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2">
                                 <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
                             </v-col>
@@ -52,8 +52,8 @@
                     <v-col>
                         <v-row class="header">
                             <v-col cols="1">순서</v-col>
-                            <v-col cols="6">강의명</v-col>
-                            <v-col cols="1">신청날짜</v-col>
+                            <v-col cols="5">강의명</v-col>
+                            <v-col cols="2">신청날짜</v-col>
                             <v-col cols="2"></v-col>
                             <v-col cols="2">상태</v-col>
                         </v-row>
@@ -63,8 +63,8 @@
                     <v-col v-if="allLectures.length">
                         <v-row v-for="(lecture, index) in allLectures" :key="lecture.applyId" class="item">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="6" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
-                            <v-col cols="1">{{ formatDate(lecture.createdTime) }}</v-col>
+                            <v-col cols="5" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
+                            <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2" v-if="lecture.status === 'STANDBY'">
                                 <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
                             </v-col>

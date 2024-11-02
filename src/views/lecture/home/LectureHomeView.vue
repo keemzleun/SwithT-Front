@@ -33,7 +33,7 @@
                                         <v-col cols="6"><strong>기간</strong></v-col>
                                     </v-row>
                                     <hr>
-                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2 list-item">
+                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" @click="viewAssignmentOpen(assignment.id)" class="mb-2 list-item">
                                         <v-col cols="6">{{ assignment.title }}</v-col>
                                         <v-col cols="6">{{ assignment.startDate }}~{{ assignment.endDate }}</v-col>
                                     </v-row>
@@ -240,12 +240,9 @@
                 </v-card-title> -->
                 <v-divider class="mt-10 mb-2"></v-divider>
                 <v-card-text class="pa-4 pt-0 mt-5">
-                    <!-- 제목  -->
                     <h4 class="mb-1 ml-6 mr-2"> <strong>과제 생성</strong> </h4>
-                    <!-- 제목  -->
                     <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
                     <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
-                    <!-- <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6> -->
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
                     <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
@@ -264,46 +261,41 @@
             </v-card>
         </v-dialog>
         <v-dialog v-model="assignmentViewModal" max-width="800px">
-            <v-card style="border-radius: 20px;">
-
-                <v-divider class="mt-10 mb-2"></v-divider>
-
-                <v-card-text class="pa-4 pt-0">
+            <v-card style="border-radius: 20px; padding: 20px 30px;" min-height="600px">
+                <v-card-text style="padding: 30px 40px;">
                     <v-row class="justify-space-between mt-5 mb-5">
-                        <h4 class="mb-1 ml-6 mr-2"> <strong>과제 조회</strong> </h4>
-                        <v-icon v-if="this.istutor" class="mr-5"
-                            @click="drawer = !drawer">mdi-dots-horizontal-circle-outline</v-icon>
+                        <div class="mb-1 ml-8 mr-2" style="font-size: 24px; font-weight: 700;">{{ this.assignmentTitle }}</div>
+                        <v-icon v-if="this.istutor" class="mr-5" style="font-size: 30px;"
+                            @click="drawer = !drawer">mdi-dots-horizontal-circle-outline
+                        </v-icon>
                         <v-navigation-drawer location="right" v-if="drawer" v-model="drawer" temporary>
-
-
-                            <v-list density="compact" nav>
-
+                            <v-list nav>
                                 <v-list-item prepend-icon="mdi-pencil" title="수정"
-                                    @click="assignmentUpdateModal = true; drawer = !drawer; assignmentViewModal = false;"></v-list-item>
-
+                                    @click="assignmentUpdateModal = true; drawer = !drawer; assignmentViewModal = false;">
+                                </v-list-item>
                                 <v-list-item prepend-icon="mdi-delete" title="삭제"
-                                    @click="deleteAssignments(); drawer = !drawer;"></v-list-item>
+                                    @click="deleteAssignments(); drawer = !drawer;">
+                                </v-list-item>
                             </v-list>
                         </v-navigation-drawer>
                     </v-row>
 
-                    <!-- 제목  -->
-                    <h4 class="mb-1 ml-8 mr-2"> 제목 </h4>
-                    <div class="mb-2 ml-8 mr-2">{{ this.assignmentTitle }}</div>
-                    <h4 class="mb-1 ml-8 mr-2"> 내용 </h4>
-                    <div class="mb-2 ml-8 mr-2">{{ this.assignmentContent }}</div>
-                    <h4 class="mb-1 ml-8 mr-2"> 제출 일자 </h4>
-                    <div class="mb-2 ml-8 mr-2">{{ this.assignmentDate?.split('T')[0] }}
-                        {{ this.assignmentDate?.split('T')[1] }}
-                    </div>
+                    <v-divider></v-divider>
+                   
+                    <div class="mb-2 ml-8 mr-2" style="font-size: 20px;">{{ this.assignmentContent }}</div>
 
+                    <div class="mb-1 ml-8 mr-2" style="font-size: 20px; font-weight: 700; color: #6C97FD; margin-top: 30px;">
+                        ~
+                        {{ this.assignmentDate?.split('T')[0] }}
+                        {{ this.assignmentDate?.split('T')[1] }} 까지
+                    </div>
+                   
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
                         <v-btn variant="outlined" @click="renewAssignment()" class="mr-3">확인</v-btn>
                     </v-row>
                 </v-card-actions>
-                <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>
@@ -316,7 +308,6 @@
                     <!-- 제목  -->
                     <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>제출 일자</strong> </h6>
                     <input class="mb-2 ml-6 mr-6 mt-3" v-model="assignmentDate" type="datetime-local" outlined>
-                    <!-- <h6 class="mt-6 mb-1 ml-6 mr-2"> <strong>내용</strong> </h6> -->
                     <v-text-field v-model="assignmentTitle" type="text" rounded="xs" variant="outlined"
                         class="mb-2 ml-6 mr-6 mt-6" placeholder="제목을 입력해주세요" label="제목"></v-text-field>
                     <v-textarea v-model="assignmentContent" variant="outlined" rows="5" class="mb-2 ml-6 mr-6 mt-3"
@@ -324,13 +315,10 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center" class="flex">
-
                         <v-btn variant="outlined" rounded class="cancel-btn mr-3"
                             @click="renewAssignment()">취소하기</v-btn>
-                        <!-- <v-btn variant="outlined" class="delete-btn mr-3" @click="deleteAssignments()">삭제하기</v-btn> -->
                         <v-btn variant="outlined" rounded class="submit-btn" @click="updateAssignment()">등록하기</v-btn>
                     </v-row>
-
                 </v-card-actions>
                 <v-divider class="mt-2 mb-10"></v-divider>
 
@@ -341,23 +329,15 @@
         <!-- 공지사항 모달-->
         <v-dialog v-model="noticeCreateModal" max-width="800px">
             <v-card style="border-radius: 20px;">
-                <!-- <v-card-title class="text-h4 pa-4 d-flex justify-center">
-                    게시판 작성
-                </v-card-title> -->
                 <v-divider class="mt-10 mb-2"></v-divider>
 
                 <v-card-text class="pa-4 pt-0 mt-5">
                     <h5 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 작성</strong> </h5>
-                    <!-- 라디오 버튼 -->
-                    <!-- <v-switch v-model="isNotice" :label="isNotice ? '공지사항으로 등록' : '게시글로 등록'" class="mb-2 ml-2"
-                        hide-details></v-switch> -->
                     <h6 class="mt-6 mb-1 ml-8 mr-2"> <strong>종류</strong> </h6>
                     <v-radio-group v-model="isNotice" class="mb-2 ml-8" hide-details>
                         <v-radio label="공지사항으로 등록" :value="true" v-if="istutor"></v-radio>
                         <v-radio label="게시글로 등록" :value="false"></v-radio>
                     </v-radio-group>
-                    <!-- 제목  -->
-                    <!-- <h6 class="mt-6 mb-4 ml-8 mr-2"> <strong>내용</strong> </h6> -->
                     <v-text-field v-model="noticeTitle" placeholder="제목을 입력해주세요" label="제목" type="text" rounded="xs"
                         variant="outlined" class="mb-2 ml-8 mr-2"></v-text-field>
                     <v-textarea v-model="noticeContent" placeholder="내용을 입력해주세요" label="내용" variant="outlined" rows="5"
@@ -404,65 +384,61 @@
 
             </v-card>
         </v-dialog>
-        <v-dialog v-model="noticeViewModal" max-width="800px">
-            <v-card style="border-radius: 20px;">
-                <v-divider class="mt-10 mb-2"></v-divider>
-
-                <v-card-text class="pa-4 pt-0">
-                    <v-row class="justify-space-between mt-5 mb-5">
-
-                        <h4 class="mt-6 mb-1 ml-6 mr-2"> <strong>게시판 조회</strong> </h4>
-                        <v-icon v-if="isAuthor" class="mr-5"
-                            @click="noticeDrawer = !noticeDrawer">mdi-dots-horizontal-circle-outline</v-icon>
-                        <v-navigation-drawer location="right" v-if="noticeDrawer" v-model="noticeDrawer" temporary>
-                            <v-list density="compact" nav>
-                                <v-list-item prepend-icon="mdi-pencil" title="수정"
-                                    @click="noticeUpdateModal = true; noticeViewModal = false; noticeDrawer = !noticeDrawer;"></v-list-item>
-
-                                <v-list-item prepend-icon="mdi-delete" title="삭제" @click="deleteItem()"></v-list-item>
-                            </v-list>
-                        </v-navigation-drawer>
+        <v-dialog v-model="noticeViewModal" max-width="70vw">
+            <v-card style="border-radius: 20px;" min-height="800px">
+                <!-- <v-card-text class="pa-4 pt-0"> -->
+                    <v-row>
+                        <v-col cols="8">
+                            <v-row class="justify-space-between mt-5 mb-5">
+                                <v-row style="font-size: 24px; font-weight: 700; margin-left: 40px;">
+                                    {{ this.noticeTitle }}
+                                </v-row>
+                                <v-icon v-if="isAuthor" class="mr-5"
+                                    @click="noticeDrawer = !noticeDrawer">mdi-dots-horizontal-circle-outline
+                                </v-icon>
+                                <v-navigation-drawer location="right" v-if="noticeDrawer" v-model="noticeDrawer" temporary>
+                                    <v-list density="compact" nav>
+                                        <v-list-item prepend-icon="mdi-pencil" title="수정"
+                                            @click="noticeUpdateModal = true; noticeViewModal = false; noticeDrawer = !noticeDrawer;">
+                                        </v-list-item>
+                                        <v-list-item prepend-icon="mdi-delete" title="삭제" @click="deleteItem()"></v-list-item>
+                                    </v-list>
+                                </v-navigation-drawer>
+                            </v-row>
+                            <v-divider class="mt-10 mb-2"></v-divider>
+                            <v-row class="mb-4 ml-7 mr-2 mt-2">
+                                {{ this.noticeContent }}
+                            </v-row>                        
+                        </v-col>
+                        <v-col>
+                            <!-- 댓글 리스트 -->
+                            <h4 class="mt-6 mb-1 ml-6 mr-2">댓글</h4>
+                            <v-row v-for="comment in comments" :key="comment.id">
+                                <div class="mb-4 ml-7 mr-2 mt-2 px-3">
+                                    <strong>{{ comment.memberName }}</strong>
+                                    <span class="ml-2">{{ comment.contents }}</span>
+                                </div>
+                                <div class="align-center mt-1">
+                                    <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
+                                    <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
+                                </div>
+                            </v-row>
+                            <v-pagination v-model="commentPage" :length="commentPages"
+                                @click="handleCommentPageChange()" style="margin-top:100px"></v-pagination>
+                            <!-- 댓글 입력 폼 -->
+                            <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
+                            <h4 class="mt-6 mb-1 ml-6 mr-2" v-else>댓글 작성 </h4>
+                            <v-textarea class="mb-1 ml-6 mr-2" v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
+                            <v-btn class="ml-6" @click="submitComment">댓글 등록</v-btn>
+                        </v-col>
                     </v-row>
-                    <!-- 제목  -->
-                    <h4 class="mb-1 ml-7 mr-2"> 제목 </h4>
-                    <v-row class="mb-4 ml-7 mr-2 mt-2">{{ this.noticeTitle }}</v-row>
-
-                    <h4 class="mb-1 ml-7 mr-2"> 내용 </h4>
-                    <v-row class="mb-4 ml-7 mr-2 mt-2">{{ this.noticeContent }}</v-row>
-                    <v-divider class="mt-10 mb-2"></v-divider>
-
-                    <!-- 댓글 리스트 -->
-                    <h4 class="mt-6 mb-1 ml-6 mr-2">댓글</h4>
-                    <v-row v-for="comment in comments" :key="comment.id">
-                        <!-- <v-col v-for="comment in comments" :key="comment.id"> -->
-                        <!-- <v-card class="pa-3 mb-2"> -->
-                        <!-- <v-row> -->
-                        <div class="mb-4 ml-7 mr-2 mt-2 px-3">
-                            <strong>{{ comment.memberName }}</strong>
-                            <span class="ml-2">{{ comment.contents }}</span>
-                        </div>
-                        <div class="align-center mt-1">
-                            <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
-                            <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
-                        </div>
-                        <!-- </v-row> -->
-                        <!-- </v-card> -->
-                        <!-- </v-col> -->
-                    </v-row>
-                    <v-pagination v-model="commentPage" :length="commentPages"
-                        @click="handleCommentPageChange()" style="margin-top:100px"></v-pagination>
-                    <!-- 댓글 입력 폼 -->
-                    <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
-                    <h4 class="mt-6 mb-1 ml-6 mr-2" v-else>댓글 작성 </h4>
-                    <v-textarea class="mb-1 ml-6 mr-2" v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
-                    <v-btn class="ml-6" @click="submitComment">댓글 등록</v-btn>
-                </v-card-text>
+ 
+                <!-- </v-card-text> -->
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
                         <v-btn variant="outlined" @click="renewNotice()" class="mr-3">확인</v-btn>
                     </v-row>
                 </v-card-actions>
-                <v-divider class="mt-2 mb-10"></v-divider>
 
             </v-card>
         </v-dialog>

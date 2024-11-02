@@ -4,7 +4,7 @@
       <button class="close-button" @click="close">&times;</button>
 
       <h2 class="modal-title">
-        <span class="mdi mdi-calendar"></span> {{ selectedSchedule ? '일정 수정' : '일정 등록' }}
+        <span class="mdi mdi-calendar"></span> {{ selectedSchedule ? isEditable?  '일정 수정' : '일정 조회' : '일정 등록' }}
       </h2>
 
       <form @submit.prevent="handleSubmit" style="text-align: left">
@@ -45,16 +45,16 @@
         <!-- 버튼들 -->
         <div class="modal-buttons">
           <button v-if="selectedSchedule && isEditable" type="submit">완료</button>
-          <button v-if="selectedSchedule && !isEditable" type="button" @click="enableEdit">수정하기</button>
+          <button v-if="selectedSchedule && !isEditable && canEdit" type="button" @click="enableEdit">수정하기</button>
           <button v-if="!selectedSchedule" type="submit">등록하기</button>
-          <button v-if="selectedSchedule" type="button" @click="$emit('scheduleDeleted', selectedSchedule.id)" class="delete-button">삭제하기</button>
-
+          <button v-if="selectedSchedule && canEdit" type="button" @click="$emit('scheduleDeleted', selectedSchedule.id)" class="delete-button">삭제하기</button>
+        
           <!-- 알림 생성 버튼 (알림이 없을 때만 표시) -->
           <button v-if="isAlertEditable && !alertInfo?.reserveDay" type="button" @click="createAlert">알림 생성</button>
-
+        
           <!-- 알림 수정 버튼 (알림이 있을 때만 표시) -->
           <button v-if="alertInfo?.reserveDay && isAlertEditable && selectedSchedule" type="button" @click="saveAlertSettings">알림 수정</button>
-
+        
           <!-- 알림 취소 버튼 (알림이 있을 때만 표시) -->
           <button v-if="alertInfo?.reserveDay && !isAlertEditable" type="button" @click="cancelAlert">알림 취소</button>
         </div>
@@ -79,6 +79,10 @@ export default {
     alertInfo: {
       type: Object,
       default: () => ({ reserveDay: '', reserveTime: '' }) // 기본값 설정
+    },
+    canEdit:{
+      type:Boolean,
+      default:false
     }
   },
   data() {

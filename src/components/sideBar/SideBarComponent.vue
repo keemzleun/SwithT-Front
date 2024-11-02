@@ -400,4 +400,32 @@ export default {
 .alert-badge:hover {
   background-color: #5a82d8; /* Hover 시 약간 어두운 색으로 변경 */
 }
+
+@keyframes slideInPartial {
+  0% {
+    transform: translateX(100%);
+    clip-path: inset(0 0 0 100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(0);
+    clip-path: inset(0 0 0 20%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.custom-alert-position {
+  position: fixed !important;
+  top: 20px !important;
+  right: 95px !important;
+  width: 400px;
+  max-height: 100vh;
+  overflow-y: auto;
+  z-index: 202;
+  animation: slideInPartial 0.5s ease-out forwards; /* 슬라이드 애니메이션 */
+}
 </style>

@@ -1,50 +1,6 @@
 <template>
   <div class="calendar-wrapper">
     <div class="sidebar">
-      <!-- <div class="today-schedule " v-if="sortedTodayEvents.length!=0">
-        <h5><strong>오늘의 일정</strong></h5>
-        <v-row v-for="event in sortedTodayEvents" :key="event.id">
-        <v-card
-        variant="outlined"
-        class="mx-auto mb-3 mt-1"
-        color="surface-variant"
-        max-width="344"
-        :subtitle="event.title+' - ' +formatTime(event.start)"
-      >
-      </v-card>
-    </v-row>
-    <v-row>
-      <v-card
-      variant="outlined"
-      class="mx-auto mb-3 mt-1"
-      color="surface-variant"
-      max-width="344"
-      :subtitle="'체크체크'+' - ' + '09:33'"
-    >
-    </v-card>
-    </v-row>
-    <v-row>
-      <v-card
-      variant="outlined"
-      class="mx-auto mb-3 mt-1"
-      color="surface-variant"
-      max-width="344"
-      :subtitle="'체크체크'+' - ' + '09:33'"
-    >
-    </v-card>
-    </v-row>
-    <v-row>
-      <v-card
-      variant="outlined"
-      class="mx-auto mb-3 mt-1"
-      color="surface-variant"
-      max-width="344"
-      :subtitle="'체크체크'+' - ' + '09:33'"
-    >
-    </v-card>
-    </v-row>
-
-      </div> -->
 
       <div class="today-schedule text-left ml-15" v-if="sortedTodayEvents.length != 0">
         <h5><strong>오늘의 일정</strong></h5>
@@ -86,9 +42,9 @@
       <FullCalendar ref="fullCalendar" :options="calendarOptions" class="full-calender" />
 
       <HandleScheduleModal v-if="isModalVisible" :selectedDate="selectedDate" :selectedSchedule="selectedEvent"
-        :alertInfo="alertInfo" @close="isModalVisible = false" @scheduleSaved="handleScheduleSubmitted"
-        @scheduleDeleted="handleScheduleDeleted" @saveAlert="handleSaveAlert" @createAlert="handleCreateAlert"
-        @cancelAlert="handleCancelAlert" />
+        :alertInfo="alertInfo" :canEdit="canEdit" @close="isModalVisible = false"
+        @scheduleSaved="handleScheduleSubmitted" @scheduleDeleted="handleScheduleDeleted" @saveAlert="handleSaveAlert"
+        @createAlert="handleCreateAlert" @cancelAlert="handleCancelAlert" />
     </v-container>
   </div>
 </template>
@@ -361,6 +317,7 @@ export default {
 
     // 날짜 선택 시 일정 생성 모달 표시
     handleDateSelect(selectionInfo) {
+
       this.selectedDate = selectionInfo.startStr;
       this.selectedEvent = null; // 새 일정이므로 선택된 이벤트는 없음
       this.isModalVisible = true;
@@ -369,8 +326,12 @@ export default {
 
     // 이벤트 클릭 시 호출
     async handleEventClick(info) {
-      // 스케줄 ID 확인
       const scheduleId = info.event.id;
+      const groupId = info.event.extendedProps.groupId;
+
+      // `canEdit`을 groupId에 따라 설정
+      const canEdit = groupId === 3;
+
       // 클릭한 이벤트 정보를 모달에 전달
       this.selectedEvent = {
         id: scheduleId,
@@ -378,33 +339,33 @@ export default {
         schedulerDate: info.event.startStr.split('T')[0],
         schedulerTime: info.event.startStr.split('T')[1],
         content: info.event.extendedProps.description,
-        alertYn: info.event.extendedProps.alertYn || false // alertYn 값 추가
+        alertYn: info.event.extendedProps.alertYn || false,
       };
 
-      // 알림 여부를 확인한 후, 알림이 설정된 경우에만 API 요청을 보냄
       if (this.selectedEvent.alertYn === 'Y') {
         try {
           const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/get-alert/${scheduleId}`);
           if (response.data && response.data.result) {
-            // 받은 알림 정보를 alertInfo에 저장
             this.alertInfo = {
-              id: response.data.result.id, // 알림 ID
+              id: response.data.result.id,
               reserveDay: response.data.result.reserveDay,
               reserveTime: response.data.result.reserveTime,
-              schedulerId: response.data.result.schedulerId // 스케줄 ID
+              schedulerId: response.data.result.schedulerId,
             };
           } else {
-            this.alertInfo = { reserveDay: null, reserveTime: null };  // 기본값으로 설정
+            this.alertInfo = { reserveDay: null, reserveTime: null };
           }
         } catch (error) {
-          this.alertInfo = { reserveDay: null, reserveTime: null };  // 에러 발생 시 기본값 설정
+          this.alertInfo = { reserveDay: null, reserveTime: null };
           console.error('알림 정보를 가져오는 중 오류가 발생했습니다:', error);
         }
       } else {
-        this.alertInfo = { reserveDay: null, reserveTime: null };  // 알림이 없을 경우 기본값 설정
+        this.alertInfo = { reserveDay: null, reserveTime: null };
       }
 
+      // 모달 표시 및 `canEdit` 전달
       this.isModalVisible = true;
+      this.canEdit = canEdit; // canEdit 상태 저장
     },
 
     // 일정 데이터가 모달에서 넘어왔을 때 처리

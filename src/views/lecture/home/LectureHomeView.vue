@@ -5,7 +5,7 @@
 
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
-            <v-icon>mdi-bullhorn-variant-outline</v-icon> <strong> [{{ notice.title }}] </strong> {{ notice.contents }}
+            <v-icon style="font-size: 16px;">mdi-bullhorn-variant-outline</v-icon> <strong> [공지사항] </strong> {{ notice.title }}
         </div>
     </div>
     <v-container>
@@ -24,27 +24,29 @@
                     <v-row>
                         <!-- 과제 리스트 -->
                         <v-col cols="12" md="6">
-                            <v-card class="pa-4 mb-3" outlined height="400px">
+                            <div class="box-style" outlined height="400px">
                                 <v-card-title><strong>과제 리스트</strong> </v-card-title>
                                 <v-spacer></v-spacer>
                                 <v-card-text v-if="urgentAssignment.length">
-                                    <v-row class="mb-1">
-                                        <v-col cols="4"><strong>과제 제목</strong></v-col>
-                                        <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
-                                        <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
+                                    <v-row>
+                                        <v-col cols="6"><strong>과제 제목</strong></v-col>
+                                        <v-col cols="3"><strong>시작일</strong></v-col>
+                                        <v-col cols="3"><strong>마감일</strong></v-col>
                                     </v-row>
+                                    <hr>
                                     <v-row v-for="assignment in urgentAssignment" :key="assignment.id" class="mb-2">
-                                        <v-col cols="4">{{ assignment.title }}</v-col>
-                                        <v-col cols="4">{{ assignment.startDate }}</v-col>
-                                        <v-col cols="4">{{ assignment.endDate }}</v-col>
+                                        <v-col cols="6">{{ assignment.title }}</v-col>
+                                        <v-col cols="3">{{ assignment.startDate }}</v-col>
+                                        <v-col cols="3">{{ assignment.endDate }}</v-col>
                                     </v-row>
                                 </v-card-text>
                                 <v-card-text v-else>
-                                    <v-row class="mb-1">
-                                        <v-col cols="4"><strong>과제 제목</strong></v-col>
-                                        <v-col cols="4"><strong>제출 시작 날짜</strong></v-col>
-                                        <v-col cols="4"><strong>제출 마감 날짜</strong></v-col>
+                                    <v-row>
+                                        <v-col cols="6"><strong>과제 제목</strong></v-col>
+                                        <v-col cols="3"><strong>시작일</strong></v-col>
+                                        <v-col cols="3"><strong>마감일</strong></v-col>
                                     </v-row>
+                                    <hr>
                                     <v-row class="mb-2">
                                         <v-col cols="12" class="text-center"
                                             style="height: 100px; display: flex; align-items: center; justify-content: center; font-size:large;">
@@ -52,16 +54,15 @@
                                         </v-col>
                                     </v-row>
                                 </v-card-text>
-                            </v-card>
+                            </div>
                         </v-col>
 
                         <!-- 공지사항 -->
 
                         <v-col cols="12" md="6">
-                            <v-card class="pa-4 mb-3" outlined height="400px">
+                            <div class="box-style" outlined height="400px">
                                 <v-card-item>
                                     <v-card-title><strong>학습 진행률</strong></v-card-title>
-                                    <v-card-subtitle>지금까지 학습 한 내용과 진도율을 확인해보세요</v-card-subtitle>
                                 </v-card-item>
                                 <v-card-text>
                                     <div v-if="infoData?.totalDayCount">
@@ -79,42 +80,8 @@
                                         아직 시작되지 않았습니다.
                                     </div>
                                 </v-card-text>
-                            </v-card>
+                            </div>
                         </v-col>
-
-                        <!-- 강의 정보 -->
-                        <!-- <v-col cols="12" md="6">
-                            <v-card class="pa-4 mb-3" outlined>
-                                <v-card-title>강의 상세 정보</v-card-title>
-                                <v-card-text>
-                                    <div style="margin-bottom: 1px;"><strong>강의 일정:</strong></div>
-                                    <div v-html="lectureSchedules" style="margin-bottom: 5px;"></div>
-                                    <div style="margin-bottom: 1px;">
-                                        <strong>위치:</strong> {{ this.infoData.address }}
-                                        <v-icon @click="showMap()">mdi-map</v-icon>
-                                    </div>
-
-                                </v-card-text>
-                            </v-card>
-                        </v-col> -->
-                        <!-- 게시글 -->
-                        <!-- <v-col cols="12" md="6">
-                            <v-card class="pa-4 mb-3" outlined>
-                                <v-card-title>게시글</v-card-title>
-                                <v-card-text>
-                                    <v-row class="mb-1">
-                                        <v-col cols="4"><strong>제목</strong></v-col>
-                                        <v-col cols="4"><strong>작성자</strong></v-col>
-                                        <v-col cols="4"><strong>작성 일자</strong></v-col>
-                                    </v-row>
-                                    <v-row v-for="notice in notices" :key="notice.id" class="mb-2">
-                                        <v-col cols="4">{{ notice.title }}</v-col>
-                                        <v-col cols="4">{{ notice.memberName }}</v-col>
-                                        <v-col cols="4">{{ notice.postDate }}</v-col>
-                                    </v-row>
-                                </v-card-text>
-                            </v-card>
-                        </v-col> -->
                     </v-row>
 
 
@@ -135,31 +102,24 @@
                         <v-row justify="center" v-if="assignments.length">
                             <v-col cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
                                 class="text-left">
-                                <v-card class="pa-4 mb-3" variant="outlined">
+                                <div class="box-style">
                                     <v-row>
                                         <v-col @click="viewAssignmentOpen(assignment.id)">
                                             <h3>{{ assignment.title }}</h3>
-                                            <p>제출 시작 날짜: {{ assignment.startDate }}</p>
-                                            <p>제출 마감 날짜: {{ assignment.endDate }}</p>
+                                            <p>시작일: {{ assignment.startDate }}</p>
+                                            <p>마감일: {{ assignment.endDate }}</p>
                                         </v-col>
-
-                                        <!-- <v-col cols="auto">
-                                            <v-btn icon="$vuetify" @click="updateAssignmentOpen(assignment.id)"
-                                                v-if="this.istutor">
-                                                <v-icon>mdi-pencil</v-icon>
-                                            </v-btn>
-                                        </v-col> -->
                                     </v-row>
-                                </v-card>
+                                </div>
                             </v-col>
                         </v-row>
 
                         <!-- 과제가 없을 경우 표시할 내용 -->
                         <v-row justify="center" v-else>
                             <v-col cols="12" class="text-center">
-                                <v-card class="pa-4 mb-3 align-center mx-auto" min-height="200px" width="80%">
+                                <div class="box-style" min-height="200px" width="80%">
                                     <h3>등록된 과제가 없습니다</h3>
-                                </v-card>
+                                </div>
                             </v-col>
                         </v-row>
                         <v-pagination v-model="assignmentPage" :length="assignmentPages"
@@ -175,48 +135,7 @@
                         <v-btn variant="outlined" elevation="0" rounded @click="onlyNoticeClick()">
                             {{ onlyNotice ? "전체" : "공지사항만" }}
                         </v-btn>
-                        <!-- <v-menu v-model="menu" class="mb-10" attach offset-y>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on" outlined elevation="0">
-                                    {{ onlyNotice ? "공지사항만 보기" : "전체 보기" }}
-                                    <v-icon right>mdi-menu-down</v-icon>
-                                </v-btn>
-                            </template>
-<v-list>
-    <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">전체
-        보기</v-list-item>
-    <v-list-item @click="onlyNotice = !onlyNotice; onlyNoticeClick(); menu = false;">공지사항만
-        보기</v-list-item>
-</v-list>
-</v-menu> -->
-                        <!-- @click="menu=!menu; onlyNotice = !onlyNotice; onlyNoticeClick();"> -->
-
-                        <!-- <v-btn outlined rounded elevation="0" @click="menu = !menu;">
-                            {{ onlyNotice ? "전체 보기" : "공지사항만 보기" }}
-                            <v-icon right>mdi-menu-down</v-icon>
-                            <v-menu activator="menu">
-                                <v-list>
-                                    <v-list-item @click="onlyNotice = false; onlyNoticeClick();">
-                                        <v-list-item-title>전체 보기</v-list-item-title>
-                                    </v-list-item>
-                                    <v-list-item @click="onlyNotice = true; onlyNoticeClick();">
-                                        <v-list-item-title>공지사항만 보기</v-list-item-title>
-                                    </v-list-item>
-                                </v-list>
-                            </v-menu>
-                        </v-btn> -->
-                        <!-- <select>
-                            <option @click="onlyNotice = false; onlyNoticeClick();">전체 보기</option>
-                            <option @click="onlyNotice = true; onlyNoticeClick();">공지사항만 보기</option>
-                        </select> -->
-                        <!-- <v-select
-                        :items="selectOptions"  
-                        variant="outlined"
-                        rounded
-                        label="보기 옵션 선택"
-                        @change="onlyNoticeClick()" 
-                      >
-                      </v-select> -->
+                        
                     </v-col>
                     <v-col class="mr-15" cols="5"><v-btn rounded color="#90CDFF"
                             @click="noticeCreateModal = true"><v-icon>mdi-plus</v-icon></v-btn></v-col>
@@ -237,7 +156,7 @@
                     <v-col cols="8" v-if="notices.length">
                         <v-row v-for="(notice) in notices" :key="notice.id" class="item" @click="noticeView(notice)">
                             <v-col cols="2">{{ notice.memberName }}</v-col>
-                            <v-col cols="2">{{ notice.type }}</v-col>
+                            <v-col cols="2">{{ changePostType(notice.type) }}</v-col>
                             <v-col cols="5">{{ notice.title }}</v-col>
                             <v-col cols="3">{{ notice.postDate }}</v-col>
                         </v-row>
@@ -252,32 +171,13 @@
                 </v-row>
 
                 <v-pagination v-model="noticePage" :length="noticePages"
-                    @click="handleNoticePageChange()"></v-pagination>
+                    @click="handleNoticePageChange()" style="margin-top:100px"></v-pagination>
 
-                <!-- <v-card flat>
-                    <v-card-text>
-                        <v-row justify="end" class="mr-4">
-                            <v-btn color="#90CDFF" @click="noticeCreateModal = true"><strong>생성</strong></v-btn>
-                        </v-row>
-                        <v-data-table :headers="headers" :items="notices" class="elevation-1"
-                            @click:row="(item) => noticeView(item)">
-                            <template v-slot:[getitemcontrols()]="{ item }">
-
-                                <v-icon class="me-2" size="small" @click.stop="editItem(item)">
-                                    mdi-pencil
-                                </v-icon>
-                                <v-icon size="small" @click.stop="deleteItem(item)">
-                                    mdi-delete
-                                </v-icon>
-                            </template>
-</v-data-table>
-</v-card-text>
-</v-card> -->
 
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
             <v-tabs-window-item value="tuteeList" v-if="this.isLecture && this.istutor">
-                <v-card flat>
+                <div class="box-style">
                     <v-card-text>
                         <!-- 튜티 리스트 -->
                         <v-list width="30%" class="mx-auto" style="overflow: hidden;">
@@ -311,15 +211,14 @@
                             <!-- 튜티가 없을 경우 메시지 출력 -->
                             <v-row v-else justify="center">
                                 <v-col cols="12" class="text-center">
-                                    <v-card class="pa-4 mb-3 align-center mx-auto" min-height="160px" width="80%"
-                                        style="overflow: hidden;">
+
                                         <h3>등록된 튜티가 없습니다</h3>
-                                    </v-card>
+
                                 </v-col>
                             </v-row>
                         </v-list>
                     </v-card-text>
-                </v-card>
+                </div>
 
             </v-tabs-window-item>
         </v-tabs-window>
@@ -696,7 +595,7 @@ export default {
         this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
             return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
         }, '');
-        const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-tutee-list/${this.lectureGroupId}`)
+        const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
         let params = {
             size: this.noticePageSize,
@@ -730,7 +629,7 @@ export default {
         startSlider() {
             setInterval(() => {
                 this.currentNotice = (this.currentNotice + 1) % this.topNotice.length;
-            }, 5000); // 3초마다 다음 공지로
+            }, 5000);
         },
         showMap() {
             this.execDaumPostcode();
@@ -1102,8 +1001,16 @@ export default {
             }
             this.renewNotice();
         },
+        changePostType(type){
+            switch (type) {
+                case 'POST':
+                    return '게시글';
+                case 'NOTICE':
+                    return '화요일';
+        }
 
-    }
+    },
+}
 
 };
 </script>
@@ -1159,9 +1066,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: black;
-    font-size: 20px;
-    color: white;
+    background-color: #222;
+    font-size: 17px;
+    color: #fff;
 }
 
 .cancel-btn {
@@ -1193,5 +1100,13 @@ export default {
 .inactive {
     background-color: #CCCCCC !important;
     /* 회색 */
+}
+
+.box-style {
+    border: 2px solid #f0efef;
+    border-radius: 10px;
+    padding: 30px 5px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 </style>

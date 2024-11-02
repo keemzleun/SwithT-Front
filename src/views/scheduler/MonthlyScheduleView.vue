@@ -46,29 +46,27 @@
 
       </div> -->
 
-      <div class="today-schedule text-left ml-15" v-if="sortedTodayEvents.length!=0">
+      <div class="today-schedule text-left ml-15" v-if="sortedTodayEvents.length != 0">
         <h5><strong>오늘의 일정</strong></h5>
-        <ul  style="list-style: none; padding: 0; margin: 0;">
+        <ul style="list-style: none; padding: 0; margin: 0;">
           <li v-for="event in sortedTodayEvents" :key="event.id">
-            <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
-            <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
-            <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
-            {{ event.title }} ( {{ formatTime(event.start) }} )</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
+            <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
+            <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
+            <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
+            {{ event.title }} ( {{ formatTime(event.start) }} )
+          </li>
         </ul>
       </div>
-      <div class="week-alert-schedule" v-if="sortedWeekAlertEvents.length!=0">
+      <div class="week-alert-schedule" v-if="sortedWeekAlertEvents.length != 0">
         <h5><strong>주간 알림 일정</strong></h5>
         <ul style="list-style: none; padding: 0; margin: 0;">
           <li v-for="event in sortedWeekAlertEvents" :key="event.id">
-            <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
-            <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
-            <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
+            <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
+            <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
+            <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
             {{ event.title }} - {{
-            formatWeekAlertTime(event.start) }}</li>
+              formatWeekAlertTime(event.start) }}
+          </li>
         </ul>
       </div>
 
@@ -78,9 +76,12 @@
     <!-- 메인 캘린더 -->
     <v-container class="calendar-container">
       <div class="d-flex flex-row-reverse mb-5">
-        <span class="color-box" style="background-color: #82B1FF;"><v-tooltip location="top" activator="parent">수업 일정</v-tooltip></span>
-        <span class="color-box" style="background-color: #FF8F00;"><v-tooltip location="top" activator="parent">과제 일정</v-tooltip></span>
-        <span class="color-box" style="background-color: #FFF490;"><v-tooltip location="top" activator="parent">개인 일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #82B1FF;"><v-tooltip location="top" activator="parent">수업
+            일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #FF8F00;"><v-tooltip location="top" activator="parent">과제
+            일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #FFF490;"><v-tooltip location="top" activator="parent">개인
+            일정</v-tooltip></span>
       </div>
       <FullCalendar ref="fullCalendar" :options="calendarOptions" class="full-calender" />
 
@@ -119,7 +120,7 @@ export default {
         initialView: 'dayGridMonth',
         locale: koLocale,
         events: [
-          
+
         ],
         datesSet: this.handleDatesSet,
         height: 700,
@@ -206,20 +207,61 @@ export default {
     },
 
     // 사용자 일정 데이터 가져오기
+    // async fetchSchedules(year, month) {
+    //   try {
+    //     const data = { year, month };
+    //     const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/schedule/monthly-schedules`, data);
+
+    //     const events = response.data.result.map(schedule => {
+    //       if (!schedule.schedulerDate || !schedule.schedulerTime) {
+    //         console.error("Invalid schedule data:", schedule);
+    //         return null;
+    //       }
+
+    //       const start = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
+    //       const end = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
+
+    //       const customClass = schedule.alertYn === "Y" ? "alert-event" : "";
+    //       let groupId = 3;
+
+    //       // 수업 일정
+    //       if (schedule.lectureAssignmentId === null && schedule.lectureGroupId != null) {
+    //         groupId = 1;
+    //       } else if (schedule.lectureGroupId != null && schedule.lectureAssignmentId != null) {
+    //         // 과제 일정
+    //         groupId = 2;
+    //       }
+
+    //       return {
+    //         id: schedule.id,
+    //         title: schedule.title,
+    //         start,
+    //         end,
+    //         description: schedule.content,
+    //         classNames: [customClass],
+    //         extendedProps: {
+    //           groupId,
+    //           alertYn: schedule.alertYn
+    //         },
+    //       };
+    //     }).filter(event => event !== null);
+
+    //     this.$refs.fullCalendar.getApi().addEventSource(events); // 메인 캘린더
+    //   } catch (error) {
+    //     console.error('스케줄을 가져오는 중 오류가 발생했습니다.', error);
+    //   }
+    // },
     async fetchSchedules(year, month) {
       try {
         const data = { year, month };
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/schedule/monthly-schedules`, data);
 
-        const events = response.data.result.map(schedule => {
-          if (!schedule.schedulerDate || !schedule.schedulerTime) {
-            console.error("Invalid schedule data:", schedule);
-            return null;
-          }
+        const uniqueEvents = []; // 중복 방지를 위한 배열
+        response.data.result.forEach(schedule => {
+          if (!schedule.schedulerDate || !schedule.schedulerTime) return;
 
           const start = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
           const end = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
-
           const customClass = schedule.alertYn === "Y" ? "alert-event" : "";
           let groupId = 3;
 
@@ -231,7 +273,7 @@ export default {
             groupId = 2;
           }
 
-          return {
+          const event = {
             id: schedule.id,
             title: schedule.title,
             start,
@@ -243,13 +285,19 @@ export default {
               alertYn: schedule.alertYn
             },
           };
-        }).filter(event => event !== null);
 
-        this.$refs.fullCalendar.getApi().addEventSource(events); // 메인 캘린더
+          // 중복된 id의 이벤트가 없는 경우에만 추가
+          if (!uniqueEvents.some(e => e.id === event.id)) {
+            uniqueEvents.push(event);
+          }
+        });
+
+        this.$refs.fullCalendar.getApi().addEventSource(uniqueEvents); // 중복 방지 후 메인 캘린더에 추가
       } catch (error) {
         console.error('스케줄을 가져오는 중 오류가 발생했습니다.', error);
       }
     },
+
 
     // 오늘의 일정 가져오기
     setTodayEvents() {
@@ -265,7 +313,7 @@ export default {
         const allEvents = this.$refs.fullCalendar.getApi().getEvents();
 
         this.todayEvents = allEvents.filter(event => {
-          console.log("오늘 이벤트",event)
+          console.log("오늘 이벤트", event)
           const eventDate = new Date(event.start);
           eventDate.setHours(0, 0, 0, 0); // 이벤트 날짜도 00:00:00으로 설정 (로컬 타임존 기준)
           return eventDate.getTime() === today.getTime(); // 날짜를 비교하여 일치하는 이벤트만 필터링
@@ -545,15 +593,17 @@ export default {
 ::v-deep .fc-next-button:hover {
   background: none;
   border: none;
-  color: #000; /* Change text color on hover */
+  color: #000;
+  /* Change text color on hover */
 }
+
 ::v-deep .fc-prev-button:active,
 ::v-deep .fc-next-button:active {
   background: none !important;
   color: #000 !important;
   box-shadow: none !important;
   border: none !important;
-  outline: none !important; 
+  outline: none !important;
 }
 
 ::v-deep .fc-prev-button:focus,
@@ -572,6 +622,4 @@ export default {
   color: #000;
   text-decoration: none;
 }
-
-
 </style>

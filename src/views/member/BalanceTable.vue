@@ -323,8 +323,9 @@ export default {
       this.drawChart();
 
       const BalanceListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/list/balance`);
-      console.log(BalanceListResponse)
+      console.log("BalanceListResponse",BalanceListResponse)
       const withDrawalListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/list/withdrawal`);
+      console.log("withDrawalListResponse",withDrawalListResponse)
 
       // 출금 리스트 데이터 처리
       this.withdrawalData = withDrawalListResponse.data.result.content.map((data) => ({
@@ -332,11 +333,11 @@ export default {
         description: data.description,
         amount: data.requestAmount.toLocaleString(),
       }));
-      // this.incomeData = BalanceListResponse.data.result.content.map((data)=>({
-      //   date:data.createdTime.split("T")[0],
-      //   description:data.description,
-      //   amount:data.incomeAmount
-      // }))
+      this.incomeData = BalanceListResponse.data.result.content.map((data)=>({
+        date:data.createdTime.split("T")[0],
+        description:data.description,
+        amount:data.incomeAmount
+      }))
     } catch (error) {
       console.error("데이터 로드 중 오류 발생:", error);
     }

@@ -10,7 +10,7 @@
       <!-- <v-container fluid class="custom-container"> -->
         <routerView />
       <!-- </v-container> -->
-    <FooterComponent />
+    <FooterComponent v-if="showFooter"/>
   </v-app>
 </template>
 
@@ -18,13 +18,23 @@
 import FooterComponent from '@/components/footer/FooterComponent.vue'
 import SidebarComponent from '@/components/sideBar/SideBarComponent.vue'
 import HeaderComponent from './components/header/HeaderComponent.vue';
-
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 export default {
   name: 'App',
   components: {
     HeaderComponent,
     FooterComponent,
     SidebarComponent
+  },
+  setup() {
+    const route = useRoute();
+
+    // 스케쥴 화면 footer 여부
+    const showFooter = computed(() => {
+      return route.path !== '/schedule';
+    });
+    return { showFooter };
   }
 }
 </script>

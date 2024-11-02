@@ -123,7 +123,7 @@ export default {
 
         ],
         datesSet: this.handleDatesSet,
-        height: 700,
+        height: 'auto',
         eventTimeFormat: {
           hour: 'numeric',
           minute: '2-digit',

@@ -173,7 +173,35 @@
   </div>
 </div>
 
+<div class="title text-start ml-16" style="margin-top: 40px">🩷 많이 검색된 강의</div>
 
+<div class="lecture-list mr-15" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-center;">
+  <div
+    class="component"
+    v-for="lecture in popularLectures"
+    :key="lecture.id"
+    @click="goToLecture(lecture.id)"
+    style="width: 375px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 8px;"
+  >
+    <img
+      :src="getlectureImage(lecture)"
+      alt="강의 썸네일"
+      class="lecture-image"
+      style="border-radius: 15px 15px 0 0; width: 100%; height: 220px; object-fit: cover;"
+    />
+    <div class="lecture-info" >
+      <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
+      <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
+      <span class="lecture-category">{{ getCategoryText(lecture.category) }}</span>
+      <div class="lecture-title" style="font-size: 20px; font-weight: bold;">
+        {{ lecture.title }}
+      </div>
+      <div class="lecture-tutor" style="font-size: 16px;">
+        {{ lecture.memberName }} 튜터
+      </div>
+    </div>
+  </div>
+</div>
   </v-container>
 </template>
 
@@ -193,6 +221,7 @@ export default {
       searchValue: "",
       suggestions: [],
       latestLectures: [],
+      popularLectures:[],
       freeLectures: [],
     };
   },
@@ -219,6 +248,17 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lectures/latest`
         );
         this.latestLectures = response.data.result;
+        console.log(response.data.result);
+      } catch (error) {
+        console.error("Failed to fetch latest lectures:", error);
+      }
+    },
+    async fetchPopularLectures() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lectures/popular`
+        );
+        this.popularLectures = response.data.result;
         console.log(response.data.result);
       } catch (error) {
         console.error("Failed to fetch latest lectures:", error);
@@ -288,6 +328,7 @@ export default {
   created() {
     this.fetchLatestLectures();
     this.fetchFreeLectures();
+    this.fetchPopularLectures();
   },
 };
 </script>

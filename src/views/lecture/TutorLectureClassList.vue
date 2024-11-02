@@ -57,9 +57,9 @@
                         </v-row>
                         <hr>
                         <span v-for="(item, index) in posts" :key="item.id" class="list-item">
-                            <v-row>
+                            <v-row class="click-item">
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
-                                <v-col cols="5" style="padding: 10px 0"><span class="item-title">{{ item.title }}</span></v-col>
+                                <v-col cols="5" style="padding: 10px 0">{{ item.title }}</v-col>
                                 <v-col cols="2" style="padding: 10px 0">{{ item.memberName || '알 수 없음' }}</v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ formatRelativeTime(item.createdTime) }}</v-col>
                             </v-row>
@@ -78,9 +78,9 @@
                         </v-row>
                         <hr>
                         <span v-for="(item, index) in assignments" :key="item.id" class="list-item">
-                            <v-row>
+                            <v-row class="click-item">
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
-                                <v-col cols="4" style="padding: 10px 0"><span class="item-title">{{ item.title }}</span></v-col>
+                                <v-col cols="4" style="padding: 10px 0">{{ item.title }}</v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ item.endDate }}</v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ item.endTime }}</v-col>
                             </v-row>
@@ -527,14 +527,17 @@ export default {
     border-radius: 5px;
     border: 1px solid #cdcdcd;
 }
-.item-title {
-    display: inline-block;
+.click-item {
+    /* display: inline-block;
     width: 100%;
-    border-radius: 10px;
+    border-radius: 10px; */
+    margin: 3px;
 }
-.item-title:hover {
+.click-item:hover {
     cursor: pointer;
     background-color: #f3f2f2;
+    border-radius: 10px;
+   
 
 }
 .icon-btn {

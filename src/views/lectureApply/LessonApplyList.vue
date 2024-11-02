@@ -14,7 +14,6 @@
                                 <v-avatar class="profile-image" style="height: 60px; width: 60px; ">
                                     <v-img :src="apply.tuteeProfileImage" alt="튜티 프로필"/>
                                 </v-avatar>
-                                
                                 <span style="font-size: 20px; margin:20px;">{{ apply.tuteeName }}</span>
                                 <span class="material-icons chat chat-btn" style="font-size: 30px;" @click="clickChatRoom(apply.chatRoomId, apply.memberId)">chat</span>
                             </div>

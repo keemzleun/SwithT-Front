@@ -72,7 +72,8 @@
             type="tel"
             id="phoneNumber"
             class="form-control"
-            placeholder="휴대전화를 입력하세요."
+            placeholder="숫자만 입력하세요."
+            @input="phoneNumber = phoneNumber.replace(/[^0-9]/g, '')"
             v-model="phoneNumber"
             required
           />

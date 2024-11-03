@@ -31,6 +31,37 @@
                 <div style="margin: 20px 0">신청한 강의가 없습니다.</div>
             </v-col>
         </v-row>
+        <v-row justify="center" class="mr-2">
+            <v-col cols="auto">
+                <!-- 이전 페이지로 이동하는 클릭 가능한 텍스트 -->
+                <span 
+                    @click="goToAllPreviousPage" 
+                    :class="{ 'disabled-text': allPage === 0 }"
+                    style="cursor: pointer; color: #000000;" 
+                    v-if="allPage !== 0"
+                >
+                    이전
+                </span>
+                <span v-else style="color: #B0BEC5;">이전</span> <!-- 비활성화된 경우 -->
+            </v-col>
+            
+            <v-col cols="auto">
+                <span>{{ allPage + 1 }} / {{ allTotalPages }}</span> <!-- 현재 페이지 및 전체 페이지 표시 -->
+            </v-col>
+            
+            <v-col cols="auto">
+                <!-- 다음 페이지로 이동하는 클릭 가능한 텍스트 -->
+                <span 
+                    @click="goToAllNextPage" 
+                    :class="{ 'disabled-text': allPage + 1 >= allTotalPages }" 
+                    style="cursor: pointer; color: #000000;" 
+                    v-if="allPage + 1 < allTotalPages"
+                >
+                    다음
+                </span>
+                <span v-else style="color: #B0BEC5;">다음</span> <!-- 비활성화된 경우 -->
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -41,16 +72,40 @@ export default {
     data() {
         return {
             allLectures: [],
+            
+            size: 10,          // 페이지 당 불러올 강의 수
+            allPage: 0,           // 현재 페이지
+            allTotalPages: 0, 
         };
     },
     methods: {
+        goToAllPreviousPage() {
+            if (this.allPage > 0) {
+                this.allPage--;
+                this.fetchAllLectures();
+            }
+        },
+        // 페이지네이션 - 다음 페이지로 이동
+        goToAllNextPage() {
+            if (this.allPage + 1 < this.allTotalPages) {
+                this.allPage++;
+                this.fetchAllLectures();
+            }
+        },
         async fetchLectures() {
             try {
                 // 상태 목록을 배열로 정의
                 const statuses = ['STANDBY', 'REJECT'];
                 // 각 상태에 대해 데이터를 요청하고, 결과를 병합
                 const lecturePromises = statuses.map(status => 
-                    axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/my-lecture-list?status=${status}`)
+                    // axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/my-lecture-list?status=${status}`,{
+                    axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/my-lecture-list`,{
+                        params:{
+                            status:`${status}`,
+                            size:this.size,
+                            page:this.allPage
+                        }
+                    })
                 );
 
                 const responses = await Promise.all(lecturePromises);

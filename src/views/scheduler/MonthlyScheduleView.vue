@@ -8,7 +8,7 @@
         <div>
           <div class="d-flex" v-for="event in sortedTodayEvents" :key="event.id"
             style="list-style: none; margin-top: 20px; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-            <div class="mr-1"> 
+            <div class="mr-1">
               <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
               <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
               <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
@@ -23,7 +23,7 @@
         <span style="font-size: 22px;"><strong>주간 알림 일정</strong></span>
         <div class="d-flex" v-for="event in sortedWeekAlertEvents" :key="event.id"
           style="list-style: none; margin-top: 20px; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-          <div class="mr-1"> 
+          <div class="mr-1">
             <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
             <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
             <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
@@ -82,6 +82,7 @@ export default {
     HandleScheduleModal,
   },
   data() {
+    const self=this;
     return {
       isModalVisible: false, // 모달 표시 여부
       selectedDate: '', // 선택한 날짜
@@ -108,14 +109,27 @@ export default {
         eventClick: this.handleEventClick, // 이벤트 클릭 시 호출
         eventDidMount: this.handleEventDidMount,
         headerToolbar: {
-          left: "prev,next today",
+          left: "customprev,customnext,today",
           center: "title",
           right: "dayGridMonth,timeGridWeek,timeGridDay"
         },
-
-        snackbar: false, // 스낵바 표시 여부
-        snackbarMessage: '', // 스낵바 메시지
+        customButtons: {
+          customprev: {
+            text: '<',
+            click: function () {
+              self.$refs.fullCalendar.getApi().prev();
+            }
+          },
+          customnext: {
+            text: '>',
+            click: function () {
+              self.$refs.fullCalendar.getApi().next();
+            }
+          }
+        }
       },
+      snackbar: false, // 스낵바 표시 여부
+      snackbarMessage: '', // 스낵바 메시지
     };
   },
   computed: {
@@ -619,5 +633,27 @@ export default {
 ::v-deep .fc-col-header-cell-cushion {
   color: #000;
   text-decoration: none;
+}
+
+::v-deep .fc-customprev-button,
+::v-deep .fc-customnext-button {
+  background-color: transparent !important; /* 배경색 투명 */
+  border: none !important; /* 테두리 없음 */
+  color: #575555 !important; /* 텍스트 색상 */
+  font-weight: bold;
+  box-shadow: none !important; /* 그림자 제거 */
+  outline: none !important; /* 포커스 outline 제거 */
+}
+
+/* Hover 및 클릭 시 스타일 */
+::v-deep .fc-customprev-button:hover,
+::v-deep .fc-customnext-button:hover,
+::v-deep .fc-customprev-button:active,
+::v-deep .fc-customnext-button:active {
+  background-color: transparent !important; /* 배경색 변경 없음 */
+  border: none !important; /* 테두리 없음 */
+  color: #000 !important; /* 텍스트 색상만 변경 */
+  box-shadow: none !important; /* 클릭 시 그림자 제거 */
+  outline: none !important; /* 클릭 시 포커스 제거 */
 }
 </style>

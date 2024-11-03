@@ -170,7 +170,6 @@ export default {
             } catch (e) {
                 const error_message = e.response.data.error_message
                 console.error(error_message);
-                alert(error_message); // 추후 수정 할 것.
             }
         },
   }

@@ -5,34 +5,25 @@
         <v-avatar class="profile-image" style="height: 80px; width: 80px; border: 4px solid #6C97FD">
           <v-img :src="profileUrl"></v-img>
         </v-avatar>
-        <div 
-          @click="openAlertListModal()" 
-          class="alert-badge"
-        >
-            <span>{{ count }}</span>
+        <div @click="openAlertListModal()" class="alert-badge">
+          <span>{{ count }}</span>
         </div>
       </div>
-      <v-dialog
-        v-model="alertDialogSSE"
-        width="400"
-        content-class="custom-alert-position"
-        absolute
-      >
-        <v-card :style="{ height: '100vh', overflowY: 'auto' }">
+      <v-dialog v-model="alertDialogSSE" width="400" content-class="custom-alert-position elevation-1" absolute persistent
+        scrim="false" :style="{ boxShadow: '10px 0px 20px rgba(0, 0, 0, 0.5)' }">
+        <v-card 
+        :style="{ height: '100vh', overflowY: 'auto', boxShadow: '10px 0 5px -2px #353535', backgroundColor:'#d3d3d3' }"
+        class="border border-t-sm border-b-sm border-l-sm pa-5">
           <v-card-title style="text-align: center; padding-bottom: 0;">
             <v-row>
-              <v-col
-                :class="{ 'tab-active': selectedTab === 'payment' }"
+              <v-col :class="{ 'tab-active': selectedTab === 'payment' }"
                 style="cursor: pointer; padding: 10px; font-weight: bold; position: relative;"
-                @click="selectTab('payment')"
-              >
+                @click="selectTab('payment')">
                 결제 알림
               </v-col>
-              <v-col
-                :class="{ 'tab-active': selectedTab === 'general' }"
+              <v-col :class="{ 'tab-active': selectedTab === 'general' }"
                 style="cursor: pointer; padding: 10px; font-weight: bold; position: relative;"
-                @click="selectTab('general')"
-              >
+                @click="selectTab('general')">
                 일반 알림
               </v-col>
             </v-row>
@@ -44,14 +35,8 @@
             </div>
             <div v-else>
               <div>
-                <v-card
-                  v-for="event in filteredEventList.slice().reverse()"
-                  :key="event.id"
-                  class="alert-card"
-                  outlined
-                  @click="goToAlertDetail(event)"
-                  :class="{ 'alert-card-active': selectedAlertId === event.id }"
-                >
+                <v-card v-for="event in filteredEventList.slice().reverse()" :key="event.id" class="alert-card" outlined
+                  @click="goToAlertDetail(event)" :class="{ 'alert-card-active': selectedAlertId === event.id }">
                   <v-card-title>{{ event.title }}</v-card-title>
                   <v-card-subtitle>{{ event.contents }}</v-card-subtitle>
                 </v-card>
@@ -61,7 +46,7 @@
         </v-card>
       </v-dialog>
       <div class="profile-name">
-        <span style="font-weight: 700">{{userName}}</span>
+        <span style="font-weight: 700">{{ userName }}</span>
         <span> 님</span>
       </div>
     </div>
@@ -97,7 +82,7 @@ export default {
       eventId: "",
     };
   },
-  watch:{
+  watch: {
     paymentEvents: {
       handler() {
         this.setAlertCount();
@@ -121,7 +106,7 @@ export default {
       this.profileUrl = response.data.profileImage;
       this.profileUrl = localStorage.getItem('profileImage');
       this.userName = localStorage.getItem('name');
-      
+
       this.setMenuItems();
     }
 
@@ -130,7 +115,7 @@ export default {
     // localStorage에서 알림 데이터를 불러옴
     const storedPaymentEvents = localStorage.getItem('paymentEvents');
     const storedGeneralEvents = localStorage.getItem('generalEvents');
-    
+
     if (storedPaymentEvents) {
       this.paymentEvents = JSON.parse(storedPaymentEvents); // 결제 알림 불러오기
     }
@@ -158,7 +143,7 @@ export default {
           if (newEvent.messageType === '결제요청' && !isDuplicatePayment) {
             this.paymentEvents.push(newEvent);
             localStorage.setItem('paymentEvents', JSON.stringify(this.paymentEvents)); // 저장
-          } 
+          }
           // 일반 알림 처리
           else if (newEvent.messageType !== 'WAITING-SUCCESS' && newEvent.messageType !== '결제요청' && !isDuplicateGeneral) {
             this.generalEvents.push(newEvent);
@@ -197,19 +182,19 @@ export default {
     setMenuItems() {
       if (this.userRole === 'TUTEE') {
         this.menuItems = [
-          { title: '채팅', icon: 'chat' , route: '/chat-room?chatRoomId='},
-          { title: '내 강의', icon: 'book', route: '/tutee-my-lecture-list'},
+          { title: '채팅', icon: 'chat', route: '/chat-room?chatRoomId=' },
+          { title: '내 강의', icon: 'book', route: '/tutee-my-lecture-list' },
           { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
-          { title: '신청 내역', icon: 'assignment', route: '/tutee-applied-list'},
+          { title: '신청 내역', icon: 'assignment', route: '/tutee-applied-list' },
           { title: '내 정보', icon: 'person', route: '/member/mypage' },
           { title: '내 결제내역', icon: 'payments', route: 'payments/list' },
         ];
       } else if (this.userRole === 'TUTOR') {
         this.menuItems = [
-          { title: '채팅', icon: 'chat' , route: '/chat-room?chatRoomId='},
-          { title: '내 강의', icon: 'book', route:'/tutor-lecture-list'},
+          { title: '채팅', icon: 'chat', route: '/chat-room?chatRoomId=' },
+          { title: '내 강의', icon: 'book', route: '/tutor-lecture-list' },
           { title: '내 스케줄', icon: 'calendar_today', route: '/schedule' },
-          { title: '신청 내역', icon: 'assignment', route: '/tutor-applied-list'},
+          { title: '신청 내역', icon: 'assignment', route: '/tutor-applied-list' },
           { title: '정산금 관리', icon: 'monetization_on', route: '/balance/table' },
           { title: '내 정보', icon: 'person', route: '/member/mypage' },
         ];
@@ -220,37 +205,37 @@ export default {
       }
     },
     navigateTo(title) {
-        const menuItem = this.menuItems.find(item => item.title === title);
-        if (menuItem && menuItem.route) {
-            this.$router.push(menuItem.route); // Vue Router를 통해 이동
-        }
+      const menuItem = this.menuItems.find(item => item.title === title);
+      if (menuItem && menuItem.route) {
+        this.$router.push(menuItem.route); // Vue Router를 통해 이동
+      }
     },
     openAlertListModal() {
-        this.alertDialogSSE = true;
+      this.alertDialogSSE = true;
     },
     closeAlertListModal() {
-        this.alertDialogSSE = false;
+      this.alertDialogSSE = false;
     },
     async checkLoginStatus() {
-        const token = localStorage.getItem('token');
-        if (token) {
-            this.isLogin = true;
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
-            this.member = response.data.result;
-            const memberInfo = {
-                name: this.member.name,
-                profileImage: this.member.profileImage
-            };
-            localStorage.setItem('memberInfo', JSON.stringify(memberInfo));
-        }
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.isLogin = true;
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
+        this.member = response.data.result;
+        const memberInfo = {
+          name: this.member.name,
+          profileImage: this.member.profileImage
+        };
+        localStorage.setItem('memberInfo', JSON.stringify(memberInfo));
+      }
     },
     login() {
-        this.$router.push("/member/main");
+      this.$router.push("/member/main");
     },
     logout() {
       document.cookie.split(";").forEach(cookie => {
-          const [name] = cookie.split("=");
-          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+        const [name] = cookie.split("=");
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
       });
       localStorage.clear();
       this.isLogin = false;
@@ -288,7 +273,7 @@ export default {
     },
   },
 };
-</script>  
+</script>
 
 <style>
 .side-bar {
@@ -301,18 +286,22 @@ export default {
   top: 0;
   right: 0;
 }
+
 .profile {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
   flex-direction: column;
 }
+
 .profile-image {
   object-fit: cover;
 }
+
 .profile-name {
   margin-top: 15px;
 }
+
 .menu-list {
   display: flex;
   flex-direction: column;
@@ -320,20 +309,24 @@ export default {
   padding: 10px 0;
   cursor: pointer;
 }
+
 .menu-list:hover {
-    background-color: #EEE;
-    border-radius: 10px;
-    cursor: pointer;
+  background-color: #EEE;
+  border-radius: 10px;
+  cursor: pointer;
 }
+
 .menu-icon {
   font-size: 32px;
   margin-bottom: 10px;
 }
+
 .menu-title {
   font-weight: bold;
   align-items: center;
   font-size: 14px;
 }
+
 .logout {
   position: absolute;
   bottom: 50px;
@@ -341,9 +334,11 @@ export default {
   align-items: center;
   cursor: pointer;
 }
+
 .logout:hover {
   font-weight: bold;
 }
+
 .tab-active {
   font-weight: bold;
   color: black;
@@ -382,6 +377,7 @@ export default {
   overflow-y: auto;
   z-index: 202;
 }
+
 .alert-badge {
   position: absolute;
   right: 0;
@@ -398,7 +394,8 @@ export default {
 }
 
 .alert-badge:hover {
-  background-color: #5a82d8; /* Hover 시 약간 어두운 색으로 변경 */
+  background-color: #5a82d8;
+  /* Hover 시 약간 어두운 색으로 변경 */
 }
 
 @keyframes slideInPartial {
@@ -407,11 +404,13 @@ export default {
     clip-path: inset(0 0 0 100%);
     opacity: 0;
   }
+
   50% {
     transform: translateX(0);
     clip-path: inset(0 0 0 20%);
     opacity: 1;
   }
+
   100% {
     transform: translateX(0);
     clip-path: inset(0 0 0 0);
@@ -425,7 +424,12 @@ export default {
   width: 400px;
   max-height: 100vh;
   overflow-y: auto;
+  box-shadow: 10px 0 5px -2px #353535 !important;
   z-index: 202;
-  animation: slideInPartial 0.5s ease-out forwards; /* 슬라이드 애니메이션 */
+  animation: slideInPartial 0.5s ease-out forwards;
+  /* 슬라이드 애니메이션 */
+}
+.v-overlay__scrim {
+  background-color: transparent !important;
 }
 </style>

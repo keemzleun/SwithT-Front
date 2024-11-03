@@ -177,4 +177,8 @@ export default {
 .admit-color {
     background-color: #90CDFF;
 }
+
+.lesson-card:hover {
+    cursor: pointer;
+}
 </style>

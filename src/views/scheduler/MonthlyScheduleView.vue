@@ -1,75 +1,30 @@
 <template>
   <div class="calendar-wrapper">
     <div class="sidebar">
-      <!-- <div class="today-schedule " v-if="sortedTodayEvents.length!=0">
-        <h5><strong>오늘의 일정</strong></h5>
-        <v-row v-for="event in sortedTodayEvents" :key="event.id">
-        <v-card
-        variant="outlined"
-        class="mx-auto mb-3 mt-1"
-        color="surface-variant"
-        max-width="344"
-        :subtitle="event.title+' - ' +formatTime(event.start)"
-      >
-      </v-card>
-    </v-row>
-    <v-row>
-      <v-card
-      variant="outlined"
-      class="mx-auto mb-3 mt-1"
-      color="surface-variant"
-      max-width="344"
-      :subtitle="'체크체크'+' - ' + '09:33'"
-    >
-    </v-card>
-    </v-row>
-    <v-row>
-      <v-card
-      variant="outlined"
-      class="mx-auto mb-3 mt-1"
-      color="surface-variant"
-      max-width="344"
-      :subtitle="'체크체크'+' - ' + '09:33'"
-    >
-    </v-card>
-    </v-row>
-    <v-row>
-      <v-card
-      variant="outlined"
-      class="mx-auto mb-3 mt-1"
-      color="surface-variant"
-      max-width="344"
-      :subtitle="'체크체크'+' - ' + '09:33'"
-    >
-    </v-card>
-    </v-row>
+      
 
-      </div> -->
-
-      <div class="today-schedule text-left ml-15" v-if="sortedTodayEvents.length!=0">
-        <h5><strong>오늘의 일정</strong></h5>
-        <ul  style="list-style: none; padding: 0; margin: 0;">
-          <li v-for="event in sortedTodayEvents" :key="event.id">
-            <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
-            <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
-            <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
-            {{ event.title }} ( {{ formatTime(event.start) }} )</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
-            <li><span class="color-box" style="background-color: #82B1FF;"></span>체크체크</li>
-        </ul>
+      <div class="today-schedule text-left" v-if="sortedTodayEvents.length!=0">
+        <span style="font-size: 22px;"><strong>오늘의 일정</strong></span>
+        <div>
+            <div v-for="event in sortedTodayEvents" :key="event.id" style="list-style: none; margin-top: 20px; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+              <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
+              <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
+              <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
+              <span style="font-weight: 700;">{{ formatTime(event.start) }}</span> {{ event.title }} 
+            </div>
+         
+          </div>
       </div>
       <div class="week-alert-schedule" v-if="sortedWeekAlertEvents.length!=0">
-        <h5><strong>주간 알림 일정</strong></h5>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li v-for="event in sortedWeekAlertEvents" :key="event.id">
+        <span style="font-size: 22px;"><strong>주간 알림 일정</strong></span>
+          <div v-for="event in sortedWeekAlertEvents" :key="event.id" style="list-style: none; margin: 0; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
             <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
             <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
             <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
             {{ event.title }} - {{
-            formatWeekAlertTime(event.start) }}</li>
-        </ul>
+            formatWeekAlertTime(event.start) }}
+          </div>
+
       </div>
 
 
@@ -78,16 +33,23 @@
     <!-- 메인 캘린더 -->
     <v-container class="calendar-container">
       <div class="d-flex flex-row-reverse mb-5">
-        <span class="color-box" style="background-color: #82B1FF;"><v-tooltip location="top" activator="parent">수업 일정</v-tooltip></span>
-        <span class="color-box" style="background-color: #FF8F00;"><v-tooltip location="top" activator="parent">과제 일정</v-tooltip></span>
-        <span class="color-box" style="background-color: #FFF490;"><v-tooltip location="top" activator="parent">개인 일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #82B1FF;"><v-tooltip location="top" activator="parent">수업
+            일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #FF8F00;"><v-tooltip location="top" activator="parent">과제
+            일정</v-tooltip></span>
+        <span class="color-box" style="background-color: #FFF490;"><v-tooltip location="top" activator="parent">개인
+            일정</v-tooltip></span>
       </div>
       <FullCalendar ref="fullCalendar" :options="calendarOptions" class="full-calender" />
 
       <HandleScheduleModal v-if="isModalVisible" :selectedDate="selectedDate" :selectedSchedule="selectedEvent"
-        :alertInfo="alertInfo" @close="isModalVisible = false" @scheduleSaved="handleScheduleSubmitted"
-        @scheduleDeleted="handleScheduleDeleted" @saveAlert="handleSaveAlert" @createAlert="handleCreateAlert"
-        @cancelAlert="handleCancelAlert" />
+        :alertInfo="alertInfo" :canEdit="canEdit" @close="isModalVisible = false"
+        @scheduleSaved="handleScheduleSubmitted" @scheduleDeleted="handleScheduleDeleted" @saveAlert="handleSaveAlert"
+        @createAlert="handleCreateAlert" @cancelAlert="handleCancelAlert" />
+
+        <v-snackbar v-model="snackbar" :timeout="3000" top>
+          {{ snackbarMessage }}
+        </v-snackbar>
     </v-container>
   </div>
 </template>
@@ -119,10 +81,10 @@ export default {
         initialView: 'dayGridMonth',
         locale: koLocale,
         events: [
-          
+
         ],
         datesSet: this.handleDatesSet,
-        height: 700,
+        height: 'auto',
         eventTimeFormat: {
           hour: 'numeric',
           minute: '2-digit',
@@ -137,6 +99,9 @@ export default {
           center: "title",
           right: "dayGridMonth,timeGridWeek,timeGridDay"
         },
+
+        snackbar: false, // 스낵바 표시 여부
+        snackbarMessage: '', // 스낵바 메시지
       },
     };
   },
@@ -206,20 +171,61 @@ export default {
     },
 
     // 사용자 일정 데이터 가져오기
+    // async fetchSchedules(year, month) {
+    //   try {
+    //     const data = { year, month };
+    //     const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/schedule/monthly-schedules`, data);
+
+    //     const events = response.data.result.map(schedule => {
+    //       if (!schedule.schedulerDate || !schedule.schedulerTime) {
+    //         console.error("Invalid schedule data:", schedule);
+    //         return null;
+    //       }
+
+    //       const start = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
+    //       const end = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
+
+    //       const customClass = schedule.alertYn === "Y" ? "alert-event" : "";
+    //       let groupId = 3;
+
+    //       // 수업 일정
+    //       if (schedule.lectureAssignmentId === null && schedule.lectureGroupId != null) {
+    //         groupId = 1;
+    //       } else if (schedule.lectureGroupId != null && schedule.lectureAssignmentId != null) {
+    //         // 과제 일정
+    //         groupId = 2;
+    //       }
+
+    //       return {
+    //         id: schedule.id,
+    //         title: schedule.title,
+    //         start,
+    //         end,
+    //         description: schedule.content,
+    //         classNames: [customClass],
+    //         extendedProps: {
+    //           groupId,
+    //           alertYn: schedule.alertYn
+    //         },
+    //       };
+    //     }).filter(event => event !== null);
+
+    //     this.$refs.fullCalendar.getApi().addEventSource(events); // 메인 캘린더
+    //   } catch (error) {
+    //     console.error('스케줄을 가져오는 중 오류가 발생했습니다.', error);
+    //   }
+    // },
     async fetchSchedules(year, month) {
       try {
         const data = { year, month };
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/schedule/monthly-schedules`, data);
 
-        const events = response.data.result.map(schedule => {
-          if (!schedule.schedulerDate || !schedule.schedulerTime) {
-            console.error("Invalid schedule data:", schedule);
-            return null;
-          }
+        const uniqueEvents = []; // 중복 방지를 위한 배열
+        response.data.result.forEach(schedule => {
+          if (!schedule.schedulerDate || !schedule.schedulerTime) return;
 
           const start = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
           const end = `${schedule.schedulerDate}T${schedule.schedulerTime}`;
-
           const customClass = schedule.alertYn === "Y" ? "alert-event" : "";
           let groupId = 3;
 
@@ -231,7 +237,7 @@ export default {
             groupId = 2;
           }
 
-          return {
+          const event = {
             id: schedule.id,
             title: schedule.title,
             start,
@@ -243,13 +249,19 @@ export default {
               alertYn: schedule.alertYn
             },
           };
-        }).filter(event => event !== null);
 
-        this.$refs.fullCalendar.getApi().addEventSource(events); // 메인 캘린더
+          // 중복된 id의 이벤트가 없는 경우에만 추가
+          if (!uniqueEvents.some(e => e.id === event.id)) {
+            uniqueEvents.push(event);
+          }
+        });
+
+        this.$refs.fullCalendar.getApi().addEventSource(uniqueEvents); // 중복 방지 후 메인 캘린더에 추가
       } catch (error) {
         console.error('스케줄을 가져오는 중 오류가 발생했습니다.', error);
       }
     },
+
 
     // 오늘의 일정 가져오기
     setTodayEvents() {
@@ -265,7 +277,7 @@ export default {
         const allEvents = this.$refs.fullCalendar.getApi().getEvents();
 
         this.todayEvents = allEvents.filter(event => {
-          console.log("오늘 이벤트",event)
+          console.log("오늘 이벤트", event)
           const eventDate = new Date(event.start);
           eventDate.setHours(0, 0, 0, 0); // 이벤트 날짜도 00:00:00으로 설정 (로컬 타임존 기준)
           return eventDate.getTime() === today.getTime(); // 날짜를 비교하여 일치하는 이벤트만 필터링
@@ -299,7 +311,7 @@ export default {
 
       if (info.event.classNames.includes('alert-event')) {
         const icon = document.createElement('span');
-        icon.classList.add('mdi', 'mdi-bell-ring');
+        icon.classList.add('mdi', 'mdi-bell-outline');
         icon.style.color = '#666';
         icon.style.marginRight = '4px';
         eventElement.querySelector('.fc-event-title').prepend(icon);
@@ -313,6 +325,7 @@ export default {
 
     // 날짜 선택 시 일정 생성 모달 표시
     handleDateSelect(selectionInfo) {
+
       this.selectedDate = selectionInfo.startStr;
       this.selectedEvent = null; // 새 일정이므로 선택된 이벤트는 없음
       this.isModalVisible = true;
@@ -321,8 +334,12 @@ export default {
 
     // 이벤트 클릭 시 호출
     async handleEventClick(info) {
-      // 스케줄 ID 확인
       const scheduleId = info.event.id;
+      const groupId = info.event.extendedProps.groupId;
+
+      // `canEdit`을 groupId에 따라 설정
+      const canEdit = groupId === 3;
+
       // 클릭한 이벤트 정보를 모달에 전달
       this.selectedEvent = {
         id: scheduleId,
@@ -330,33 +347,33 @@ export default {
         schedulerDate: info.event.startStr.split('T')[0],
         schedulerTime: info.event.startStr.split('T')[1],
         content: info.event.extendedProps.description,
-        alertYn: info.event.extendedProps.alertYn || false // alertYn 값 추가
+        alertYn: info.event.extendedProps.alertYn || false,
       };
 
-      // 알림 여부를 확인한 후, 알림이 설정된 경우에만 API 요청을 보냄
       if (this.selectedEvent.alertYn === 'Y') {
         try {
           const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/get-alert/${scheduleId}`);
           if (response.data && response.data.result) {
-            // 받은 알림 정보를 alertInfo에 저장
             this.alertInfo = {
-              id: response.data.result.id, // 알림 ID
+              id: response.data.result.id,
               reserveDay: response.data.result.reserveDay,
               reserveTime: response.data.result.reserveTime,
-              schedulerId: response.data.result.schedulerId // 스케줄 ID
+              schedulerId: response.data.result.schedulerId,
             };
           } else {
-            this.alertInfo = { reserveDay: null, reserveTime: null };  // 기본값으로 설정
+            this.alertInfo = { reserveDay: null, reserveTime: null };
           }
         } catch (error) {
-          this.alertInfo = { reserveDay: null, reserveTime: null };  // 에러 발생 시 기본값 설정
+          this.alertInfo = { reserveDay: null, reserveTime: null };
           console.error('알림 정보를 가져오는 중 오류가 발생했습니다:', error);
         }
       } else {
-        this.alertInfo = { reserveDay: null, reserveTime: null };  // 알림이 없을 경우 기본값 설정
+        this.alertInfo = { reserveDay: null, reserveTime: null };
       }
 
+      // 모달 표시 및 `canEdit` 전달
       this.isModalVisible = true;
+      this.canEdit = canEdit; // canEdit 상태 저장
     },
 
     // 일정 데이터가 모달에서 넘어왔을 때 처리
@@ -367,9 +384,11 @@ export default {
         if (this.selectedEvent) {
           // 일정 수정 처리
           response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${this.selectedEvent.id}/update`, scheduleData);
+          this.showSnackbar("일정이 수정되었습니다.");
         } else {
           // 새 일정 등록 처리
           response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/make`, scheduleData);
+          this.showSnackbar("일정이 저장되었습니다.");
         }
         // 스케줄 저장 후 반환된 ID를 알림 데이터에 사용
         const savedScheduleId = response.data.result || this.selectedEvent.id;
@@ -386,6 +405,8 @@ export default {
       } catch (error) {
         console.error('Error during schedule saving process:', error);
       }
+      this.refreshCalendarEvents(); // 일정 새로고침
+
     },
 
     // 알림 데이터를 서버에 저장하는 함수
@@ -405,12 +426,14 @@ export default {
       try {
         const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/update-alert`, alertData);
         console.log("알림 수정 완료:", response.data);
-
+        this.showSnackbar("알림이 저장되었습니다.");
         this.isModalVisible = false;
-        alert(response.data.status_message)
+        // alert(response.data.status_message)
         await this.refreshCalendarEvents(); // 일정 새로고침
       } catch (error) {
-        alert('알림 수정 중 오류 발생:', error);
+        this.showSnackbar("알림이 생성되지 않았습니다.");
+        console.log(error.response.data)
+        // alert('알림 수정 중 오류 발생:', error);
       }
     },
 
@@ -420,13 +443,16 @@ export default {
         if (scheduleId) {
           const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/${scheduleId}/delete`);
           console.log(response.data);
-          alert(response.data.status_message);
+          this.showSnackbar("일정이 삭제되었습니다.")
+          // alert(response.data.status_message);
           await this.refreshCalendarEvents(); // 일정 삭제 후 캘린더 새로고침
         }
         this.isModalVisible = false;
       } catch (error) {
         console.error('일정 삭제 중 오류가 발생했습니다.', error);
       }
+      this.refreshCalendarEvents(); // 일정 삭제 후 캘린더 새로고침
+
     },
 
     async handleCancelAlert(alertData) {
@@ -434,13 +460,20 @@ export default {
         const response = await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/cancel-alert/${alertData.alertId}`);
         console.log("Alert canceled successfully:", response.data);
         this.isModalVisible = false;
-        alert(response.data.status_message)
+        this.showSnackbar("알림이 삭제되었습니다.")
+        
+        // alert(response.data.status_message)
         await this.refreshCalendarEvents(); // 캘린더 새로고침
       } catch (error) {
+        this.showSnackbar("알림이 삭제되지 않았습니다.")
+
         console.error('Error while canceling alert:', error);
       }
     },
-
+    showSnackbar(message) {
+      this.snackbarMessage = message;
+      this.snackbar = true;
+    },
     // 캘린더 이벤트 새로고침
     async refreshCalendarEvents() {
       try {
@@ -473,9 +506,8 @@ export default {
 }
 
 .sidebar {
-  width: 300px;
-  background-color: #f5f5f5;
-  padding: 10px;
+  width: 350px;
+  padding: 10px 0 0 40px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -516,7 +548,7 @@ export default {
 /* FullCalendar 내부 스타일에 영향 주기 위해 deep 사용 */
 ::v-deep .fc-event {
   font-size: 15px !important;
-  color: white !important;
+  color: #555 !important;
 }
 
 ::v-deep .holiday-event {
@@ -545,15 +577,17 @@ export default {
 ::v-deep .fc-next-button:hover {
   background: none;
   border: none;
-  color: #000; /* Change text color on hover */
+  color: #000;
+  /* Change text color on hover */
 }
+
 ::v-deep .fc-prev-button:active,
 ::v-deep .fc-next-button:active {
   background: none !important;
   color: #000 !important;
   box-shadow: none !important;
   border: none !important;
-  outline: none !important; 
+  outline: none !important;
 }
 
 ::v-deep .fc-prev-button:focus,
@@ -572,6 +606,4 @@ export default {
   color: #000;
   text-decoration: none;
 }
-
-
 </style>

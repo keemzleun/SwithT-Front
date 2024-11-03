@@ -1,38 +1,18 @@
 <template>
-  <v-container fluid class="py-4 px-2 mt-15" :style="{
+  <!-- <v-container fluid class="py-4 px-2 mt-15" :style="{
     maxWidth: '1650px',
     maxHeight: '1400px',
     display: 'flex',
     flexDirection: 'column',
-  }">
+  }"> -->
+  <v-container width="70vw"  style="margin-top: 60px;">
+    <v-row justify="center">
+      <v-col class="main-title" cols="12" align="center" style="font-size: 28px; font-weight: 700">
+        <p>정산금</p>
+      </v-col>
+  </v-row>
     <!-- 상단 출금 가능 금액과 예상 수익금 -->
     <v-row>
-      <!-- <v-col cols="12">
-        <v-card class="pa-4 d-flex" elevation="3" :style="{ borderRadius: '12px' }">
-          <v-row>
-            <v-col class="text-center">
-              <div class="text-h6" :style="{ color: '#1A237E' }">
-                <strong>출금 가능 금액</strong>
-              </div>
-              <div class="text-h4 font-weight-bold">
-                {{ formatMoney(memberInfo.availableMoney) }}원
-              </div>
-              <v-btn class="mt-2" color="primary" large outlined @click="showModal = true">
-                출금하기
-              </v-btn>
-            </v-col>
-
-            <v-divider vertical :style="{ borderRightWidth: '2px', borderColor: 'lightgray' }"></v-divider>
-
-            <v-col class="text-center">
-              <div class="text-h6" :style="{ color: '#1A237E' }">
-                <strong>예상 수익금</strong>
-              </div>
-              <div class="text-h4 font-weight-bold">{{formatMoney(expectedBalance)}}원</div>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col> -->
       <v-col cols="6">
         <v-card class="pa-4 d-flex" elevation="3" :style="{ borderRadius: '12px' }" min-height="132px">
           <v-row>
@@ -42,7 +22,6 @@
                 <v-col cols="auto" class="text-h6" :style="{ color: '#1A237E', marginRight: '1px' }" align="center">
                   <strong>출금 가능 금액</strong>
                 </v-col>
-
               </v-row>
               <div class="text-h4 font-weight-bold mb-1">
                 {{ formatMoney(memberInfo.availableMoney) }}원
@@ -89,54 +68,6 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- 탭 메뉴 -->
-    <!-- <v-tabs v-model="tab" grow background-color="primary" :style="{
-      backgroundColor: 'white',
-      border: '1px solid lightgray',
-      borderRadius: '6px',
-    }">
-      <v-tab :style="{
-        color: 'black',
-        padding: '12px 16px',
-        fontSize: '18px',
-        textAlign: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-      }">
-        <strong>수익 목록</strong>
-      </v-tab>
-      <v-tab :style="{
-        color: 'black',
-        padding: '12px 16px',
-        fontSize: '18px',
-        textAlign: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-      }">
-        <strong>출금 목록</strong>
-      </v-tab>
-    </v-tabs>
-
-    <v-tabs-items v-model="tab">
-      <v-tab-item>
-        <v-row justify="center">
-          <v-col cols="12">
-            <v-row class="header">
-              <v-col cols="2">날짜</v-col>
-              <v-col cols="6">항목</v-col>
-              <v-col cols="4">금액</v-col>
-            </v-row>
-
-            <v-row v-for="(item, index) in filteredData" :key="index" class="item" @click="itemClicked(item)">
-              <v-col cols="2">{{ item.date }}</v-col>
-              <v-col cols="6">{{ item.description }}</v-col>
-              <v-col cols="4">{{ item.amount }}</v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-tab-item>
-    </v-tabs-items> -->
     <v-row>
       <v-col cols="6">
         <v-card elevation="3" min-height="600px">
@@ -153,28 +84,20 @@
               <!-- 테이블 헤더 -->
               <div class="text-center" justify="center">
                 <v-row class="header text-center" justify="center">
-                  <v-col cols="2"><strong>날짜</strong></v-col>
+                  <v-col cols="3"><strong>날짜</strong></v-col>
                   <v-col cols="6"><strong>항목</strong></v-col>
-                  <v-col cols="4"><strong>금액</strong></v-col>
+                  <v-col cols="3"><strong>금액</strong></v-col>
                 </v-row>
 
                 <!-- 데이터 리스트 -->
                 <v-row v-for="(item, index) in incomeData" :key="index" class="item text-center" justify="center"
                   :style="{ textAlign: 'center' }">
-                  <v-col cols="2">{{ item.date }}</v-col>
+                  <v-col cols="3">{{ item.date }}</v-col>
                   <v-col cols="6">{{ item.description }}</v-col>
-                  <v-col cols="4">{{ item.amount }}</v-col>
+                  <v-col cols="3">{{ item.amount }}</v-col>
                 </v-row>
               </div>
 
-              <!-- 데이터가 없을 때 -->
-              <!-- <v-row v-if="filteredData.length==0" class="text-center">
-                <v-col>
-                  <v-card class="pa-4 mb-3" min-height="200px">
-                    <h3>등록된 내역이 없습니다</h3>
-                  </v-card>
-                </v-col>
-              </v-row> -->
             </v-col>
           </v-row>
           <v-row justify="center" class="mt-4" :style="{ position: 'absolute', bottom: '20px', width: '100%' }">
@@ -197,16 +120,16 @@
             <v-col cols="10" class="justify-center">
               <!-- 테이블 헤더 -->
               <v-row class="header">
-                <v-col cols="2"><strong>날짜</strong></v-col>
+                <v-col cols="3"><strong>날짜</strong></v-col>
                 <v-col cols="6"><strong>항목</strong></v-col>
-                <v-col cols="4"><strong>금액</strong></v-col>
+                <v-col cols="3"><strong>금액</strong></v-col>
               </v-row>
 
               <!-- 데이터 리스트 -->
               <v-row v-for="(item, index) in withdrawalData" :key="index" class="item">
-                <v-col cols="2">{{ item.date }}</v-col>
+                <v-col cols="3">{{ item.date }}</v-col>
                 <v-col cols="6">{{ item.description }}</v-col>
-                <v-col cols="4">{{ item.amount }}</v-col>
+                <v-col cols="3">{{ item.amount }}</v-col>
               </v-row>
 
               <!-- 데이터가 없을 때 -->
@@ -322,9 +245,10 @@ export default {
       // 차트 데이터를 불러온 후 drawChart 메서드 호출
       this.drawChart();
 
-      const BalanceListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/list/balance`);
-      console.log(BalanceListResponse)
-      const withDrawalListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/list/withdrawal`);
+      const BalanceListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/list/balance?page=0&size=5`);
+      console.log("BalanceListResponse", BalanceListResponse)
+      const withDrawalListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/list/withdrawal?page=0&size=5`);
+      console.log("withDrawalListResponse", withDrawalListResponse)
 
       // 출금 리스트 데이터 처리
       this.withdrawalData = withDrawalListResponse.data.result.content.map((data) => ({
@@ -332,11 +256,12 @@ export default {
         description: data.description,
         amount: data.requestAmount.toLocaleString(),
       }));
-      // this.incomeData = BalanceListResponse.data.result.content.map((data)=>({
-      //   date:data.createdTime.split("T")[0],
-      //   description:data.description,
-      //   amount:data.incomeAmount
-      // }))
+      this.incomeData = BalanceListResponse.data.result.content.map((data) => ({
+        date: data.createdTime.split("T")[0],
+        description: data.description,
+        amount: data.incomeAmount
+      }))
+      this.incomeTotalPages = BalanceListResponse.data.result.totalPages;
     } catch (error) {
       console.error("데이터 로드 중 오류 발생:", error);
     }
@@ -358,50 +283,93 @@ export default {
     },
   },
   methods: {
+    // async incomeList() {
+    //   try {
+    //     let params = {
+    //       size: this.size,
+    //       page: this.incomePage 
+    //     }
+    //     const BalanceListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/list/balance`, { params });
+    //     this.incomeData = BalanceListResponse.data.result.content.map((data) => ({
+    //       date: data.createdTime.split("T")[0],
+    //       description: data.description,
+    //       amount: data.incomeAmount
+    //     }))
+    //     this.incomeTotalPages = BalanceListResponse.data.result.totalPages;
+    //   }
+    //   catch (e) {
+    //     console.log(e.response.data.error_message);
+    //   }
+    // },
+    // handleIncomePageChange() {
+    //   this.page = this.incomePage - 1;
+    //   this.incomeList();
+    // },
+
+    // handleWithdrawalPageChange() {
+    //   this.page = this.incomePage - 1;
+    //   this.incomeList();
+    // },
+    // async withdrawalList() {
+    //   try {
+    //     let params = {
+    //       size: this.size,
+    //       page: this.page
+    //     }
+    //     const withDrawalListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/list/withdrawal`, { params });
+    //     this.withdrawalData = withDrawalListResponse.data.result.content.map((data) => ({
+    //       date: data.requestTime.split("T")[0],
+    //       description: data.description,
+    //       amount: data.requestAmount.toLocaleString(),
+    //     }))
+    //     this.withdrawalTotalPages = withDrawalListResponse.data.result.totalPages;
+    //   }
+    //   catch (e) {
+    //     console.log(e.response.data.error_message);
+    //   }
+    // },
     async incomeList() {
       try {
         let params = {
-          size: this.size,
-          page: this.page
-        }
+          size: this.pageSize,
+          page: this.incomePage - 1 // incomePage를 사용
+        };
         const BalanceListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/list/balance`, { params });
         this.incomeData = BalanceListResponse.data.result.content.map((data) => ({
           date: data.createdTime.split("T")[0],
           description: data.description,
           amount: data.incomeAmount
-        }))
+        }));
         this.incomeTotalPages = BalanceListResponse.data.result.totalPages;
-      }
-      catch (e) {
+      } catch (e) {
         console.log(e.response.data.error_message);
       }
     },
+
     handleIncomePageChange() {
-      this.page = this.incomePage - 1;
       this.incomeList();
     },
 
-    handleWithdrawalPageChange() {
-      this.page = this.incomePage - 1;
-      this.incomeList();
-    },
     async withdrawalList() {
       try {
         let params = {
-          size: this.size,
-          page: this.page
-        }
+          size: this.pageSize,
+          page: this.withdrawalPage - 1 // withdrawalPage를 사용
+        };
         const withDrawalListResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/list/withdrawal`, { params });
         this.withdrawalData = withDrawalListResponse.data.result.content.map((data) => ({
           date: data.requestTime.split("T")[0],
           description: data.description,
           amount: data.requestAmount.toLocaleString(),
-        }))
+        }));
         this.withdrawalTotalPages = withDrawalListResponse.data.result.totalPages;
-      }
-      catch (e) {
+      } catch (e) {
         console.log(e.response.data.error_message);
       }
+    },
+
+    handleWithdrawalPageChange() {
+      this.withdrawalList();
     },
     async fetchChartData() {
       try {
@@ -411,12 +379,14 @@ export default {
         );
         this.labels = chartWithdrawalResponse.data.result.labels;
         this.withdrawalChart = chartWithdrawalResponse.data.result.data;
+        console.log("this.withdrawalChart",this.withdrawalChart)
 
         const chartBalanceResponse = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/payment-service/chart/balance?months=${this.months}`
         );
         this.balanceChart = chartBalanceResponse.data.result.data;
-
+        console.log("this.balanceChart",this.balanceChart)
+        
         // 차트 데이터를 불러온 후 drawChart 메서드 호출
         this.drawChart();
       } catch (error) {
@@ -514,7 +484,7 @@ export default {
       incomeTotalPages: 1,
       withdrawalPage: 0,
       withdrawalTotalPages: 1,
-      pageSize: 8,
+      pageSize: 5,
       months: 6,
       memberInfo: {},
       labels: [],

@@ -591,6 +591,7 @@ sendDeleteQueue() {
     axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-delete-queue`, null, { 
         params: this.getOrderData
     });
+    this.rank = null;
 },
 selectLectureGroup(group) {
     this.selectedLectureGroup = group;

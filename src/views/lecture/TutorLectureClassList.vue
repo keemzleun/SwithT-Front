@@ -57,9 +57,9 @@
                         </v-row>
                         <hr>
                         <span v-for="(item, index) in posts" :key="item.id" class="list-item">
-                            <v-row>
+                            <v-row class="click-item" @click="viewNotice(item.id)">
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
-                                <v-col cols="5" style="padding: 10px 0"><span class="item-title">{{ item.title }}</span></v-col>
+                                <v-col cols="5" style="padding: 10px 0">{{ item.title }}</v-col>
                                 <v-col cols="2" style="padding: 10px 0">{{ item.memberName || '알 수 없음' }}</v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ formatRelativeTime(item.createdTime) }}</v-col>
                             </v-row>
@@ -78,7 +78,7 @@
                         </v-row>
                         <hr>
                         <span v-for="(item, index) in assignments" :key="item.id" class="list-item">
-                            <v-row>
+                            <v-row class="click-item" @click="viewAssignment(item.id)">
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
                                 <v-col cols="4" style="padding: 10px 0">{{ item.title }}</v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ item.endDate }}</v-col>
@@ -194,6 +194,79 @@
             </v-tabs-window>
         </v-card-text> -->
     </v-container>
+    <!-- 과제 조회 -->
+    <v-dialog v-model="assignmentViewModal" max-width="800px">
+        <v-card style="border-radius: 20px; padding: 20px 30px;" min-height="600px">
+            <v-card-text style="padding: 30px 40px;">
+                <v-row class="justify-space-between mt-5 mb-5">
+                    <div class="mb-1 ml-8 mr-2" style="font-size: 24px; font-weight: 700;">{{ this.assignmentTitle }}</div>
+                </v-row>
+                <v-divider></v-divider>
+               
+                <div class="mb-2 ml-8 mr-2" style="font-size: 20px;">{{ this.assignmentContent }}</div>
+
+                <div class="mb-1 ml-8 mr-2" style="font-size: 20px; font-weight: 700; color: #6C97FD; margin-top: 30px;">
+                    ~
+                    {{ this.assignmentDate }}
+                    {{ this.assignmentTime }} 까지
+                </div>
+               
+            </v-card-text>
+            <v-card-actions class="pa-4">
+                <v-row justify="center">
+                    <v-btn variant="outlined" @click="assignmentViewModal=false" class="mr-3">확인</v-btn>
+                </v-row>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+    <!-- 게시글 조회 -->
+    <v-dialog v-model="noticeViewModal" max-width="75vw">
+        <v-card style="border-radius: 20px;" min-height="800px">
+            <!-- <v-card-text class="pa-4 pt-0"> -->
+                <v-row>
+                    <v-col cols="8">
+                        <v-row class="justify-space-between mt-5 mb-5">
+                            <v-row style="font-size: 24px; font-weight: 700; margin-left: 40px;">
+                                {{ this.noticeTitle }}
+                            </v-row>
+                        </v-row>
+                        <v-divider class="mt-10 mb-2"></v-divider>
+                        <v-row class="mb-4 ml-7 mr-2 mt-2">
+                            {{ this.noticeContent }}
+                        </v-row>                        
+                    </v-col>
+                    <v-col>
+                        <!-- 댓글 리스트 -->
+                        <h4 class="mt-6 mb-1 ml-6 mr-2">댓글</h4>
+                        <v-row v-for="comment in comments" :key="comment.id" class="mt-2 mr-2">
+                            <div class="mb-4 ml-7 mr-2 mt-2 px-3">
+                                <strong>{{ comment.memberName }}</strong>
+                                <span class="ml-2"  style="white-space: pre-wrap; word-break: break-word;">{{ comment.contents }}</span>
+                            </div>
+                            <!-- <div class="align-center mt-1">
+                                <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
+                                <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
+                            </div> -->
+                        </v-row>
+                        <v-pagination v-model="commentPage" :length="commentPages"
+                            @click="handleCommentPageChange()" style="margin-top:100px"></v-pagination>
+                        <!-- 댓글 입력 폼 -->
+                        <!-- <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
+                        <h4 class="mt-6 mb-1 ml-6 mr-2" v-else>댓글 작성 </h4>
+                        <v-textarea class="mb-1 ml-6 mr-2" v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
+                        <v-btn class="ml-6" @click="submitComment">댓글 등록</v-btn> -->
+                    </v-col>
+                </v-row>
+
+            <!-- </v-card-text> -->
+            <v-card-actions class="pa-4">
+                <v-row justify="center">
+                    <v-btn variant="outlined" @click="noticeViewModal=false" class="mr-3">확인</v-btn>
+                </v-row>
+            </v-card-actions>
+
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -213,6 +286,22 @@ export default {
             lectureType: '',
             lectureStatue: '',
             tuteeList: [],
+
+            assignmentViewModal:false,
+            assignmentTitle:"",
+            assignmentContent:"",
+            assignmentDate:"",
+            assignmentTime:"",
+
+            noticeViewModal:false,
+            noticeTitle:"",
+            noticeContent:"",
+            noticeId:0,
+            comments: [], // 댓글 리스트
+            commentPage: 0,
+            commentPages: 1,
+            page:0,
+
         }
     },
     async created() {
@@ -231,6 +320,38 @@ export default {
         this.fetchLectureGroups();
     },
     methods: {
+        async viewNotice(id){
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board/${id}`);
+            this.noticeTitle = response?.data?.result?.title;
+            this.noticeContent = response?.data?.result?.contents;
+            this.noticeId = id;
+            this.fetchComments(id);
+            this.noticeViewModal = true;
+        },
+        async fetchComments(noticeId) {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list?page=0`)
+            this.commentPages = response?.data?.result?.totalPages;
+            this.comments = response?.data?.result?.content || [];
+        },
+        async handleCommentPageChange() {
+            this.page = this.commentPage - 1;
+            let params = {
+                size: this.size,
+                page: this.page,
+            };
+            const commentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/list`, { params })
+            this.comments = commentResponse?.data?.result?.content;
+            this.commentPages = commentResponse?.data?.result?.totalPages;
+        },
+        async viewAssignment(id){
+            const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
+            this.assignmentTitle = getResponse?.data?.result?.title;
+            this.assignmentContent = getResponse?.data?.result?.contents;
+            this.assignmentDate = getResponse?.data?.result?.endDate;
+            this.assignmentTime= getResponse?.data?.result?.endTime;
+            this.assignmentViewModal = true;
+        },
+
         async fetchLectureGroups(){
             try {
                 console.log(this.lectureId);
@@ -248,7 +369,7 @@ export default {
         async fetchPostsByLectureId() {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/board-list/${this.lectureId}`);
-                console.log(response)
+                console.log("post",response)
                 if (response.status === 200) {
                     this.posts = response.data.result;
                 } else {
@@ -262,7 +383,7 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment-list/${this.lectureId}`);
 
-                console.log(response)
+                console.log("과제",response)
                 if (response.status === 200) {
                     this.assignments = response.data.result;
                 } else {
@@ -348,6 +469,7 @@ export default {
         clickLectureHome(lectureGroupId){
             this.$router.push(`/lecture-home/${lectureGroupId}`);
         },
+
     },
 }
 
@@ -527,14 +649,17 @@ export default {
     border-radius: 5px;
     border: 1px solid #cdcdcd;
 }
-.item-title {
-    display: inline-block;
+.click-item {
+    /* display: inline-block;
     width: 100%;
-    border-radius: 10px;
+    border-radius: 10px; */
+    margin: 3px;
 }
-.item-title:hover {
+.click-item:hover {
     cursor: pointer;
     background-color: #f3f2f2;
+    border-radius: 10px;
+   
 
 }
 .icon-btn {

@@ -6,15 +6,14 @@
         <h4 class="div-title"> <br>신청 리스트  </h4>
         <br>
         <div v-if="this.lectureType === 'LESSON'">
-            <v-row v-for="apply in lessonApplyList" :key="apply.id" >
+            <v-row v-for="apply in lessonApplyList" :key="apply.id" align="center">
                 <v-col>
-                    <div>
+                    <div class="d-flex align-center">
                         <v-card-text class="tutee-list">
-                            <div d-flex align-center>
+                            <div class="d-flex align-center">
                                 <v-avatar class="profile-image" style="height: 60px; width: 60px; ">
                                     <v-img :src="apply.tuteeProfileImage" alt="튜티 프로필"/>
                                 </v-avatar>
-                                
                                 <span style="font-size: 20px; margin:20px;">{{ apply.tuteeName }}</span>
                                 <span class="material-icons chat chat-btn" style="font-size: 30px;" @click="clickChatRoom(apply.chatRoomId, apply.memberId)">chat</span>
                             </div>
@@ -38,14 +37,14 @@
                         <v-card-text class="d-flex justify-space-between align-center">
                             <div>
                                 <v-avatar class="profile-image" style="height: 50px; width: 50px; ">
-                                    <v-img :src="apply.tuteeProfileImage" alt="튜티 프로필"/>
+                                    <v-img :src="apply.tuteeProfile" alt="튜티 프로필"/>
                                   </v-avatar>
                                 
                                 <span style="font-size: 20px; margin:20px;">{{ apply.tuteeName }}</span>
-                                <span class="mdi mdi-chat" @click="clickChatRoom(apply.chatRoomId, apply.memberId)"></span>
+                                <!-- <span class="mdi mdi-chat" @click="clickChatRoom(apply.chatRoomId, apply.memberId)"></span> -->
                                 <!-- <v-icon ">mdi-message-outline</v-icon> -->
                             </div>
-    
+<!--     
     
                             <div>
                                 <span class="ml-3 font-weight-class" style="color: blue; font-weight:bold; font-size: 18px;" v-if="apply.status === 'WAITING'">결제 대기중</span>
@@ -54,7 +53,7 @@
                                     @click="clickApplyRejectBtn('apply', apply.applyId, apply.tuteeName)">수락</v-btn>
                                 <v-btn color="#f03e3e" class="ml-3 font-weight-class"
                                     @click="clickApplyRejectBtn('reject', apply.applyId, apply.tuteeName)">거절</v-btn>
-                            </div>
+                            </div> -->
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -125,6 +124,8 @@ export default {
 
     created() {
         this.showLessonApplyList();
+        this.showLectureApplyList();
+
     },
 
     methods: {
@@ -136,6 +137,7 @@ export default {
                 };
                 this.lectureGroupId = this.$route.query.lectureGroupId;
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/single-lecture-apply-list/${this.lectureGroupId}`, { params });
+                console.log("cpz,",response)
                 this.lessonApplyList = response.data.result.content;
                 this.totalPages = response.data.result.totalPages;
             } catch (e) {
@@ -149,7 +151,9 @@ export default {
                     page: this.page
                 };
                 this.lectureGroupId = this.$route.query.lectureGroupId;
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`, { params });
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/show-lecture-tutee-list/${this.lectureGroupId}`, { params });
+                console.log("cpz,",response)
+                
                 this.lessonApplyList = response.data.result.content;
                 this.totalPages = response.data.result.totalPages;
             } catch (e) {
@@ -278,9 +282,7 @@ div,
     transform: scale(1.05);
 
 }
-.tutee-lists{
 
-}
 .tutee-list {
     display: flex;
     align-items: center;

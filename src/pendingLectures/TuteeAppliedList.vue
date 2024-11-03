@@ -17,8 +17,8 @@
                     <v-col>
                         <v-row class="header">
                             <v-col cols="1">순서</v-col>
-                            <v-col cols="6">강의명</v-col>
-                            <v-col cols="1">신청날짜</v-col>
+                            <v-col cols="5">강의명</v-col>
+                            <v-col cols="2">신청날짜</v-col>
                             <v-col cols="2"> </v-col>
                             <v-col cols="2">상태</v-col>
                         </v-row>
@@ -28,8 +28,8 @@
                     <v-col v-if="paymentLectures.length">
                         <v-row v-for="(lecture, index) in paymentLectures" :key="lecture.applyId" class="item">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="6" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
-                            <v-col cols="1">{{ formatDate(lecture.createdTime) }}</v-col>
+                            <v-col cols="5" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
+                            <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2">
                                 <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
                             </v-col>
@@ -45,6 +45,37 @@
                         <div style="margin: 20px 0">결제 요청이 없습니다.</div>
                     </v-col>
                 </v-row>
+                <v-row justify="center" class="mr-2">
+                    <v-col cols="auto">
+                        <!-- 이전 페이지로 이동하는 클릭 가능한 텍스트 -->
+                        <span 
+                            @click="goToPaymentPreviousPage" 
+                            :class="{ 'disabled-text': paymentPage === 0 }"
+                            style="cursor: pointer; color: #000000;" 
+                            v-if="paymentPage !== 0"
+                        >
+                            이전
+                        </span>
+                        <span v-else style="color: #B0BEC5;">이전</span> <!-- 비활성화된 경우 -->
+                    </v-col>
+                    
+                    <v-col cols="auto">
+                        <span>{{ paymentPage + 1 }} / {{ paymentTotalPages }}</span> <!-- 현재 페이지 및 전체 페이지 표시 -->
+                    </v-col>
+                    
+                    <v-col cols="auto">
+                        <!-- 다음 페이지로 이동하는 클릭 가능한 텍스트 -->
+                        <span 
+                            @click="goToPaymentNextPage" 
+                            :class="{ 'disabled-text': paymentPage + 1 >= paymentTotalPages }" 
+                            style="cursor: pointer; color: #000000;" 
+                            v-if="paymentPage + 1 < paymentTotalPages"
+                        >
+                            다음
+                        </span>
+                        <span v-else style="color: #B0BEC5;">다음</span> <!-- 비활성화된 경우 -->
+                    </v-col>
+                </v-row>
             </v-tabs-window-item>
 
             <v-tabs-window-item value="all">
@@ -52,8 +83,8 @@
                     <v-col>
                         <v-row class="header">
                             <v-col cols="1">순서</v-col>
-                            <v-col cols="6">강의명</v-col>
-                            <v-col cols="1">신청날짜</v-col>
+                            <v-col cols="5">강의명</v-col>
+                            <v-col cols="2">신청날짜</v-col>
                             <v-col cols="2"></v-col>
                             <v-col cols="2">상태</v-col>
                         </v-row>
@@ -63,8 +94,8 @@
                     <v-col v-if="allLectures.length">
                         <v-row v-for="(lecture, index) in allLectures" :key="lecture.applyId" class="item">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="6" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
-                            <v-col cols="1">{{ formatDate(lecture.createdTime) }}</v-col>
+                            <v-col cols="5" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
+                            <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2" v-if="lecture.status === 'STANDBY'">
                                 <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
                             </v-col>
@@ -79,6 +110,37 @@
                     </v-col>
                     <v-col v-else>
                         <div style="margin: 20px 0">신청한 강의가 없습니다.</div>   
+                    </v-col>
+                </v-row>
+                <v-row justify="center" class="mr-2">
+                    <v-col cols="auto">
+                        <!-- 이전 페이지로 이동하는 클릭 가능한 텍스트 -->
+                        <span 
+                            @click="goToAllPreviousPage" 
+                            :class="{ 'disabled-text': allPage === 0 }"
+                            style="cursor: pointer; color: #000000;" 
+                            v-if="allPage !== 0"
+                        >
+                            이전
+                        </span>
+                        <span v-else style="color: #B0BEC5;">이전</span> <!-- 비활성화된 경우 -->
+                    </v-col>
+                    
+                    <v-col cols="auto">
+                        <span>{{ allPage + 1 }} / {{ allTotalPages }}</span> <!-- 현재 페이지 및 전체 페이지 표시 -->
+                    </v-col>
+                    
+                    <v-col cols="auto">
+                        <!-- 다음 페이지로 이동하는 클릭 가능한 텍스트 -->
+                        <span 
+                            @click="goToAllNextPage" 
+                            :class="{ 'disabled-text': allPage + 1 >= allTotalPages }" 
+                            style="cursor: pointer; color: #000000;" 
+                            v-if="allPage + 1 < allTotalPages"
+                        >
+                            다음
+                        </span>
+                        <span v-else style="color: #B0BEC5;">다음</span> <!-- 비활성화된 경우 -->
                     </v-col>
                 </v-row>
             </v-tabs-window-item>
@@ -114,7 +176,14 @@ export default {
             modalTitle: '',
             modalContents: '',
             yesBtnName: '',
-            isPaymentAction: false
+            isPaymentAction: false,
+
+            paymentPage: 0,           // 현재 페이지
+            size: 10,          // 페이지 당 불러올 강의 수
+            paymentTotalPages: 0, 
+
+            allPage: 0,           // 현재 페이지
+            allTotalPages: 0, 
         };
     },
     watch: {
@@ -127,9 +196,41 @@ export default {
         }
     },
     methods: {
+        goToAllPreviousPage() {
+            if (this.allPage > 0) {
+                this.allPage--;
+                this.fetchAllLectures();
+            }
+        },
+        // 페이지네이션 - 다음 페이지로 이동
+        goToAllNextPage() {
+            if (this.allPage + 1 < this.allTotalPages) {
+                this.allPage++;
+                this.fetchAllLectures();
+            }
+        },
+        goToPaymentPreviousPage() {
+            if (this.paymentPage > 0) {
+                this.paymentPage--;
+                this.fetchPaymentLectures();
+            }
+        },
+        // 페이지네이션 - 다음 페이지로 이동
+        goToPaymentNextPage() {
+            if (this.paymentPage + 1 < this.paymentTotalPages) {
+                this.paymentPage++;
+                this.fetchPaymentLectures();
+            }
+        },
         async fetchPaymentLectures() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list?status=WAITING`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list`,{
+                    params:{
+                        status:'WAITING',
+                        size:this.size,
+                        page:this.paymentPage,
+                    }
+                });
                 this.paymentLectures = response.data.result.content;
             } catch (error) {
                 console.error("Failed to fetch payment lectures:", error);
@@ -137,7 +238,12 @@ export default {
         },
         async fetchAllLectures() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list?status=`);
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list`,{
+                    params:{
+                        size:this.size,
+                        page:this.allPage
+                    }
+                });
                 this.allLectures = response.data.result.content;
             } catch (error) {
                 console.error("Failed to fetch all lectures:", error);

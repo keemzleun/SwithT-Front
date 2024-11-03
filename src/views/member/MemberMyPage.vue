@@ -136,8 +136,8 @@
                 </div>
               </div>
               <br />
-              <button v-if="!isEditing" type="button" class="btn" :style="{ backgroundColor: '#6C97FD', color: 'white' }"
-                @click="isEditing = true">
+              <button v-if="!isEditing" type="button" class="btn"
+                :style="{ backgroundColor: '#6C97FD', color: 'white' }" @click="isEditing = true">
                 수정하기
               </button>
               <button type="submit" class="btn ml-3" v-if="isEditing"
@@ -150,18 +150,27 @@
       </div>
     </div>
   </div>
+  <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+    :title=this.alertModalTitle :contents=this.alertModalContents />
 </template>
 
 <script>
 /* global kakao */
+import AlertModal from "@/components/AlertModal.vue";
 
 import axios from "axios";
 export default {
+  components: {
+    AlertModal
+  },
   data() {
     return {
       memberInfo: {},
       role: localStorage.getItem("role"),
       isEditing: false, // 수정 모드 상태 추가
+      alertModal: false,
+      alertModalTitle: "",
+      alertModalContents: "",
     };
   },
   computed: {
@@ -204,10 +213,14 @@ export default {
           updatedInfo
         );
         this.isEditing = false; // 수정 완료 후 수정 모드 종료
-        alert("회원 정보가 업데이트 되었습니다.");
+        this.alertModalTtile = "수정 완료";
+        this.alertModalContents = "회원 정보가 업데이트 되었습니다";
+        this.alertModal = true;
       } catch (error) {
         console.error("회원 정보 업데이트 중 오류 발생:", error);
-        alert("회원 정보 업데이트에 실패했습니다.");
+        this.alertModalTtile = "회원 정보 수정 실패";
+        this.alertModalContents = "회원 정보 수정이 실패되었습니다";
+        this.alertModal = true;
       }
     },
     selectImage() {
@@ -222,11 +235,15 @@ export default {
           .then(response => {
             this.memberInfo.profileImage = response.data.url;
             window.location.reload();
-            alert("프로필 이미지가 업로드 되었습니다.");
+            this.alertModalTtile = "프로필 이미지 업로드";
+            this.alertModalContents = "프로필 이미지가 업로드 되었습니다.";
+            this.alertModal = true;
           })
           .catch(error => {
             console.error("이미지 업로드 중 오류 발생:", error);
-            alert("프로필 이미지 업로드에 실패했습니다.");
+            this.alertModalTtile = "프로필 이미지 업로드 실패";
+            this.alertModalContents = "프로필 이미지가 업로드 실패되었습니다.";
+            this.alertModal = true;
           });
       }
     },

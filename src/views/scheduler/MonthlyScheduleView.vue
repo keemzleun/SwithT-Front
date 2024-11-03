@@ -415,7 +415,7 @@ export default {
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/set-alert`, alertData);
         console.log("Alert created successfully:", response.data);
         this.isModalVisible = false;
-        alert(response.data.status_message)
+        this.showSnackbar(response.data.status_message)
         await this.refreshCalendarEvents(); // 일정 새로고침
       } catch (error) {
         console.error('Error while creating alert:', error);
@@ -491,7 +491,7 @@ export default {
           calendarApi.addEventSource(response.data.result); // 새로운 일정 데이터 추가
         }
       } catch (error) {
-        alert(error);
+        this.showSnackbar(error.response.data)
       }
     },
   },

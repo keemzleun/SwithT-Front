@@ -1,29 +1,42 @@
 <template>
   <div class="calendar-wrapper">
     <div class="sidebar">
-      
 
-      <div class="today-schedule text-left" v-if="sortedTodayEvents.length!=0">
+
+      <div class="today-schedule text-left" v-if="sortedTodayEvents.length != 0">
         <span style="font-size: 22px;"><strong>오늘의 일정</strong></span>
         <div>
-            <div v-for="event in sortedTodayEvents" :key="event.id" style="list-style: none; margin-top: 20px; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-              <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
-              <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
-              <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
-              <span style="font-weight: 700;">{{ formatTime(event.start) }}</span> {{ event.title }} 
+          <div class="d-flex" v-for="event in sortedTodayEvents" :key="event.id"
+            style="list-style: none; margin-top: 20px; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+            <div class="mr-1"> 
+              <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
+              <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
+              <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
             </div>
-         
+            <div class="mr-1" style="font-weight: 700;">{{ formatTime(event.start) }}</div>
+            <div>{{ event.title }}</div>
           </div>
+
+        </div>
       </div>
-      <div class="week-alert-schedule" v-if="sortedWeekAlertEvents.length!=0">
+      <div class="week-alert-schedule text-left" v-if="sortedWeekAlertEvents.length != 0">
         <span style="font-size: 22px;"><strong>주간 알림 일정</strong></span>
-          <div v-for="event in sortedWeekAlertEvents" :key="event.id" style="list-style: none; margin: 0; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-            <span v-if="event.extendedProps.groupId==1" class="color-box" style="background-color: #82B1FF;"></span>
-            <span v-if="event.extendedProps.groupId==2" class="color-box" style="background-color: #FF8F00;"></span>
-            <span v-if="event.extendedProps.groupId==3" class="color-box" style="background-color: #FFF490;"></span>
-            {{ event.title }} - {{
-            formatWeekAlertTime(event.start) }}
+        <div class="d-flex" v-for="event in sortedWeekAlertEvents" :key="event.id"
+          style="list-style: none; margin-top: 20px; background-color: #f5f5f5; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+          <div class="mr-1"> 
+            <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
+            <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
+            <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
           </div>
+          <div class="mr-1" style="font-weight: 700;">{{ formatTime(event.start) }}</div>
+          <div>{{ event.title }}</div>
+          <!-- <span v-if="event.extendedProps.groupId == 1" class="color-box" style="background-color: #82B1FF;"></span>
+          <span v-if="event.extendedProps.groupId == 2" class="color-box" style="background-color: #FF8F00;"></span>
+          <span v-if="event.extendedProps.groupId == 3" class="color-box" style="background-color: #FFF490;"></span>
+          <span style="font-weight: 700;">{{ formatTime(event.start) }}</span> {{ event.title }} -->
+
+
+        </div>
 
       </div>
 
@@ -47,9 +60,9 @@
         @scheduleSaved="handleScheduleSubmitted" @scheduleDeleted="handleScheduleDeleted" @saveAlert="handleSaveAlert"
         @createAlert="handleCreateAlert" @cancelAlert="handleCancelAlert" />
 
-        <v-snackbar v-model="snackbar" :timeout="3000" top>
-          {{ snackbarMessage }}
-        </v-snackbar>
+      <v-snackbar v-model="snackbar" :timeout="3000" top>
+        {{ snackbarMessage }}
+      </v-snackbar>
     </v-container>
   </div>
 </template>
@@ -461,7 +474,7 @@ export default {
         console.log("Alert canceled successfully:", response.data);
         this.isModalVisible = false;
         this.showSnackbar("알림이 삭제되었습니다.")
-        
+
         // alert(response.data.status_message)
         await this.refreshCalendarEvents(); // 캘린더 새로고침
       } catch (error) {
@@ -549,6 +562,7 @@ export default {
 ::v-deep .fc-event {
   font-size: 15px !important;
   color: #555 !important;
+  cursor: pointer;
 }
 
 ::v-deep .holiday-event {

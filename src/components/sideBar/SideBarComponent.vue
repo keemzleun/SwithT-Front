@@ -9,10 +9,10 @@
           <span>{{ count }}</span>
         </div>
       </div>
-      <v-dialog v-model="alertDialogSSE" width="400" content-class="custom-alert-position elevation-1" absolute persistent
+      <v-dialog v-model="alertDialogSSE" width="400" content-class="custom-alert-position elevation-1" absolute
         scrim="false" :style="{ boxShadow: '10px 0px 20px rgba(0, 0, 0, 0.5)' }">
         <v-card 
-        :style="{ height: '100vh', overflowY: 'auto', boxShadow: '10px 0 5px -2px #353535', backgroundColor:'#d3d3d3' }"
+        :style="{ height: '100vh', overflowY: 'auto', boxShadow: '10px 0 5px -2px #353535', backgroundColor:'#f1f3f5' }"
         class="border border-t-sm border-b-sm border-l-sm pa-5">
           <v-card-title style="text-align: center; padding-bottom: 0;">
             <v-row>

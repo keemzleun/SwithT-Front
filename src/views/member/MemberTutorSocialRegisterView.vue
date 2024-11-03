@@ -71,8 +71,9 @@
             type="tel"
             id="phoneNumber"
             class="form-control"
-            placeholder="핸드폰 번호를 입력하세요."
+            placeholder="숫자만 입력하세요."
             v-model="phoneNumber"
+            @input="phoneNumber = phoneNumber.replace(/[^0-9]/g, '')"
             required
           />
         </div>
@@ -247,7 +248,6 @@ export default {
           e.response?.data?.error_message ||
           "추가정보 입력 중 오류가 발생했습니다.";
         console.error(error_message);
-        alert(error_message);
       }
     },
     updateAddress() {

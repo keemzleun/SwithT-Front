@@ -95,8 +95,8 @@
       <div class="form-group row mb-3">
         <label for="phoneNumber" class="col-sm-2 col-form-label">휴대전화</label>
         <div class="col-sm-10">
-          <input type="tel" id="phoneNumber" class="form-control" placeholder="휴대전화를 입력하세요." v-model="phoneNumber"
-            required />
+          <input type="tel" id="phoneNumber" class="form-control" placeholder="숫자만 입력하세요." v-model="phoneNumber"
+            @input="phoneNumber = phoneNumber.replace(/[^0-9]/g, '')" required />
         </div>
       </div>
 

@@ -12,7 +12,7 @@
                             <v-row>
                                 <v-col>
                                     <div align="left" justify="center">
-                                        <span class="tag" style="text-align:center;">
+                                        <span class="tag" style="text-align:center;" >
                                             {{ getLectureGroupStatus(group) }}
                                         </span>
                                         <span style="font-size: 20px; font-weight: 700;">그룹 {{index + 1}}</span>
@@ -20,7 +20,9 @@
                                 </v-col>
                                 <v-col>
                                     <div align="right" justify="center">
-                                        <span class="material-icons icon-btn" style="font-size: 40px;" @click="clickLessonApplyList(group.lectureGroupId, this.lectureType)">groups</span>
+                                        <span v-if="this.lectureType === 'LESSON' && group.isAvailable === 'Y'" class="material-icons icon-btn" style="font-size: 40px;" @click="clickLessonApplyList(group.lectureGroupId, this.lectureType)">
+                                            groups
+                                        </span>
                                         <span class="material-icons icon-btn"  style="font-size: 40px;" @click="clickLectureHome(group.lectureGroupId)">home</span>
                                     </div>
                                 </v-col>
@@ -56,6 +58,9 @@
                             <v-col cols="3"><strong>작성시간</strong></v-col>
                         </v-row>
                         <hr>
+                        <span v-if="posts.length === 0" class="list-item" style="text-align: center; padding: 10px 0;">
+                            게시글이 없습니다
+                        </span>
                         <span v-for="(item, index) in posts" :key="item.id" class="list-item">
                             <v-row class="click-item" @click="viewNotice(item.id)">
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>
@@ -63,13 +68,12 @@
                                 <v-col cols="2" style="padding: 10px 0">{{ item.memberName || '알 수 없음' }}</v-col>
                                 <v-col cols="3" style="padding: 10px 0">{{ formatRelativeTime(item.createdTime) }}</v-col>
                             </v-row>
-                          </span>
+                        </span>
                     </div>
                 </v-row>
                 <v-row>
                     <div class="list-title">곧 마감되는 과제</div>
                     <div class="list-style">
-                       
                         <v-row>
                             <v-col cols="2"></v-col>
                             <v-col cols="4"><strong>과제</strong></v-col>
@@ -77,6 +81,9 @@
                             <v-col cols="3"><strong>마감시간</strong></v-col>
                         </v-row>
                         <hr>
+                        <span v-if="assignments.length === 0" class="list-item" style="text-align: center; padding: 10px 0;">
+                            과제가 없습니다
+                        </span>
                         <span v-for="(item, index) in assignments" :key="item.id" class="list-item">
                             <v-row class="click-item" @click="viewAssignment(item.id)">
                                 <v-col cols="2" style="padding: 10px 0">{{ index + 1 }}</v-col>

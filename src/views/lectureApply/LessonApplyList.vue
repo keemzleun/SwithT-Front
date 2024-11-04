@@ -82,6 +82,13 @@
         :contents=this.alertModalContents
         />
 
+        <ChatModal
+        v-model:dialog="chatModal"
+        :selectedChatRoomId="this.chatRoomId"
+        persistent
+        :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
+        />
+
     </v-container>
 </template>
 
@@ -89,6 +96,7 @@
 import YesOrNoModal from '@/components/YesOrNoModal.vue';
 import LectureDetailInfoComponent from '@/components/LectureDetailInfoComponent.vue';
 import AlertModal from '@/components/AlertModal.vue';
+import ChatModal from '@/components/ChatModal.vue';
 import axios from 'axios';
 
 
@@ -97,6 +105,7 @@ export default {
         YesOrNoModal,
         LectureDetailInfoComponent,
         AlertModal,
+        ChatModal,
     },
 
     data() {
@@ -119,6 +128,9 @@ export default {
             alertModal: false,
             alertModalTtile: '',
             alertModalContents: '',
+
+            chatModal: false,
+            chatRoomId: '',
         };
 
     },
@@ -232,10 +244,14 @@ export default {
                 }
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`, registerData);
                 console.log(response.data.result);
-                chatRoomId = response.data.result.roomId;
+                this.chatRoomId = response.data.result.roomId;
                 
+            }else{
+                this.chatRoomId = chatRoomId;
             }
-            this.$router.push(`/chat-room?chatRoomId=${chatRoomId}`);
+            
+            this.chatModal = true;
+            // this.$router.push(`/chat-room?chatRoomId=${chatRoomId}`);
         }
 
     }

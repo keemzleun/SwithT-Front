@@ -1,96 +1,98 @@
 <template>
     <v-dialog v-model="noticeCreateModal">
-        <v-card v-if="chatRoomList.length == 0" style="height:400px; width: 750px;  overflow: hidden;box-shadow: none; border: 2px solid #D9D9D9; border-radius: 8px;">
-            
-                <div  class="chatRoomListEmpty" style="height:700px;">
+        <v-card v-if="chatRoomList.length != 0"
+            style="height:800px; width: 750px;  overflow: hidden;box-shadow: none; border: 2px solid #D9D9D9; border-radius: 8px;">
+            <v-row justify="center">
+                <v-col cols="4" class="chat-list-scroll">
+                    <div>
+                        <v-card-text>
+                            <div v-if="chatRoomList.length == 0" class="chatRoomListEmpty" style="height:700px;">
+
+                            </div>
+
+                            <div v-else ref="chatListContainer" @scroll="onScrollDown">
+                                <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id"
+                                    :class="{ 'selected-chat-room': chatRoomId === chatRoom.chatRoomId, 'custom-border': true }"
+                                    @click="changeChatRoom(chatRoom)">
+                                    <v-card-title>
+                                        <v-chip v-if="chatRoom.lectureType === 'LESSON'" color="primary"
+                                            class="mr-2">과외</v-chip>
+                                        <v-chip v-else color="primary" class="mr-2">강의</v-chip>
+                                        {{ chatRoom.chatRoomTitle }}
+                                    </v-card-title>
+                                    <v-card-text>
+                                        {{ chatRoom.memberName }}
+                                    </v-card-text>
+                                </v-card>
+
+                            </div>
+                        </v-card-text>
+                    </div>
+                </v-col>
+
+                <v-col cols="8">
                     <div style="display: flex; justify-content: flex-end;">
-                        <v-icon @click="closeModal"  style="cursor: pointer; margin-top:10px; margin-right:10px;">mdi-window-close</v-icon>
+                        <v-icon @click="closeModal"
+                            style="cursor: pointer; margin-top:10px; margin-right:10px;">mdi-window-close</v-icon>
                     </div>
-                    <v-icon style="font-size: 40px; margin-bottom:20px;"
-                    color="#11b69a">mdi-message-settings-outline</v-icon>
-                    <h5>채팅방이 없어요</h5>
-                    <div color="grey">
-                        마음에 드는 과외/강의에<br /> 지원해보세요<br /><br />
-                    </div>
+                    <v-card class="chat-card v-card-custom">
+                        <v-card-title class="title-font-size">
+                            {{ chatRoomTitle }}
+                        </v-card-title>
 
-                    <v-btn class="lectureLessonBtn" @click="clickHomeBtn()">과외/강의 확인하기</v-btn>
+                        <v-card-text class="chat-content">
+                            <v-row class="chat-messages">
 
+                                <div class="chat-history" ref="chatHistory" @scroll="onScrollUp">
+                                    <div v-for="(msg, index) in chatHistory" :key="index" :class="getMessageClass(msg)">
+                                        {{ msg.memberName }}
+                                        <br>
+                                        {{ msg.message }}
+                                    </div>
+                                </div>
+                            </v-row>
+
+
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-row class="chat-input mt-auto">
+                                <v-col cols="10" style="padding-right: 0px;">
+                                    <input v-model="message" type="text" placeholder="..." class="w-100 custom-input"
+                                        @keydown.enter="sendMessage" />
+                                </v-col>
+                                <v-col cols="2" style="padding-left:0px;">
+                                    <v-btn @click="sendMessage"><v-icon style="font-size: 30px;"
+                                            color="blue">mdi-send</v-icon></v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-card-actions>
+
+                    </v-card>
+
+                </v-col>
+            </v-row>
+        </v-card>
+        <v-card v-else
+            style="height:400px; width: 750px;  overflow: hidden;box-shadow: none; border: 2px solid #D9D9D9; border-radius: 8px;">
+
+            <div class="chatRoomListEmpty" style="height:700px;">
+                <div style="display: flex; justify-content: flex-end;">
+                    <v-icon @click="closeModal"
+                        style="cursor: pointer; margin-top:10px; margin-right:10px;">mdi-window-close</v-icon>
                 </div>
-                </v-card>
+                <v-icon style="font-size: 40px; margin-bottom:20px;"
+                    color="#11b69a">mdi-message-settings-outline</v-icon>
+                <h5>채팅방이 없어요</h5>
+                <div color="grey">
+                    마음에 드는 과외/강의에<br /> 지원해보세요<br /><br />
+                </div>
 
+                <v-btn class="lectureLessonBtn" @click="clickHomeBtn()">과외/강의 확인하기</v-btn>
 
-                <v-card v-else style="height:800px; width: 750px;  overflow: hidden;box-shadow: none; border: 2px solid #D9D9D9; border-radius: 8px;">
-                    <v-row justify="center">
-                        <v-col cols="4" class="chat-list-scroll">
-                            <div>
-                                <v-card-text>
-                                    <div v-if="chatRoomList.length == 0" class="chatRoomListEmpty" style="height:700px;">
-                                        
-                                    </div>
-        
-                                    <div v-else ref="chatListContainer" @scroll="onScrollDown">
-                                        <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id"
-                                            :class="{ 'selected-chat-room': chatRoomId === chatRoom.chatRoomId, 'custom-border': true }"
-                                            @click="changeChatRoom(chatRoom)">
-                                            <v-card-title>
-                                                <v-chip v-if="chatRoom.lectureType === 'LESSON'" color="primary"
-                                                    class="mr-2">과외</v-chip>
-                                                <v-chip v-else color="primary" class="mr-2">강의</v-chip>
-                                                {{ chatRoom.chatRoomTitle }}
-                                            </v-card-title>
-                                            <v-card-text>
-                                                {{ chatRoom.memberName }}
-                                            </v-card-text>
-                                        </v-card>
-        
-                                    </div>
-                                </v-card-text>
-                            </div>
-                        </v-col>
-    
-                        <v-col cols="8" >
-                            <div style="display: flex; justify-content: flex-end;">
-                                <v-icon @click="closeModal"  style="cursor: pointer; margin-top:10px; margin-right:10px;">mdi-window-close</v-icon>
-                            </div>
-                            <v-card class="chat-card v-card-custom">
-                                <v-card-title class="title-font-size">
-                                    {{ chatRoomTitle }}
-                                </v-card-title>
-        
-                                <v-card-text class="chat-content">
-                                    <v-row class="chat-messages">
-        
-                                        <div class="chat-history" ref="chatHistory" @scroll="onScrollUp">
-                                            <div v-for="(msg, index) in chatHistory" :key="index" :class="getMessageClass(msg)">
-                                                {{ msg.memberName }}
-                                                <br>
-                                                {{ msg.message }}
-                                            </div>
-                                        </div>
-                                    </v-row>
-        
-        
-                                </v-card-text>
-                                <v-card-actions>
-                                    <v-row class="chat-input mt-auto">
-                                        <v-col cols="10" style="padding-right: 0px;">
-                                            <input v-model="message" type="text" placeholder="..." class="w-100 custom-input"
-                                                @keydown.enter="sendMessage" />
-                                        </v-col>
-                                        <v-col cols="2" style="padding-left:0px;">
-                                            <v-btn @click="sendMessage"><v-icon style="font-size: 30px;"
-                                                    color="blue">mdi-send</v-icon></v-btn>
-                                        </v-col>
-                                    </v-row>
-                                </v-card-actions>
-        
-                            </v-card>
-        
-                        </v-col>
-                    </v-row>
-                </v-card>
-                     
-                <!-- <v-col cols="8" v-if="chatRoomList.length === 0">
+            </div>
+        </v-card>
+
+        <!-- <v-col cols="8" v-if="chatRoomList.length === 0">
                     <div style="display: flex; justify-content: flex-end;">
                         <v-icon @click="closeModal"  style="cursor: pointer; margin-top:10px; margin-right:10px;">mdi-window-close</v-icon>
                     </div>
@@ -117,12 +119,16 @@ export default {
         dialog: {
             type: Boolean,
             required: true
+        },
+        selectedChatRoomId: {
+            type: String,
+            required: false
         }
     },
     data() {
         return {
             noticeCreateModal: this.dialog,
-            chatRoomId: '',
+            chatRoomId: this.selectedChatRoomId,
             chatRoomTitle: '',
             chatRoomList: [],
 
@@ -142,14 +148,18 @@ export default {
             currentChatListPage: 0, // Page number for pagination
             pageSize: 10, // Number of chat rooms to load per request
             isLoadingMore: false, // Prevents duplicate requests
-            isEndOfList: false, 
+            isEndOfList: false,
 
         };
     },
     watch: {
         dialog(val) {
+
             this.noticeCreateModal = val; // 부모 컴포넌트로부터 업데이트된 값을 반영
+            
+            this.chatRoomId = this.selectedChatRoomId;
             if (val) {
+                this.chatRoomList = ['test'];
                 this.showChatRoomList();
             }
         },
@@ -160,7 +170,7 @@ export default {
     mounted() {
         //채팅방 목록
         // this.showChatRoomList();
-
+        
         //채팅 내역
         // if (this.chatRoomId != '') {
         // this.getChatRoomLogs();
@@ -215,11 +225,9 @@ export default {
         async onScrollUp() {
             const chatHistoryElement = this.$refs.chatHistory;
 
-            // Check if the user scrolled to the top
             if (!this.isChange && chatHistoryElement.scrollTop === 0 && !this.isLoading && !this.isLastPage) {
                 this.isLoading = true;
 
-                // Load older messages
                 await this.getChatRoomLogs();
 
             }
@@ -274,24 +282,26 @@ export default {
                 this.chatRoomList = [...this.chatRoomList, ...newRooms];
                 this.currentPage += 1; // Increment page for the next load
 
+                this.chatRoomList.shift();
                 if (this.chatRoomId != '' || this.chatRoomList.length != 0) {
                     this.setChatRoom(this.chatRoomList[0]);
                 }
+
 
             } catch (e) {
                 console.log(e);
             }
         },
-        onScroll() {
-            const container = this.$refs.chatListContainer;
-            if (
-                container.scrollTop + container.clientHeight >= container.scrollHeight - 10 && // Near bottom
-                !this.isLoadingMore &&
-                !this.isEndOfList
-            ) {
-                this.showChatRoomList(); // Load more chat rooms
-            }
-        },
+        // onScroll() {
+        //     const container = this.$refs.chatListContainer;
+        //     if (
+        //         container.scrollTop + container.clientHeight >= container.scrollHeight - 10 && // Near bottom
+        //         !this.isLoadingMore &&
+        //         !this.isEndOfList
+        //     ) {
+        //         this.showChatRoomList(); // Load more chat rooms
+        //     }
+        // },
 
 
         setChatRoom(chatRoom) {
@@ -422,6 +432,13 @@ export default {
         },
 
         closeModal() {
+            this.chatRoomList = [];
+            this.isLoadingMore = false;
+            this.isEndOfList = false;
+            this.currentPage = 0;
+            this.isLastPage = false;
+            this.isLoading = false;
+            this.chatHistory = [];
             this.$emit("update:dialog", false); // 모달을 닫을 때 부모에게 업데이트 알림
         },
 

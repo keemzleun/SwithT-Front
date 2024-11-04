@@ -62,8 +62,9 @@
 
   <ChatModal
     v-model:dialog="chatModal"
-  persistent
-  :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
+    selectedChatRoomId=""
+    persistent
+    :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
   />
 </template>
 

@@ -501,7 +501,7 @@ export default {
             commentPages: 1,
             infoData: {
                 category: "",
-                chatRoomId: 0,
+                chatRoomId: null,
                 contents: "",
                 image: "",
                 limitPeople: null,
@@ -514,7 +514,8 @@ export default {
                 title: "",
                 lectureGroupTimes: [],
                 totalDayCount: 0,
-                pastDayCount: 0
+                pastDayCount: 0,
+                tuteeName:"",
             },
 
             notice: [],
@@ -595,6 +596,7 @@ export default {
         this.infoData.detailAddress = data.detailAddress;
         this.infoData.totalDayCount = data.totalDayCount;
         this.infoData.pastDayCount = data.pastDayCount;
+
         this.isDataLoaded = true;
         this.breadItems[1].title = this.infoData.title;
         this.infoData.lectureGroupTimes = data.lectureGroupTimes;
@@ -603,6 +605,8 @@ export default {
         }, '');
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
+        console.log("튜티"+JSON.stringify(this.tutees))
+        // if(!this.isLecture) this.infoData.tuteeName = this.tutees[0]
         let params = {
             size: this.noticePageSize,
             page: this.page,
@@ -629,6 +633,21 @@ export default {
         }
         if (this.infoData.address != "") this.isShowMap = true;
         // 과외의 경우 튜터 채팅방 생성
+        // if(!this.isLecture && this.istutor && this.tutees.length !==0){
+        //     const body = {
+        //         lectureGroupId : this.lectureGroupId,
+        //         tuteeId : this.tutees[0].memberId
+        //     }
+        //     const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`,body)
+        //     console.log("채팅방 response tutor"+JSON.stringify(response))
+        //     console.log(response.data.result.roomId)
+        //     this.infoData.chatRoomId=response.data.result.roomId;
+        // }
+        // else if(!this.isLecture && !this.istutor && this.tutees.length !==0){
+        //     const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-room-check-or-create?lectureGroupId=${this.lectureGroupId}`)
+        //     console.log("튜티 채팅방"+JSON.stringify(response))
+        //     this.infoData.chatRoomId=response.data.result.roomId;
+        // }
         if(!this.isLecture && this.istutor){
             const body = {
                 lectureGroupId : this.lectureGroupId,

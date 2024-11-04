@@ -80,14 +80,20 @@
                 <span v-else style="color: #B0BEC5;">다음</span> <!-- 비활성화된 경우 -->
             </v-col>
         </v-row>
+        <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+        :title=this.alertModalTitle :contents=this.alertModalContents />
     </v-container>
 </template>
 
 
 <script>
 import axios from "axios";
+import AlertModal from "@/components/AlertModal.vue";
 
 export default {
+    components: {
+        AlertModal
+    },
     data() {
         return {
             allLectures: [],   // 모든 강의 목록
@@ -95,6 +101,9 @@ export default {
             size: 10,          // 페이지 당 불러올 강의 수
             totalPages: 0,     // 전체 페이지 수
             isLoading: false,  // 로딩 상태
+            alertModal: false,
+            alertModalTitle: "",
+            alertModalContents: "",
         };
     },
     methods: {
@@ -105,7 +114,9 @@ export default {
                     params: { newStatus: newStatus },
                 });
                 if (response.status === 200) {
-                    alert("상태 변경 완료");
+                    this.alertModalTtile = `${newStatus} 완료`;
+                    this.alertModalContents =`${newStatus} 완료되었습니다`;
+                    this.alertModal = true;
                     this.fetchLectures();  // 상태 변경 후 강의 목록을 다시 불러옴
                 }
             } catch (error) {

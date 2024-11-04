@@ -160,6 +160,7 @@ export default {
             address: "",
             detailAddress:"",
             lectureGroupId: 0,
+            chatRoomId:0,
             days: ['월', '화', '수', '목', '금', '토', '일'],
             hours: [
                 '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -191,6 +192,7 @@ export default {
     watch: {
         infoData: {
             handler() {
+                console.log(this.infoData)
                 this.lectureType = this.formattedLectureType();
                 this.category = this.formattedCategory();
                 this.startDate = this.infoData.startDate;
@@ -200,6 +202,7 @@ export default {
                 this.price = this.infoData.price
                 this.limitPeople = this.infoData.limitPeople
                 this.groupTimes = this.infoData.lectureGroupTimes
+                this.chatRoomId=this.infoData.chatRoomId
             },
             immediate: true,
             deep: true
@@ -236,7 +239,7 @@ export default {
         groupEditClick(){
             this.$router.push(`/lecture-group/${this.lectureGroupId}`);
         },
-        clickChatRoom() {
+         clickChatRoom() {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
             this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
         },

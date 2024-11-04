@@ -214,7 +214,9 @@ export default {
                 window.location.reload();
             } catch (e) {
                 console.log(e.response.data);
-                alert("신청 취소에 실패했습니다.");
+                this.alertModalTtile = "신청 취소에 실패";
+                this.alertModalContents =  "신청 취소에 실패했습니다";
+                this.alertModal = true;
             }
 
         },

@@ -5,10 +5,11 @@
     <v-container width="50%"  style="margin-top: 60px;">
         <h4 class="div-title"> <br>신청 리스트  </h4>
         <br>
-        <div v-if="this.lectureType === 'LESSON'">
+        <div>
             <v-row v-for="apply in lessonApplyList" :key="apply.id" align="center">
                 <v-col>
                     <div class="d-flex align-center">
+                        
                         <v-card-text class="tutee-list">
                             <div class="d-flex align-center">
                                 <v-avatar class="profile-image" style="height: 60px; width: 60px; ">

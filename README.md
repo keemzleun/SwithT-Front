@@ -86,6 +86,62 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 ![ERD_10-25](https://github.com/user-attachments/assets/6a45ddcb-8bd2-4664-92ff-a2724d8354b5)
 <br/>
 
+## 시스템아키텍처 및 CI/CD
+<details>
+<summary><b>시스템 아키텍처</b></summary>
+
+![AWS 환경](https://github.com/user-attachments/assets/f8108583-ba58-46f4-9540-76f54e605f50)
+
+</details>
+<br/>
+
+
+<details>
+<summary><b>백엔드</b></summary>
+
+![백엔드](https://github.com/user-attachments/assets/9d4a1e6c-e741-48c3-a3a4-71b720651bbc)
+
+</details>
+<br/>
+
+
+<details>
+<summary><b>프론트엔드</b></summary>
+
+![프론트](https://github.com/user-attachments/assets/251e849c-e6c4-4d36-a845-1da1e78b197f)
+
+</details>
+<br/>
+
+## 테스트 결과서
+### (과외) 과외강사와 학생 채팅(강사가 학생한테 승인전에 채팅을 건다.)
+<details>
+<summary><b>튜터 튜티 채팅</b></summary>
+<img src="https://github.com/user-attachments/assets/2490cebc-d2da-4c40-8ee9-fd6f2b9e313c" alt="과외강사와 학생 채팅"/>
+</details>
+<br/>
+
+### 결제 요청 및 알림 기능
+<details>
+<summary><b>결제 요청 및 알림 기능</b></summary>
+<img src="https://github.com/user-attachments/assets/2df7a442-54eb-46b0-abaf-0a01ba0d32e4" alt="결제 요청 및 알림 기능"/>
+</details>
+<br/>
+
+### 결제 요청 및 알림 기능
+<details>
+<summary><b>결제 요청 및 알림 기능</b></summary>
+<img src="https://github.com/user-attachments/assets/2df7a442-54eb-46b0-abaf-0a01ba0d32e4" alt="결제 요청 및 알림 기능"/>
+</details>
+<br/>
+
+### 알람 및 결제
+<details>
+<summary><b>알람 및 결제</b></summary>
+<img src="https://github.com/user-attachments/assets/19b9ed87-1757-4581-8455-af768658fe9a" alt="알람 및 결제"/>
+</details>
+<br/>
+
 
 
 ## 📝 프로그램 사양서 - [프로그램 사양서 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=1934764833#gid=1934764833)

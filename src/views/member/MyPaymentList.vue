@@ -106,13 +106,19 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+        :title=this.alertModalTitle :contents=this.alertModalContents />
     </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import AlertModal from "@/components/AlertModal.vue";
 
 export default {
+    components: {
+        AlertModal
+    },
     data() {
         return {
             currentPage: 1,
@@ -125,7 +131,10 @@ export default {
             selectedPayment: null,
             selectedReason: '',
             isCustomReason: false,
-            customReason: ''
+            customReason: '',
+            alertModal: false,
+            alertModalTitle: "",
+            alertModalContents: "",
         };
     },
     created() {
@@ -196,7 +205,9 @@ export default {
 
             // '직접 입력'이 선택되었을 경우 customReason 사용
             if (this.selectedReason === 'custom' && !this.customReason) {
-                alert("직접 입력한 환불 사유를 입력하세요.");
+                this.alertModalTtile = "환불 사유 직접 입력";
+                this.alertModalContents = "환불 사유 직접 입력을 선택하셨습니다. 사유를 입력하세요.";
+                this.alertModal = true;
                 return;
             }
 
@@ -205,13 +216,17 @@ export default {
                 cancelReason: reason
             })
             .then(() => {
-                alert("환불 요청이 완료되었습니다.");
+                this.alertModalTtile = "환불 요청 완료";
+                this.alertModalContents = "환불 요청이 완료되었습니다.";
+                this.alertModal = true;
                 this.showRefundModal = false; // 모달 닫기
                 this.customReason = ''; // 환불 사유 초기화
             })
             .catch((error) => {
                 console.error("환불 요청 실패:", error);
-                alert("환불 요청에 실패했습니다.");
+                this.alertModalTtile = "환불 요청 실패";
+                this.alertModalContents = "환불 요청에 실파였습니다.";
+                this.alertModal = true;
             });
         }
     }

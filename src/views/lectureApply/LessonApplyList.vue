@@ -5,10 +5,11 @@
     <v-container width="50%"  style="margin-top: 60px;">
         <h4 class="div-title"> <br>신청 리스트  </h4>
         <br>
-        <div v-if="this.lectureType === 'LESSON'">
+        <div>
             <v-row v-for="apply in lessonApplyList" :key="apply.id" align="center">
                 <v-col>
                     <div class="d-flex align-center">
+                        
                         <v-card-text class="tutee-list">
                             <div class="d-flex align-center">
                                 <v-avatar class="profile-image" style="height: 60px; width: 60px; ">
@@ -214,7 +215,9 @@ export default {
                 window.location.reload();
             } catch (e) {
                 console.log(e.response.data);
-                alert("신청 취소에 실패했습니다.");
+                this.alertModalTtile = "신청 취소에 실패";
+                this.alertModalContents =  "신청 취소에 실패했습니다";
+                this.alertModal = true;
             }
 
         },

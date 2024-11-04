@@ -108,7 +108,9 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 <details>
 <summary><b>프론트엔드</b></summary>
 
-![프론트](https://github.com/user-attachments/assets/251e849c-e6c4-4d36-a845-1da1e78b197f)
+
+![프론트엔드2](https://github.com/user-attachments/assets/37125592-4ae4-4e2c-8d50-0832967e244b)
+
 
 </details>
 <br/>
@@ -121,12 +123,6 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 </details>
 <br/>
 
-### 결제 요청 및 알림 기능
-<details>
-<summary><b>결제 요청 및 알림 기능</b></summary>
-<img src="https://github.com/user-attachments/assets/2df7a442-54eb-46b0-abaf-0a01ba0d32e4" alt="결제 요청 및 알림 기능"/>
-</details>
-<br/>
 
 ### 결제 요청 및 알림 기능
 <details>
@@ -313,4 +309,3 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 <img src="https://github.com/user-attachments/assets/41c6ee12-321b-489a-a957-216ab533f017" alt="댓글 생성/조회/수정/삭제/>
 </details>
 <br/>
-

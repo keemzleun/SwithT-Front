@@ -648,8 +648,16 @@ async submitApplication() {
                     this.rank = response.data.result;
                     console.log("현재 대기열 순위: " + this.rank);
 
-                    // 3초 대기
-                    await new Promise(resolve => setTimeout(resolve, 3000)); 
+                    if(this.rank > 500 && this.rank < 1000){
+                        // 3초 대기
+                        await new Promise(resolve => setTimeout(resolve, 3000)); 
+                    } else if(this.rank > 1000 && this.rank < 3000){
+                        // 5초 대기
+                        await new Promise(resolve => setTimeout(resolve, 5000)); 
+                    } else if(this.rank > 3000){
+                        // 9초 대기
+                        await new Promise(resolve => setTimeout(resolve, 9000)); 
+                    }
                 }
 
                 if (!this.isExitingQueue) {

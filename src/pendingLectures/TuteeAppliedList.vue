@@ -19,8 +19,8 @@
                             <v-col cols="1">순서</v-col>
                             <v-col cols="5">강의명</v-col>
                             <v-col cols="2">신청날짜</v-col>
-                            <v-col cols="2"> </v-col>
                             <v-col cols="2">상태</v-col>
+                            <v-col cols="2"> </v-col>
                         </v-row>
                     </v-col>
                 </v-row>
@@ -31,13 +31,13 @@
                             <v-col cols="5" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
                             <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2">
-                                <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
-                            </v-col>
-                            <v-col cols="2">
                                 <span :class="getStatusClass(lecture.status)"
                                       :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
                                     {{ getStatusText(lecture.status) }}
                                 </span>
+                            </v-col>
+                            <v-col cols="2">
+                                <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
                             </v-col>
                         </v-row>
                     </v-col>
@@ -85,8 +85,8 @@
                             <v-col cols="1">순서</v-col>
                             <v-col cols="5">강의명</v-col>
                             <v-col cols="2">신청날짜</v-col>
-                            <v-col cols="2"></v-col>
                             <v-col cols="2">상태</v-col>
+                            <v-col cols="2"></v-col>
                         </v-row>
                     </v-col>
                 </v-row>
@@ -96,16 +96,18 @@
                             <v-col cols="1">{{ index + 1 }}</v-col>
                             <v-col cols="5" class="lecture-title" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title }}</v-col>
                             <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
-                            <v-col cols="2" v-if="lecture.status === 'STANDBY'">
-                                <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
-                            </v-col>
-                            <v-col cols="2" v-else> </v-col>
                             <v-col cols="2" style="font-weight: 700">
                                 <span :class="getStatusClass(lecture.status)"
-                                      :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
+                                      :style="{ cursor: lecture.status === 'WAITING' }">
                                     {{ getStatusText(lecture.status) }}
                                 </span>
                             </v-col>
+                            <v-col cols="2" v-if="lecture.status === 'ADMIT' && lecture.price === 0">
+                                <v-btn small color="red" @click="confirmCancel(lecture)">
+                                    신청 취소
+                                </v-btn>
+                            </v-col>
+                            <v-col cols="2" v-else> </v-col>
                         </v-row>
                     </v-col>
                     <v-col v-else>
@@ -238,10 +240,11 @@ export default {
         },
         async fetchAllLectures() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list`,{
-                    params:{
-                        size:this.size,
-                        page:this.allPage
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-my-lecture-list`, {
+                    params: {
+                        status: 'ALL', // 모든 status를 가져오기 위해 "ALL" 전달
+                        size: this.size,
+                        page: this.allPage
                     }
                 });
                 this.allLectures = response.data.result.content;

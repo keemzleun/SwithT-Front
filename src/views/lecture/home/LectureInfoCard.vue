@@ -22,14 +22,16 @@
                     <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
                 </v-row>
 
-                <div class="memberName"> <strong>{{ infoData.memberName }} 튜터</strong>
+                <div class="memberName" v-if="lectureType=='강의'"> <strong>{{ infoData.memberName }} 튜터</strong>
+                </div>
+                <div class="memberName" v-else> <strong>{{ infoData.tuteeName ?? "신청 및 승인된 튜티가 없습니다" }} 튜티</strong>
                 </div>
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate ?? "아직 입력되지 않았습니다." }}</div>
                 <div class="detailInfo">강의 일정 : </div>
                 <div v-html="lectureSchedules" class="detailInfo"></div>
                 <div class="detailInfo">위치 : {{ infoData.address }} {{infoData.detailAddress=="" ? "아직 입력되지 않았습니다.":infoData.detailAddress}}<v-icon @click="showMap()" v-if="infoData.address">mdi-google-maps</v-icon>
                 </div>
-                <div class="detailInfo"> 튜티 : {{ infoData.startDate ?? "신청 및 승인된 튜티가 없습니다" }}</div>
+                <!-- <div class="detailInfo" v-if="lectureType=='과외'"> 튜티 : {{ infoData.tuteeName ?? "신청 및 승인된 튜티가 없습니다" }}</div> -->
 
 
             </v-col>

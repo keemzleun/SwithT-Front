@@ -12,7 +12,7 @@
       <v-overlay v-model="alertDialogSSE" width="400" content-class="custom-alert-position" absolute
         scrim="false" >
         <v-card 
-        :style="{ height: '100vh', top: '0', overflowY: 'auto', boxShadow: '5px 0 5px -2px #adb5bd', backgroundColor:'#f1f3f5' }"
+        :style="{ height: '100vh', top: '0', overflowY: 'auto', boxShadow: 'inset -4px 0 10px rgba(0, 0, 0, 0.1)', backgroundColor:'#f1f3f5' }"
         class="border border-t-sm border-b-sm border-l-sm pa-5">
           <v-card-title style="text-align: center; padding-bottom: 0;">
             <v-row>
@@ -424,7 +424,6 @@ export default {
   width: 400px;
   height: 100vh;
   overflow-y: auto;
-  box-shadow: 5px 0 5px -1px #949494 !important;
   z-index: 202;
   animation: slideInPartial 0.5s ease-out forwards;
   margin-top: 0px !important;

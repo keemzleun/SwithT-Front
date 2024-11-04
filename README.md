@@ -108,7 +108,7 @@ SwithT Project의 목표는 개인 맞춤형 강의를 소비자가 개인 일�
 <details>
 <summary><b>프론트엔드</b></summary>
 
-![프론트](https://github.com/user-attachments/assets/251e849c-e6c4-4d36-a845-1da1e78b197f)
+<img src="https://github.com/user-attachments/assets/f372ea3c-e246-405c-be2b-ee11c908dbbb" alt="프론트엔드 아키텍처"/>
 
 </details>
 <br/>

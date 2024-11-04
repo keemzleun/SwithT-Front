@@ -20,18 +20,14 @@
 
         <v-row justify="center">
             <v-col v-if="allLectures.length" cols="12" style="max-width: 1300px;">
-                <v-row 
-                  v-for="(lecture, index) in allLectures" 
-                  :key="lecture.applyId" 
-                  class="item"
-                  style="padding: 5px 10px; cursor:pointer;"
-                  @click="goToLectureDetail(lecture.id)"
-                >
+                <v-row v-for="(lecture, index) in allLectures" :key="lecture.applyId" class="item"
+                    style="padding: 5px 10px; cursor:pointer;" @click="goToLectureDetail(lecture.id)">
                     <v-col cols="2" class="text-center">{{ index + 1 + page * size }}</v-col> <!-- 순서에 페이지 값 반영 -->
                     <v-col cols="2" class="text-center">
-                        <span :class="getStatusClass(lecture.status)" style="font-weight: bold;">{{ getStatusText(lecture.status) }}</span>
+                        <span :class="getStatusClass(lecture.status)" style="font-weight: bold;">{{
+                            getStatusText(lecture.status) }}</span>
                     </v-col>
-                    <v-col cols="3" class="text-center" >
+                    <v-col cols="3" class="text-center">
                         {{ lecture.title }}
                     </v-col>
                     <v-col cols="2" class="text-center">{{ formatDate(lecture.createdTime) }}</v-col>
@@ -53,36 +49,28 @@
         <v-row justify="center" class="mr-2">
             <v-col cols="auto">
                 <!-- 이전 페이지로 이동하는 클릭 가능한 텍스트 -->
-                <span 
-                    @click="goToPreviousPage" 
-                    :class="{ 'disabled-text': page === 0 }"
-                    style="cursor: pointer; color: #000000;" 
-                    v-if="page !== 0"
-                >
+                <span @click="goToPreviousPage" :class="{ 'disabled-text': page === 0 }"
+                    style="cursor: pointer; color: #000000;" v-if="page !== 0">
                     이전
                 </span>
                 <span v-else style="color: #B0BEC5;">이전</span> <!-- 비활성화된 경우 -->
             </v-col>
-            
+
             <v-col cols="auto">
                 <span>{{ page + 1 }} / {{ totalPages }}</span> <!-- 현재 페이지 및 전체 페이지 표시 -->
             </v-col>
-            
+
             <v-col cols="auto">
                 <!-- 다음 페이지로 이동하는 클릭 가능한 텍스트 -->
-                <span 
-                    @click="goToNextPage" 
-                    :class="{ 'disabled-text': page + 1 >= totalPages }" 
-                    style="cursor: pointer; color: #000000;" 
-                    v-if="page + 1 < totalPages"
-                >
+                <span @click="goToNextPage" :class="{ 'disabled-text': page + 1 >= totalPages }"
+                    style="cursor: pointer; color: #000000;" v-if="page + 1 < totalPages">
                     다음
                 </span>
                 <span v-else style="color: #B0BEC5;">다음</span> <!-- 비활성화된 경우 -->
             </v-col>
         </v-row>
         <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
-        :title=this.alertModalTitle :contents=this.alertModalContents />
+            :title=this.alertModalTitle :contents=this.alertModalContents />
     </v-container>
 </template>
 
@@ -116,13 +104,16 @@ export default {
                 });
                 if (response.status === 200) {
                     this.alertModalTtile = `${newStatus} 완료`;
-                    this.alertModalContents =`${newStatus} 완료되었습니다`;
+                    this.alertModalContents = `${newStatus} 완료되었습니다`;
                     this.alertModal = true;
                     this.fetchLectures();  // 상태 변경 후 강의 목록을 다시 불러옴
                 }
             } catch (error) {
                 console.error("상태 변경:", error);
+
             }
+            this.fetchLectures();  // 상태 변경 후 강의 목록을 다시 불러옴
+
         },
         goToLectureDetail(id) {
             this.$router.push(`/lecture/${id}`);
@@ -201,26 +192,31 @@ export default {
     margin-top: 60px;
     width: 70vw;
 }
+
 .header {
     font-weight: bold;
     border-bottom: 2px solid #ccc;
 }
+
 .item {
     padding: 10px 0;
 }
+
 .lecture-title:hover {
     background-color: #ececec;
     border-radius: 15px;
     cursor: pointer;
 }
+
 .status-standby {
     color: orange;
 }
+
 .status-admit {
     color: green;
 }
+
 .status-rejected {
     color: red;
 }
-
 </style>

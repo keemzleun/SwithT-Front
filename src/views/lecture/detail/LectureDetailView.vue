@@ -427,14 +427,42 @@ export default {
       }
     },
     async fetchLectureDetail() {
-      const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`);
-        this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
-        this.tutorId = this.lectureInfo.memberId;
-      } catch (error) {
-        console.error('강의 정보를 가져오는 데 실패했습니다:', error);
-      }
+        const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
+        try {
+            // 로그인 여부 확인 (예시: userId 존재 여부)
+            const isUserLoggedIn = !!localStorage.getItem('id'); // localStorage에서 userId를 가져옴
+            const headers = {
+                'User-Agent': navigator.userAgent, // 브라우저 User-Agent 정보
+            };
+
+            if (isUserLoggedIn) {
+                // 로그인한 경우, userId를 X-User-Id 헤더로 추가
+                headers['X-User-Id'] = localStorage.getItem('id');
+            } else {
+                // 로그인하지 않은 경우, IP 주소를 X-Forwarded-For 헤더에 추가
+                headers['X-Forwarded-For'] = await this.getIpAddress();
+            }
+
+            // API 요청
+            const response = await axios.get(
+                `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`, 
+                { headers }
+            );
+            
+            this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
+            this.tutorId = this.lectureInfo.memberId;
+        } catch (error) {
+            console.error('강의 정보를 가져오는 데 실패했습니다:', error);
+        }
+    },
+    async getIpAddress() {
+        try {
+            const response = await axios.get('https://api.ipify.org?format=json');
+            return response.data.ip;
+        } catch (error) {
+            console.error('IP 주소를 가져오는 데 실패했습니다:', error);
+            return ''; // 실패 시 빈 문자열 반환
+        }
     },
     async fetchLectureGroupInfo() {
       try {

@@ -16,19 +16,21 @@
                     </div>
                 </v-row>
                 <v-row class="d-flex align-center justify-start mb-2">
-                    <div class="title mr-2">{{ infoData.title }}</div>
+                    <div class="title mr-2">{{ infoData.title }} <v-icon v-if="isChat&&isTutor" @click="clickChatRoom()">mdi-chat</v-icon></div>
 
-                    <v-icon v-if="isTutor" @click="clickChatRoom()">mdi-chat</v-icon>
+                    
                     <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
                 </v-row>
 
-                <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()" v-if="!isTutor">mdi-chat</v-icon>
+                <div class="memberName"> <strong>{{ infoData.memberName }} 튜터</strong>
                 </div>
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate ?? "아직 입력되지 않았습니다." }}</div>
                 <div class="detailInfo">강의 일정 : </div>
                 <div v-html="lectureSchedules" class="detailInfo"></div>
                 <div class="detailInfo">위치 : {{ infoData.address }} {{infoData.detailAddress=="" ? "아직 입력되지 않았습니다.":infoData.detailAddress}}<v-icon @click="showMap()" v-if="infoData.address">mdi-google-maps</v-icon>
                 </div>
+                <div class="detailInfo"> 튜티 : {{ infoData.startDate ?? "신청 및 승인된 튜티가 없습니다" }}</div>
+
 
             </v-col>
             <v-col cols="5" class="d-flex align-center justify-center">
@@ -167,7 +169,8 @@ export default {
                 '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
                 '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
             ],
-            groupTimes: []
+            groupTimes: [],
+            isChat:false,
         };
     },
     mounted() {
@@ -203,6 +206,8 @@ export default {
                 this.limitPeople = this.infoData.limitPeople
                 this.groupTimes = this.infoData.lectureGroupTimes
                 this.chatRoomId=this.infoData.chatRoomId
+                if(this.infoData.chatRoomId === null) this.isChat = false;
+                else this.isChat = true;
             },
             immediate: true,
             deep: true
@@ -240,8 +245,10 @@ export default {
             this.$router.push(`/lecture-group/${this.lectureGroupId}`);
         },
          clickChatRoom() {
-            console.log("채팅방 입장" + this.infoData.chatRoomId);
-            this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
+            
+            if(this.infoData.chatRoomId =="" || this.infoData.chatRoomId == null) console.log("채팅방 입장 안됨" + this.infoData.chatRoomId);
+            else console.log("채팅방 입장" + this.infoData.chatRoomId);
+            // this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
         },
         formattedCategory() {
             if (this.infoData?.category) {

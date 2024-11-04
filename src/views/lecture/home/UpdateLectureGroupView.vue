@@ -273,6 +273,8 @@
           <v-btn color="white" text v-bind="attrs" @click="snackbar.visible = false">닫기</v-btn>
         </template>
       </v-snackbar>
+      <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+        :title=this.alertModalTitle :contents=this.alertModalContents />
     </div>
   </v-container>
 
@@ -286,7 +288,12 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import AlertModal from "@/components/AlertModal.vue";
+
 export default {
+  components: {
+    AlertModal
+  },
   data() {
     return {
       lectureGroupId: 0,
@@ -330,7 +337,10 @@ export default {
         visible: false,
         message: '',
         color: '#6C97FD'
-      }
+      },
+      alertModal: false,
+      alertModalTitle: "",
+      alertModalContents: "",
     };
   },
   mounted() {
@@ -400,7 +410,7 @@ export default {
     },
     coloringSchedule() {
       console.log('스케줄 객체 상태:', this.schedule);
-      
+
       const color = this.getRandomColor();
       let hasOverlap = false; // 겹치는 시간대를 체크하는 플래그
       console.log(this.currentLecture?.timeSlots)
@@ -408,7 +418,7 @@ export default {
         const startHour = this.hours.indexOf(timeSlot.startTime); // 시작 시간의 인덱스
         const endHour = this.hours.indexOf(timeSlot.endTime);     // 종료 시간의 인덱스
         const day = this.changeDay(timeSlot.lectureDay);                                 // 요일 정보
-        console.log("스케쥴 왜 안 들어오지"+startHour,endHour,day)
+        console.log("스케쥴 왜 안 들어오지" + startHour, endHour, day)
 
         // 시간이 겹치는지 확인
         if (this.isOverlapping(day, startHour, endHour)) {
@@ -419,14 +429,15 @@ export default {
 
       // 겹치는 강의 시간이 있으면 중단
       if (hasOverlap) {
-        alert('겹치는 강의 시간이 존재합니다. 다른 시간을 선택해주세요.');
+        this.alertModalTtile = "강의 신청 시간 중복";
+        this.alertModalContents = "겹치는 강의 시간이 존재합니다. 다른 시간을 선택해주세요.";
+        this.alertModal = true;
         return;
       }
 
       // 겹치는 시간이 없는 경우에만 시간표에 색상과 강의 정보를 추가
       console.log(this.currentLecture.timeSlots)
       for (const timeSlot of this.currentLecture.timeSlots) {
-        console.log("헤이 왜 안 나와"+JSON.stringify(timeSlot))
         const startHour = this.hours.indexOf(timeSlot.startTime);
         const endHour = this.hours.indexOf(timeSlot.endTime);
         const day = this.changeDay(timeSlot.lectureDay);
@@ -573,7 +584,7 @@ export default {
         const startHour = this.hours.indexOf(timeSlot.startTime);
         const endHour = this.hours.indexOf(timeSlot.endTime);
         const day = timeSlot.lectureDay;
-        console.log("스케쥴 왜 안 들어오지"+startHour,endHour,day)
+        console.log("스케쥴 왜 안 들어오지" + startHour, endHour, day)
 
         // 겹치는 시간 확인
         if (this.isOverlapping(day, startHour, endHour)) {

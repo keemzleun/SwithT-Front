@@ -24,21 +24,22 @@
                   v-for="(lecture, index) in allLectures" 
                   :key="lecture.applyId" 
                   class="item"
-                  style="padding: 5px 10px;"
+                  style="padding: 5px 10px; cursor:pointer;"
+                  @click="goToLectureDetail(lecture.id)"
                 >
                     <v-col cols="2" class="text-center">{{ index + 1 + page * size }}</v-col> <!-- 순서에 페이지 값 반영 -->
                     <v-col cols="2" class="text-center">
                         <span :class="getStatusClass(lecture.status)" style="font-weight: bold;">{{ getStatusText(lecture.status) }}</span>
                     </v-col>
-                    <v-col cols="3" class="text-center lecture-title" @click="goToLectureDetail(lecture.id)">
+                    <v-col cols="3" class="text-center" >
                         {{ lecture.title }}
                     </v-col>
                     <v-col cols="2" class="text-center">{{ formatDate(lecture.createdTime) }}</v-col>
                     <v-col cols="2" class="text-center ml-5">
-                        <v-btn color="#6C97FD" @click="updateLectureStatus(lecture.id, 'ADMIT')">
+                        <v-btn color="#6C97FD" @click.stop="updateLectureStatus(lecture.id, 'ADMIT')">
                             <strong>승인</strong>
                         </v-btn>
-                        <v-btn color="#FD6C6C" class="ml-2" @click="updateLectureStatus(lecture.id, 'REJECT')">
+                        <v-btn color="#FD6C6C" class="ml-2" @click.stop="updateLectureStatus(lecture.id, 'REJECT')">
                             <strong>거절</strong>
                         </v-btn>
                     </v-col>

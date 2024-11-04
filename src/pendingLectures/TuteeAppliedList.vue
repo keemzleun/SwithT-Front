@@ -25,21 +25,21 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col v-if="paymentLectures.length">
-                        <v-row v-for="(lecture, index) in paymentLectures" :key="lecture.applyId" class="item">
+                    <v-col v-if="paymentLectures.length" style="align-content:center">
+                        <v-row v-for="(lecture, index) in paymentLectures" :key="lecture.applyId" class="item" @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null" :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="5" class="lecture-title"
-                                @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title
+                            <v-col cols="5" 
+                                >{{ lecture.title
                                 }}</v-col>
                             <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2">
                                 <span :class="getStatusClass(lecture.status)"
-                                    :style="{ cursor: lecture.status === 'WAITING' ? 'pointer' : 'default' }">
+                                    >
                                     {{ getStatusText(lecture.status) }}
                                 </span>
                             </v-col>
                             <v-col cols="2">
-                                <v-btn small color="red" @click="confirmCancel(lecture)">신청 취소</v-btn>
+                                <v-btn small variant="outlined" @click="confirmCancel(lecture)">신청 취소</v-btn>
                             </v-col>
                         </v-row>
                     </v-col>
@@ -87,10 +87,10 @@
                 </v-row>
                 <v-row>
                     <v-col v-if="allLectures.length">
-                        <v-row v-for="(lecture, index) in allLectures" :key="lecture.applyId" class="item">
+                        <v-row v-for="(lecture, index) in allLectures" :key="lecture.applyId" class="item" @click="lecture.status === 'ADMIT' ? goToGroupHome(lecture) : null"
+                        :style="{ cursor: lecture.status === 'ADMIT' ? 'pointer' : 'default' }">
                             <v-col cols="1">{{ index + 1 }}</v-col>
-                            <v-col cols="5" class="lecture-title"
-                                @click="lecture.status === 'WAITING' ? confirmPayment(lecture) : null">{{ lecture.title
+                            <v-col cols="5">{{ lecture.title
                                 }}</v-col>
                             <v-col cols="2">{{ formatDate(lecture.createdTime) }}</v-col>
                             <v-col cols="2" style="font-weight: 700">
@@ -99,8 +99,8 @@
                                     {{ getStatusText(lecture.status) }}
                                 </span>
                             </v-col>
-                            <v-col cols="2" v-if="lecture.status === 'ADMIT' && lecture.price === 0">
-                                <v-btn small color="red" @click="confirmCancel(lecture)">
+                            <v-col cols="2" v-if="lecture.status === 'ADMIT' && lecture.price === 0" >
+                                <v-btn small variant="outlined" @click.stop="confirmCancel(lecture)">
                                     신청 취소
                                 </v-btn>
                             </v-col>
@@ -191,6 +191,10 @@ export default {
         }
     },
     methods: {
+        goToGroupHome(lecture){
+            console.log("lecturelecture"+JSON.stringify(lecture))
+            this.$router.push(`/lecture-home/${lecture.lectureGroupId}`)
+        },
         goToAllPreviousPage() {
             if (this.allPage > 0) {
                 this.allPage--;

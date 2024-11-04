@@ -558,7 +558,7 @@ export default {
         this.infoData.category = this.changeCategory(data.category);
         this.isLecture = data.lectureType === "LECTURE" ? true : false;
         this.breadItems[0].title = this.isLecture ? "강의" : "과외"
-        this.infoData.chatRoomId = data.chatRoomId;
+        
         this.infoData.contents = data.contents;
         this.infoData.image = data.image;
         this.infoData.limitPeople = data.limitPeople;
@@ -604,7 +604,22 @@ export default {
             this.istutor = true;
         }
         if (this.infoData.address != "") this.isShowMap = true;
-
+        // 과외의 경우 튜터 채팅방 생성
+        if(!this.isLecture && this.istutor){
+            const body = {
+                lectureGroupId : this.lectureGroupId,
+                tuteeId : this.tutees[0].memberId
+            }
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`,body)
+            console.log("채팅방 response tutor"+JSON.stringify(response))
+            console.log(response.data.result.roomId)
+            this.infoData.chatRoomId=response.data.result.roomId;
+        }
+        else if(!this.isLecture && !this.istutor){
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-room-check-or-create?lectureGroupId=${this.lectureGroupId}`)
+            console.log("튜티 채팅방"+JSON.stringify(response))
+            this.infoData.chatRoomId=response.data.result.roomId;
+        }
     },
 
     methods: {

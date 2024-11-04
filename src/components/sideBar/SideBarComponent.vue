@@ -145,7 +145,7 @@ export default {
             localStorage.setItem('paymentEvents', JSON.stringify(this.paymentEvents)); // 저장
           }
           // 일반 알림 처리
-          else if (newEvent.messageType !== 'WAITING-SUCCESS' && newEvent.messageType !== '결제요청' && !isDuplicateGeneral) {
+          else if (newEvent.messageType !== 'WAITING' && newEvent.messageType !== 'WAITING-SUCCESS' && newEvent.messageType !== '결제요청' && !isDuplicateGeneral) {
             this.generalEvents.push(newEvent);
             localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents)); // 저장
           }

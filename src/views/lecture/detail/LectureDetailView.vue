@@ -426,42 +426,35 @@ export default {
         console.error("Daum Postcode 스크립트가 로드되지 않았습니다.");
       }
     },
+    async getIpAddress() {
+        try {
+            const res = await axios.get('https://api64.ipify.org?format=json'); // IP 주소 조회 API
+            return res.data.ip;
+        } catch (error) {
+            console.error("IP 주소를 가져오는 데 실패했습니다:", error);
+            return '';
+        }
+    },
     async fetchLectureDetail() {
         const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
+        const userId = localStorage.getItem('id'); // 로그인된 사용자 ID 가져오기
+        const ipAddress = await this.getIpAddress(); // IP 주소 가져오기
+        const userAgent = navigator.userAgent; // 사용자 에이전트 가져오기
+
         try {
-            // 로그인 여부 확인 (예시: userId 존재 여부)
-            const isUserLoggedIn = !!localStorage.getItem('id'); // localStorage에서 userId를 가져옴
-            const headers = {
-                'User-Agent': navigator.userAgent, // 브라우저 User-Agent 정보
-            };
-
-            if (isUserLoggedIn) {
-                // 로그인한 경우, userId를 X-User-Id 헤더로 추가
-                headers['X-User-Id'] = localStorage.getItem('id');
-            } else {
-                // 로그인하지 않은 경우, IP 주소를 X-Forwarded-For 헤더에 추가
-                headers['X-Forwarded-For'] = await this.getIpAddress();
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`, {
+            headers: {
+                'X-Forwarded-For': ipAddress, // IP 주소 헤더로 전달
+                'User-Agent': userAgent, // User-Agent 헤더로 전달
+            },
+            params: {
+                userId: userId || '', // 로그인한 사용자 ID를 쿼리 파라미터로 전달
             }
-
-            // API 요청
-            const response = await axios.get(
-                `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`, 
-                { headers }
-            );
-            
+            });
             this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
             this.tutorId = this.lectureInfo.memberId;
         } catch (error) {
             console.error('강의 정보를 가져오는 데 실패했습니다:', error);
-        }
-    },
-    async getIpAddress() {
-        try {
-            const response = await axios.get('https://api.ipify.org?format=json');
-            return response.data.ip;
-        } catch (error) {
-            console.error('IP 주소를 가져오는 데 실패했습니다:', error);
-            return ''; // 실패 시 빈 문자열 반환
         }
     },
     async fetchLectureGroupInfo() {
@@ -676,8 +669,16 @@ async submitApplication() {
                     this.rank = response.data.result;
                     console.log("현재 대기열 순위: " + this.rank);
 
-                    // 3초 대기
-                    await new Promise(resolve => setTimeout(resolve, 3000)); 
+                    if(this.rank > 500 && this.rank < 1000){
+                        // 3초 대기
+                        await new Promise(resolve => setTimeout(resolve, 3000)); 
+                    } else if(this.rank > 1000 && this.rank < 3000){
+                        // 5초 대기
+                        await new Promise(resolve => setTimeout(resolve, 5000)); 
+                    } else if(this.rank > 3000){
+                        // 9초 대기
+                        await new Promise(resolve => setTimeout(resolve, 9000)); 
+                    }
                 }
 
                 if (!this.isExitingQueue) {

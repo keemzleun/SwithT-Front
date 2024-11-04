@@ -426,15 +426,36 @@ export default {
         console.error("Daum Postcode 스크립트가 로드되지 않았습니다.");
       }
     },
+    async getIpAddress() {
+        try {
+            const res = await axios.get('https://api64.ipify.org?format=json'); // IP 주소 조회 API
+            return res.data.ip;
+        } catch (error) {
+            console.error("IP 주소를 가져오는 데 실패했습니다:", error);
+            return '';
+        }
+    },
     async fetchLectureDetail() {
-      const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`);
-        this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
-        this.tutorId = this.lectureInfo.memberId;
-      } catch (error) {
-        console.error('강의 정보를 가져오는 데 실패했습니다:', error);
-      }
+        const lectureId = this.$route.params.id; // URL에서 강의 ID 가져오기
+        const userId = localStorage.getItem('id'); // 로그인된 사용자 ID 가져오기
+        const ipAddress = await this.getIpAddress(); // IP 주소 가져오기
+        const userAgent = navigator.userAgent; // 사용자 에이전트 가져오기
+
+        try {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`, {
+            headers: {
+                'X-Forwarded-For': ipAddress, // IP 주소 헤더로 전달
+                'User-Agent': userAgent, // User-Agent 헤더로 전달
+            },
+            params: {
+                userId: userId || '', // 로그인한 사용자 ID를 쿼리 파라미터로 전달
+            }
+            });
+            this.lectureInfo = response.data.result; // 가져온 강의 정보를 저장
+            this.tutorId = this.lectureInfo.memberId;
+        } catch (error) {
+            console.error('강의 정보를 가져오는 데 실패했습니다:', error);
+        }
     },
     async fetchLectureGroupInfo() {
       try {

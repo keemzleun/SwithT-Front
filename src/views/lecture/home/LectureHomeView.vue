@@ -89,13 +89,12 @@
             <v-tabs-window-item value="assignment">
                 <v-container style="width: 60vw; min-height: 500px;">
                         <v-card-text>
-                            <v-btn rounded color="#6C97FD" style="font-weight: bold"
-                                @click="renewAssignment(); assignmentCreateModal = true;"
-                                v-if="this.istutor">
-                                과제 생성
-                                <!-- <v-icon>mdi-plus</v-icon> -->
-                            </v-btn>
-    
+                            <v-row justify="end" >
+                                    <v-btn rounded color="#6C97FD" style="font-weight: bold;" @click="renewAssignment(); assignmentCreateModal = true;" v-if="this.istutor">
+                                        과제 생성
+                                    </v-btn>
+                            </v-row>
+                            
                             <!-- 과제 목록 -->
                             <div justify="center" v-if="assignments.length">
                                 <div cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
@@ -138,20 +137,21 @@
             <v-tabs-window-item value="notice">
                 <v-container style="width: 70vw; min-height: 500px;">
                     <v-row>
-                        <v-col class="align-left" cols="5">
+                        <v-col>
                             <v-btn variant="outlined" elevation="0" rounded @click="onlyNoticeClick()">
                                 {{ onlyNotice ? "전체" : "공지사항만" }}
                             </v-btn>
-                            
                         </v-col>
-                        <v-col class="align-right" cols="5">
+                       
+                        <v-col>
                             <v-btn rounded color="#6C97FD" style="font-weight: bold"
-                                @click="noticeCreateModal = true">
-                                글 작성
-                                <!-- <v-icon>mdi-plus</v-icon> -->
+                            @click="noticeCreateModal = true">
+                            글 작성
+                            <!-- <v-icon>mdi-plus</v-icon> -->
                             </v-btn>
-                        
                         </v-col>
+                        
+                    
                     </v-row>
                     <v-row justify="center">
                         <v-col cols="8">
@@ -187,15 +187,14 @@
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
             <v-tabs-window-item value="tuteeList" v-if="this.isLecture && this.istutor">
-                <v-container style="width: 70vw; min-height: 500px;">
-                    <div class="box-style">
+                <v-container style="width: 50vw; min-height: 500px;">
                         <v-card-text>
                             <!-- 튜티 리스트 -->
                             <v-list class="mx-auto" style="overflow: hidden;">
                                 <!-- 튜티가 있을 경우 리스트 출력 -->
                                 <template v-if="tutees.length">
                                     <v-list-item v-for="tutee in tutees" :key="tutee.id" justify="center"
-                                        class="tutee-list-item pa-1 mx-auto d-flex " rounded="lg"
+                                        class="box-style pa-1 mx-auto d-flex " rounded="lg"
                                         style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
                                         variant="outlined">
     
@@ -227,7 +226,6 @@
                                 </v-row>
                             </v-list>
                         </v-card-text>
-                    </div>
                 </v-container>
             </v-tabs-window-item>
         </v-tabs-window>
@@ -388,12 +386,12 @@
             <v-card style="border-radius: 20px;" min-height="800px">
                 <!-- <v-card-text class="pa-4 pt-0"> -->
                     <v-row>
-                        <v-col cols="8">
-                            <v-row class="justify-space-between mt-5 mb-5">
-                                <v-row style="font-size: 24px; font-weight: 700; margin-left: 40px;">
+                        <v-col cols="7">
+                            <v-row class="justify-space-between">
+                                <v-row style="font-size: 24px; font-weight: 700; margin: 40px 50px 0">
                                     {{ this.noticeTitle }}
                                 </v-row>
-                                <v-icon v-if="isAuthor" class="mr-5"
+                                <v-icon v-if="isAuthor" style="margin: 40px 10px 0"
                                     @click="noticeDrawer = !noticeDrawer">mdi-dots-horizontal-circle-outline
                                 </v-icon>
                                 <v-navigation-drawer location="right" v-if="noticeDrawer" v-model="noticeDrawer" temporary>
@@ -406,37 +404,63 @@
                                 </v-navigation-drawer>
                             </v-row>
                             <v-divider class="mt-10 mb-2"></v-divider>
-                            <v-row class="mb-4 ml-7 mr-2 mt-2">
+                            <v-row style="margin: 20px 40px; font-size: 20px;">
                                 {{ this.noticeContent }}
                             </v-row>                        
                         </v-col>
                         <v-col>
+                            
                             <!-- 댓글 리스트 -->
-                            <h4 class="mt-6 mb-1 ml-6 mr-2">댓글</h4>
-                            <v-row v-for="comment in comments" :key="comment.id">
-                                <div class="mb-4 ml-7 mr-2 mt-2 px-3">
-                                    <strong>{{ comment.memberName }}</strong>
-                                    <span class="ml-2">{{ comment.contents }}</span>
-                                </div>
-                                <div class="align-center mt-1">
-                                    <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
-                                    <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
-                                </div>
-                            </v-row>
-                            <v-pagination v-model="commentPage" :length="commentPages"
-                                @click="handleCommentPageChange()" style="margin-top:100px"></v-pagination>
+                             <v-row>
+                                <h4 style="font-weight: 700; margin: 40px 0 30px; padding: 0 20px">댓글</h4>
+                             </v-row>
                             <!-- 댓글 입력 폼 -->
-                            <h4 v-if="isCommentEdit" class="mt-6 mb-1 ml-6 mr-2">댓글 수정</h4>
-                            <h4 class="mt-6 mb-1 ml-6 mr-2" v-else>댓글 작성 </h4>
-                            <v-textarea class="mb-1 ml-6 mr-2" v-model="newComment" placeholder="댓글을 입력하세요"></v-textarea>
-                            <v-btn class="ml-6" @click="submitComment">댓글 등록</v-btn>
+                            <v-row style="margin: 20px 10px 50px 0">
+                                <v-textarea
+                                    v-model="newComment"
+                                    placeholder="댓글을 입력하세요"
+                                    dense
+                                    rows="1"
+                                    auto-grow
+                                    hide-details
+                                    style="max-height: 36px; margin-right: 8px;"
+                                ></v-textarea>
+                                <v-btn
+                                    @click="submitComment"
+                                    color="primary"
+                                    height="40px"
+                                >
+                                    등록
+                                </v-btn>
+                            </v-row>
+                            <hr>
+                            <v-row v-if="comments.length===0" justify="center">
+                                <div style="font-size: 18px; color: #999; margin: 30px 0">
+                                    댓글이 없습니다
+                                </div>
+                                
+                            </v-row>
+                            <div v-else>
+                                <v-row v-for="comment in comments" :key="comment.id">
+                                    <div style="background-color: #F2F2F2; margin: 20px 20px 10px 10px; width: 75%; padding: 10px 20px; font-size: 18px; border-radius: 10px;">
+                                        <strong>{{ comment.memberName }}</strong><br>
+                                        <span>{{ comment.contents }}</span>
+                                    </div>
+                                    <div style="margin: 20px 20px 10px 10px; display: flex; align-items: center;">
+                                        <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
+                                        <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
+                                    </div>
+                                </v-row>
+                                <v-pagination v-model="commentPage" :length="commentPages"
+                                    @click="handleCommentPageChange()"></v-pagination>
+                            </div>    
                         </v-col>
                     </v-row>
  
                 <!-- </v-card-text> -->
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
-                        <v-btn variant="outlined" @click="renewNotice()" class="mr-3">확인</v-btn>
+                        <v-btn variant="outlined" @click="renewNotice()" class="mr-3">닫기</v-btn>
                     </v-row>
                 </v-card-actions>
 
@@ -624,6 +648,21 @@ export default {
         //     console.log("튜티 채팅방"+JSON.stringify(response))
         //     this.infoData.chatRoomId=response.data.result.roomId;
         // }
+        if(!this.isLecture && this.istutor){
+            const body = {
+                lectureGroupId : this.lectureGroupId,
+                tuteeId : this.tutees[0].memberId    // 에러남
+            }
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`,body)
+            console.log("채팅방 response tutor"+JSON.stringify(response))
+            console.log(response.data.result.roomId)
+            this.infoData.chatRoomId=response.data.result.roomId;
+        }
+        else if(!this.isLecture && !this.istutor){
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-room-check-or-create?lectureGroupId=${this.lectureGroupId}`)
+            console.log("튜티 채팅방"+JSON.stringify(response))
+            this.infoData.chatRoomId=response.data.result.roomId;
+        }
     },
 
     methods: {

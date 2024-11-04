@@ -59,13 +59,22 @@
     </div>
     <div class="logout" @click="logout">로그아웃</div>
   </section>
+
+  <ChatModal
+    v-model:dialog="chatModal"
+  persistent
+  :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
+  />
 </template>
 
 <script>
 import axios from "axios";
 import { EventSourcePolyfill } from 'event-source-polyfill'
-
+import ChatModal from "../ChatModal.vue";
 export default {
+  components:{
+    ChatModal
+    },
   data() {
     return {
       isLogin: false,
@@ -80,6 +89,7 @@ export default {
       generalEvents: [], // 일반 알림을 저장할 배열
       count: 0,
       eventId: "",
+      chatModal : false,
     };
   },
   watch: {
@@ -205,10 +215,15 @@ export default {
       }
     },
     navigateTo(title) {
-      const menuItem = this.menuItems.find(item => item.title === title);
-      if (menuItem && menuItem.route) {
-        this.$router.push(menuItem.route); // Vue Router를 통해 이동
+      if(title ==='채팅'){
+        this.chatModal = true;
+      }else{
+        const menuItem = this.menuItems.find(item => item.title === title);
+        if (menuItem && menuItem.route) {
+          this.$router.push(menuItem.route); // Vue Router를 통해 이동
+        }
       }
+      
     },
     openAlertListModal() {
       this.alertDialogSSE = true;
@@ -433,4 +448,6 @@ export default {
 .v-overlay__scrim {
   background-color: transparent !important;
 }
+
+
 </style>

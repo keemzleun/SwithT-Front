@@ -7,6 +7,17 @@
                 <div style="height: 650px;" class="v-card-custom">
 
                     <v-card-text class="chat-list-scroll">
+                        <div v-if="chatRoomList.length == 0" class="chatRoomListEmpty">
+                            <v-icon style="font-size: 40px; margin-bottom:20px;" color="#11b69a" >mdi-message-settings-outline</v-icon>
+                            <h5>채팅 내역이 없어요</h5>
+                            <div color="grey">
+                                마음에 드는 과외/강의에<br/> 지원해보세요<br/><br />
+                            </div>
+                           
+                            <v-btn class="lectureLessonBtn" @click="clickHomeBtn()">과외/강의 확인하기</v-btn>
+                        </div>
+
+                        <div v-else>
                         <v-card v-for="chatRoom in chatRoomList" :key="chatRoom.id"
                             :class="{ 'selected-chat-room': chatRoomId === chatRoom.chatRoomId, 'custom-border': true }"
                             @click="changeChatRoom(chatRoom)">
@@ -20,6 +31,7 @@
                                 {{ chatRoom.memberName }}
                             </v-card-text>
                         </v-card>
+                    </div>
                     </v-card-text>
                 </div>
             </v-col>
@@ -333,6 +345,9 @@ export default {
                 return 'chat-message received';
             }
         },
+        clickHomeBtn(){
+            this.$router.push("/home");
+        },
 
 
     }
@@ -483,5 +498,22 @@ export default {
 .title-font-size {
     font-size: 25px;
     font-weight: bold;
+}
+
+.chatRoomListEmpty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Ensures it takes the full height of the parent card */
+    text-align: center;
+  }
+
+.lectureLessonBtn{
+    border: 2px solid;
+    border-radius: 8px;
+    box-shadow: none !important;
+    color: #11b69a !important; /* Customize green color */
+    border-color: #11b69a !important;
 }
 </style>

@@ -95,10 +95,8 @@
       <div class="form-group row mb-3">
         <label for="phoneNumber" class="col-sm-2 col-form-label">휴대전화</label>
         <div class="col-sm-10">
-          <input type="tel" id="phoneNumber" class="form-control" placeholder="숫자만 입력해주세요" v-model="phoneNumber" 
-          @input="phoneNumber = phoneNumber.replace(/[^0-9]/g, '')"
-
-            required />
+          <input type="tel" id="phoneNumber" class="form-control" placeholder="숫자만 입력해주세요" v-model="phoneNumber"
+            @input="phoneNumber = phoneNumber.replace(/[^0-9]/g, '')" required />
         </div>
       </div>
 
@@ -117,6 +115,8 @@
         </div>
       </div>
     </form>
+    <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+    :title=this.alertModalTitle :contents=this.alertModalContents />
   </div>
 </template>
 
@@ -124,7 +124,12 @@
 /* global kakao */
 
 import axios from "axios";
+import AlertModal from "@/components/AlertModal.vue";
+
 export default {
+  components: {
+    AlertModal
+  },
   data() {
     return {
       // 회원가입 form data
@@ -144,6 +149,10 @@ export default {
       // 인증 코드 관련 상태
       codeSent: false,
       verificationSuccess: false,
+
+      alertModal: false,
+      alertModalTitle: "",
+      alertModalContents: "",
     };
   },
   mounted() {
@@ -180,13 +189,17 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/member-service/member/create`,
           registerData
         );
-        alert("회원 가입 성공");
+        this.alertModalTtile = "회원 가입 성공";
+        this.alertModalContents = "회원 가입 성공했습니다.";
+        this.alertModal = true;
         this.$router.push("/member/email/login");
       } catch (e) {
         const error_message =
           e.response?.data?.error_message || "회원가입 중 오류가 발생했습니다.";
         console.error(error_message);
-        alert(error_message);
+        this.alertModalTtile = "회원 가입 실패";
+        this.alertModalContents = error_message;
+        this.alertModal = true;
       }
     },
     async requestVerificationCode() {
@@ -197,11 +210,16 @@ export default {
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/email/requestCode?email=${this.email}`
         );
-        alert(response.data.status_message);
+        console.log(response)
+        this.alertModalTtile = "이메일 인증 코드 전송";
+        this.alertModalContents = response.data.status_message;
+        this.alertModal = true;
       } catch (error) {
         console.error(error);
         this.codeSent = false;
-        alert("이메일 인증 코드 전송에 실패했습니다.");
+        this.alertModalTtile = "이메일 인증 코드 전송 실패";
+        this.alertModalContents = "이메일 인증 코드 전송에 실패했습니다.";
+        this.alertModal = true;
       }
     },
     async verifyCode() {
@@ -209,12 +227,16 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/email/requestCode?email=${this.email}&code=${this.otp}`
         );
-        alert(response.data.status_message);
+        this.alertModalTtile = "이메일 인증 성공";
+        this.alertModalContents = response.data.status_message;
+        this.alertModal = true;
         this.verificationSuccess = true;
       } catch (error) {
         console.error(error);
         this.verificationSuccess = false;
-        alert("인증 코드가 올바르지 않습니다.");
+        this.alertModalTtile = "이메일 인증 실패";
+        this.alertModalContents = "인증 코드가 올바르지 않습니다.";
+        this.alertModal = true;
       }
     },
     fileUpdate(event) {

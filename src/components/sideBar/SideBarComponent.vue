@@ -9,10 +9,10 @@
           <span>{{ count }}</span>
         </div>
       </div>
-      <v-dialog v-model="alertDialogSSE" width="400" content-class="custom-alert-position elevation-1" absolute
-        scrim="false" :style="{ boxShadow: '10px 0px 20px rgba(0, 0, 0, 0.5)' }">
+      <v-overlay v-model="alertDialogSSE" width="400" content-class="custom-alert-position" absolute
+        scrim="false" >
         <v-card 
-        :style="{ height: '100vh', overflowY: 'auto', boxShadow: '10px 0 5px -2px #353535', backgroundColor:'#f1f3f5' }"
+        :style="{ height: '100vh', top: '0', overflowY: 'auto', boxShadow: '5px 0 5px -2px #adb5bd', backgroundColor:'#f1f3f5' }"
         class="border border-t-sm border-b-sm border-l-sm pa-5">
           <v-card-title style="text-align: center; padding-bottom: 0;">
             <v-row>
@@ -29,7 +29,7 @@
             </v-row>
           </v-card-title>
 
-          <v-card-text>
+          <v-card-text class="mt-5">
             <div v-if="filteredEventList.length === 0">
               새로운 알림이 없습니다.
             </div>
@@ -44,7 +44,7 @@
             </div>
           </v-card-text>
         </v-card>
-      </v-dialog>
+      </v-overlay>
       <div class="profile-name">
         <span style="font-weight: 700">{{ userName }}</span>
         <span> 님</span>
@@ -369,11 +369,11 @@ export default {
 
 .custom-alert-position {
   position: fixed !important;
-  top: 20px !important;
+  top: 0px !important;
   right: 100px !important;
   transform: none !important;
   width: 400px;
-  max-height: 100vh;
+  height: 100vh !important;
   overflow-y: auto;
   z-index: 202;
 }
@@ -419,14 +419,16 @@ export default {
 
 .custom-alert-position {
   position: fixed !important;
-  top: 20px !important;
+  top: 0px !important;
   right: 95px !important;
   width: 400px;
-  max-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
-  box-shadow: 10px 0 5px -2px #353535 !important;
+  box-shadow: 5px 0 5px -1px #949494 !important;
   z-index: 202;
   animation: slideInPartial 0.5s ease-out forwards;
+  margin-top: 0px !important;
+  padding: 1px;
   /* 슬라이드 애니메이션 */
 }
 .v-overlay__scrim {

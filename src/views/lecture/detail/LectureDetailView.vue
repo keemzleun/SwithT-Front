@@ -743,7 +743,6 @@ async submitApplication() {
             this.closeApplyModal();
             // location.reload(); // 페이지 새로 고침
         } catch (error) {
-            alert(error.response.data.error_message);
             console.error("강의 신청 중 오류가 발생했습니다:", error);
             this.snackbar = { show: true, message: "강의 신청에 실패했습니다.", color: "error" };
         }

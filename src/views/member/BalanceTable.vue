@@ -5,12 +5,12 @@
     display: 'flex',
     flexDirection: 'column',
   }"> -->
-  <v-container width="70vw"  style="margin-top: 60px;">
+  <v-container width="70vw" style="margin-top: 60px;">
     <v-row justify="center">
       <v-col class="main-title" cols="12" align="center" style="font-size: 28px; font-weight: 700">
         <p>정산금</p>
       </v-col>
-  </v-row>
+    </v-row>
     <!-- 상단 출금 가능 금액과 예상 수익금 -->
     <v-row>
       <v-col cols="6">
@@ -202,11 +202,15 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+      :title=this.alertModalTitle :contents=this.alertModalContents />
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import AlertModal from "@/components/AlertModal.vue";
+
 import {
   Chart,
   CategoryScale,
@@ -220,6 +224,9 @@ import {
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default {
+  components: {
+    AlertModal
+  },
   async created() {
     try {
       const response = await axios.get(
@@ -379,14 +386,14 @@ export default {
         );
         this.labels = chartWithdrawalResponse.data.result.labels;
         this.withdrawalChart = chartWithdrawalResponse.data.result.data;
-        console.log("this.withdrawalChart",this.withdrawalChart)
+        console.log("this.withdrawalChart", this.withdrawalChart)
 
         const chartBalanceResponse = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/payment-service/chart/balance?months=${this.months}`
         );
         this.balanceChart = chartBalanceResponse.data.result.data;
-        console.log("this.balanceChart",this.balanceChart)
-        
+        console.log("this.balanceChart", this.balanceChart)
+
         // 차트 데이터를 불러온 후 drawChart 메서드 호출
         this.drawChart();
       } catch (error) {
@@ -440,7 +447,9 @@ export default {
 
     async handleWithdrawal() {
       if (!this.withdrawAmount || this.withdrawAmount <= 0) {
-        alert("유효한 출금 금액을 입력하세요.");
+        this.alertModalTtile = "출금 금액 재입력 요청";
+        this.alertModalContents = "유효한 출금 금액을 입력하세요.";
+        this.alertModal = true;
         return;
       }
 
@@ -454,12 +463,17 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/member-service/withdrawal`,
           dto
         );
-        alert("출금 요청 완료");
+
         this.showModal = false;
+        this.alertModalTtile = "출금 요청 완료";
+        this.alertModalContents = "출금 요청 완료되었습니다.";
+        this.alertModal = true;
         window.location.reload();
       } catch (error) {
         console.error(error);
-        alert("출금 요청 중 오류가 발생했습니다.");
+        this.alertModalTtile = "출금 요청 실패";
+        this.alertModalContents = "출금 요청이 실패되었습니다.";
+        this.alertModal = true;
       }
     },
   },
@@ -508,6 +522,11 @@ export default {
         { date: "24/09/04", description: "과학 과외 수익", amount: "400,000" },
         { date: "24/09/01", description: "수학 과외 수익", amount: "200,000" },
       ],
+
+
+      alertModal: false,
+      alertModalTitle: "",
+      alertModalContents: "",
     };
   },
 };

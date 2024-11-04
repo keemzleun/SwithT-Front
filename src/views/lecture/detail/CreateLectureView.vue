@@ -73,7 +73,7 @@
         </v-col>
       </v-row>
 
-     
+
     </v-form>
 
 
@@ -114,7 +114,7 @@
                           </v-col>
                         </v-row>
                       </div>
-                      
+
                       <v-row>
                         <v-col cols="4" class="d-flex align-center justify-center">
                           <label style="font-size: 13px; color: #555;">강의료/인원</label>
@@ -146,12 +146,12 @@
               </div>
             </div>
           </div>
-          <hr/>
+          <hr />
 
           <v-row>
             <!-- 시간표 -->
             <v-col cols="4" class="d-flex">
-              <table border="3" class="time-table" >
+              <table border="3" class="time-table">
                 <thead>
                   <tr>
                     <th>시간</th>
@@ -177,7 +177,7 @@
                 </tbody>
               </table>
             </v-col>
-    
+
             <v-col cols="8">
               <div v-if="!showForm" @click="addLectureGroup" class="time-form time-add"
                 style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
@@ -188,10 +188,10 @@
                   강의 그룹 생성
                 </span>
               </div>
-    
+
               <!-- 강의 그룹 정보 입력 폼 -->
               <div v-if="showForm" class="form">
-    
+
                 <!-- 강의 주소, 시작일, 종료일 -->
                 <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center" style="margin-top: 10px">
                   <v-col cols="3" class="d-flex align-center justify-center">
@@ -200,15 +200,16 @@
                   <v-col cols="9">
                     <v-row style="padding: 12px;" align="center">
                       <v-btn style="border: 1px solid #ccc;" variant="outlined"
-                      @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
+                        @click="updateAddress()"><v-icon>mdi-map-search</v-icon> 주소 검색</v-btn>
                       <div style="margin-left: 10px; font-weight: 700;">{{ currentLecture.address }}</div>
                     </v-row>
                     <v-row style="padding: 0px 12px 12px;">
-                      <input v-model="currentLecture.detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" type="text" />
+                      <input v-model="currentLecture.detailAddress" class="form-control" placeholder="상세주소를 입력해주세요"
+                        type="text" />
                     </v-row>
                   </v-col>
                 </v-row>
-    
+
                 <v-row v-if="teachingMethod === 'LECTURE'" class="form-group align-center">
                   <v-col cols="3" class="d-flex align-center justify-center">
                     <label style="font-size: 15px">강의 기간</label>
@@ -223,7 +224,7 @@
                     <input v-model="currentLecture.endDate" class="form-control" type="date" />
                   </v-col>
                 </v-row>
-    
+
                 <v-row class="form-group align-center">
                   <v-col cols="3" class="d-flex align-center justify-center">
                     <label class="label-width" style="font-size: 15px">강의료</label>
@@ -233,7 +234,7 @@
                       class="form-control input-width" />
                   </v-col>
                 </v-row>
-    
+
                 <v-row>
                   <v-col cols="3" class="d-flex align-center justify-center">
                     <label class="label-width" style="font-size: 15px">모집 인원</label>
@@ -243,7 +244,7 @@
                       placeholder="모집 인원을 입력하세요" class="form-control input-width" />
                   </v-col>
                 </v-row>
-    
+
                 <!-- 시간 및 요일 추가 -->
                 <div v-for="(timeSlot, index) in currentLecture.timeSlots" :key="index" class="time-form">
                   <v-row>
@@ -253,8 +254,8 @@
                     <v-col>
                       <v-row>
                         <div v-for="day in days" :key="day"
-                          :class="['custom-option-day', timeSlot.day === day ? 'selected' : '']" @click="timeSlot.day = day"
-                          style="margin: 0 3px">
+                          :class="['custom-option-day', timeSlot.day === day ? 'selected' : '']"
+                          @click="timeSlot.day = day" style="margin: 0 3px">
                           {{ day }}
                         </div>
                       </v-row>
@@ -276,7 +277,7 @@
                     </v-col>
                   </v-row>
                 </div>
-    
+
                 <div @click="addTimeSlot" class="time-form time-add"
                   style="padding: 10px 0; display: flex; align-items: center; justify-content: center;">
                   <span class="material-icons-outlined" style="margin-right: 5px;">
@@ -291,11 +292,11 @@
                 </v-row>
               </div>
             </v-col>
-            </v-row>
-          </v-col>
-        
+          </v-row>
+        </v-col>
 
-        
+
+
       </v-row>
       <v-row class="justify-center" style="padding: 0 10px">
         <div @click="createLecture" class="create-lecture">개설 신청</div>
@@ -308,6 +309,8 @@
         </template>
       </v-snackbar>
     </div>
+    <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+      :title=this.alertModalTitle :contents=this.alertModalContents />
   </v-container>
 
 
@@ -318,14 +321,19 @@
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
+import AlertModal from "@/components/AlertModal.vue";
+
 import axios from 'axios';
 
 export default {
+  components: {
+    AlertModal
+  },
   data() {
     return {
       isLogin: false,
       address: null,
-      detailAddress:"",
+      detailAddress: "",
       startDate: null,
       endDate: null,
       userName: null,
@@ -368,7 +376,10 @@ export default {
         visible: false,
         message: '',
         color: '#6C97FD'
-      }
+      },
+      alertModal: false,
+      alertModalTitle: "",
+      alertModalContents: "",
     };
   },
   mounted() {
@@ -509,7 +520,9 @@ export default {
       }
 
       if (hasOverlap) {
-        alert('겹치는 강의 시간이 존재합니다. 다른 시간을 선택해주세요.');
+        this.alertModalTtile = "강의 신청 시간 중복";
+        this.alertModalContents = "겹치는 강의 시간이 존재합니다. 다른 시간을 선택해주세요.";
+        this.alertModal = true;
         return; // 겹치는 경우 강의 추가 중단
       }
 
@@ -567,8 +580,8 @@ export default {
     },
 
     async createLecture() {
- 
-      if (this.title === '' || this.contents === '' || this.field === '' || this.teachingMethod === ''){
+
+      if (this.title === '' || this.contents === '' || this.field === '' || this.teachingMethod === '') {
         this.showSnackbar('강의 정보를 입력해야 합니다.');
         return; // 강의 그룹이 없을 경우 함수 종료
       }
@@ -591,7 +604,7 @@ export default {
           price: (group.fee && group.fee.replace(/,/g, '')) || '0',
           limitPeople: group.capacity,
           address: group.address,
-          detailAddress:group.detailAddress,
+          detailAddress: group.detailAddress,
           startDate: group.startDate,
           endDate: group.endDate,
           groupTimeReqDtos: group.timeSlots.map(slot => ({
@@ -627,7 +640,7 @@ export default {
         console.log(formData);
         if (response.status === 200) {
           this.showSnackbar('강의가 성공적으로 생성되었습니다!', 'success');
-          
+
           window.location.href = "/tutor-applied-list";
         }
       } catch (e) {
@@ -641,7 +654,7 @@ export default {
       this.snackbar.visible = true;
     },
     removeLectureGroup(index) {
-     const removedGroup = this.lectureGroups[index];
+      const removedGroup = this.lectureGroups[index];
 
       // 스케줄에서 삭제된 강의 그룹의 시간 슬롯 제거
       removedGroup.timeSlots.forEach(slot => {
@@ -695,6 +708,7 @@ export default {
 .section {
   margin: 50px 0;
 }
+
 .time-table {
   position: sticky;
   top: 60px;
@@ -768,15 +782,18 @@ td {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 .custom-option:hover {
   cursor: pointer;
   transform: scale(1.05);
 }
+
 .custom-option.selected {
   border-color: #007bff;
   background-color: #e7f0ff;
   transform: scale(1.05);
 }
+
 .custom-option-day {
   padding: 7px;
   border: 1px solid #ccc;
@@ -784,10 +801,12 @@ td {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 .custom-option-day:hover {
   cursor: pointer;
   transform: scale(1.05);
 }
+
 .custom-option-day.selected {
   border-color: #007bff;
   background-color: #e7f0ff;

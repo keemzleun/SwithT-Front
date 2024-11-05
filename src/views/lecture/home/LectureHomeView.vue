@@ -663,6 +663,9 @@ export default {
             console.log("튜티 채팅방"+JSON.stringify(response))
             this.infoData.chatRoomId=response.data.result.roomId;
         }
+        else{
+            this.infoData.chatRoomId = data.chatRoomId;
+        }
     },
 
     methods: {

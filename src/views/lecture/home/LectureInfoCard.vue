@@ -16,7 +16,7 @@
                     </div>
                 </v-row>
                 <v-row class="d-flex align-center justify-start mb-2">
-                    <div class="title mr-2">{{ infoData.title }} <v-icon v-if="isChat&&isTutor" @click="clickChatRoom()">mdi-chat</v-icon></div>
+                    <span class="title mr-2">{{ infoData.title }}</span> <v-icon style="font-size:30px;" v-if="isChat" @click="clickChatRoom()">mdi-chat</v-icon>
 
                     
                     <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
@@ -181,6 +181,7 @@ export default {
             groupTimes: [],
             chatModal: false,
             chatRoomId: '',
+            isChat:false,
         };
     },
     mounted() {
@@ -256,7 +257,7 @@ export default {
         },
          clickChatRoom() {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
-            this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
+            this.chatModal = true;
         },
         formattedCategory() {
             if (this.infoData?.category) {

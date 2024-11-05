@@ -25,7 +25,11 @@
     </div>
 
     <!-- 카테고리 메뉴 -->
-    <section class="menu" style="margin-top: 20px">
+    <section class="menu mt-5" style="margin-top: 20px">
+      <div class="menu-list" :class="{ 'highlighted': selectedCategory === 'CAREER' }" @click="performCategorySearch('CAREER')">
+        <img src="@/assets/manager_2704454.png" class="menu-icon">
+        <div class="menu-title">취업/직무</div>
+      </div>
       <div class="menu-list" :class="{ 'highlighted': selectedCategory === 'DEVELOPMENT' }" @click="performCategorySearch('DEVELOPMENT')">
         <img src="@/assets/target_2656366.png" class="menu-icon">
         <div class="menu-title">자기계발</div>
@@ -37,10 +41,6 @@
       <div class="menu-list" :class="{ 'highlighted': selectedCategory === 'HOBBY' }" @click="performCategorySearch('HOBBY')">
         <img src="@/assets/painting_2655642.png" class="menu-icon">
         <div class="menu-title">취미</div>
-      </div>
-      <div class="menu-list" :class="{ 'highlighted': selectedCategory === 'CAREER' }" @click="performCategorySearch('CAREER')">
-        <img src="@/assets/manager_2704454.png" class="menu-icon">
-        <div class="menu-title">취업/직무</div>
       </div>
       <div class="menu-list" :class="{ 'highlighted': selectedCategory === 'LECTURE' }" @click="performTypeSearch('LECTURE')">
         <img src="@/assets/meeting-room_2645420.png" class="menu-icon">
@@ -260,12 +260,14 @@ export default {
     background-color: #EEE;
     border-radius: 10px;
     cursor: pointer;
+
 }
 
 .menu-icon {
     font-size: 60px;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
+    margin: 5px;
 }
 
 .menu-title {

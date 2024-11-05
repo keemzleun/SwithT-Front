@@ -29,9 +29,9 @@
             이메일로 로그인
           </v-btn>
 
-          <br />
+          <!-- <br /> -->
 
-          <v-btn
+          <!-- <v-btn
             block
             style="
               height: 50px;
@@ -45,7 +45,7 @@
           >
             <v-icon left style="margin-right: 10px"> mdi-chat </v-icon>
             카카오 계정으로 로그인
-          </v-btn>
+          </v-btn> -->
 
           <br />
 
@@ -112,7 +112,7 @@
 
           <br />
 
-          <v-btn
+          <!-- <v-btn
             block
             style="
               height: 50px;
@@ -128,7 +128,7 @@
             카카오 계정으로 로그인
           </v-btn>
 
-          <br />
+          <br /> -->
 
           <v-btn
             block

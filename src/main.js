@@ -10,6 +10,8 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import '@mdi/font/css/materialdesignicons.css'
 import { useKakao } from 'vue3-kakao-maps/@utils';
 import 'font-awesome/css/font-awesome.css';
+import Toast, { POSITION } from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 const app = createApp(App);
 
 axios.interceptors.request.use(
@@ -57,3 +59,8 @@ useKakao('03a055c21377bee26ab1559dedf4af6f',['clusterer', 'services', 'drawing']
 app.use(router);
 app.use(vuetify);
 app.mount('#app');
+app.use(Toast, {
+  position: POSITION.TOP_RIGHT,
+  timeout: 3000, // 토스트 알림 표시 시간
+  closeOnClick: true, // 클릭하면 닫힘
+});

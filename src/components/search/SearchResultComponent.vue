@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <!-- 검색창 및 추천 검색어 목록 -->
-    <div class="search-container" style="margin-top: 60px">
+    <div class="search-container" ref="searchBar" style="margin-top: 80px">
       <input
         v-model="searchValue"
         dense
@@ -12,15 +12,20 @@
         @keyup.enter="performSearch"
       />
       <span @click="performSearch" class="search-btn mdi mdi-magnify"></span>
-      <ul v-if="suggestions.length > 0" class="suggestions-list">
-        <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)">
+      <!-- 추천 검색어 표시 -->
+      <ul v-if="suggestions.length > 0" class="suggestions-list" :style="{ top: suggestionsTop + 'px' }">
+        <li
+          v-for="(suggestion, index) in suggestions"
+          :key="index"
+          @click="selectSuggestion(suggestion)"
+        >
           {{ suggestion }}
         </li>
       </ul>
     </div>
 
     <!-- 카테고리 메뉴 -->
-    <section class="menu">
+    <section class="menu" style="margin-top: 20px">
       <div class="menu-list" :class="{ 'highlighted': selectedCategory === 'DEVELOPMENT' }" @click="performCategorySearch('DEVELOPMENT')">
         <img src="@/assets/target_2656366.png" class="menu-icon">
         <div class="menu-title">자기계발</div>
@@ -47,6 +52,8 @@
       </div>
     </section>
 
+    <br>
+    <br>
     <!-- 검색 결과 -->
     <div v-if="searchResult.length === 0">검색 결과가 없습니다.</div>
     <div v-else class="lecture-list mr-15" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
@@ -89,11 +96,14 @@ export default {
       suggestions: [],  // 추천 검색어 저장 배열
       searchResult: [], // 검색 결과 저장할 배열
       selectedCategory: "", // 선택된 카테고리를 저장
+      suggestionsTop: 0,
     };
   },
   async mounted() {
     // 초기 검색 요청
     this.fetchSearchResults();
+    this.updateSuggestionsPosition();
+    window.addEventListener("resize", this.updateSuggestionsPosition);
   },
   watch: {
     // 라우터의 쿼리 파라미터가 변경될 때마다 검색 결과 갱신
@@ -114,6 +124,8 @@ export default {
             { params: { keyword: this.searchValue } }
           );
           this.suggestions = response.data;
+
+          this.updateSuggestionsPosition();
         } catch (error) {
           console.error("추천 검색어 가져오기 실패:", error);
         }
@@ -203,8 +215,24 @@ export default {
         default:
           return category;
       }
-    }
-  }
+    },
+    updateSuggestionsPosition() {
+    // search-bar의 위치를 계산하여 suggestionsTop에 반영
+      const searchBar = this.$refs.searchBar;
+      if (searchBar) {
+        const rect = searchBar.getBoundingClientRect();
+        // console.log(rect)
+        this.suggestionsTop = rect.height;
+        // console.log("Updated suggestionsTop:", this.suggestionsTop);
+      }
+    },
+  },
+  updated() {
+    this.updateSuggestionsPosition();
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.updateSuggestionsPosition);
+  },
 };
 </script>
 
@@ -212,7 +240,6 @@ export default {
 .v-container {
     margin: 0 auto;
     max-width: 90%; /* 전체 폭을 최대한 꽉 차게 설정 */
-    padding-right: 140px; /* 사이드바 공간 확보 */
     color: #333;
 }
 
@@ -251,41 +278,65 @@ export default {
 }
 
 .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 50px;
-    position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  position: relative;
 }
-
 .search-bar {
-    width: 40vw;
-    height: 50px;
-    background-color: #d1e4fb;
-    border: 1px solid #a7caef;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
-    padding: 14px 20px;
-    border-radius: 28px;
-    transition: all .2s ease;
+  width: 40vw;
+  height: 50px;
+  border-radius: 50px;
+  background-color: #d1e4fb;
+  border: 1px solid #a7caef;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  padding: 14px 20px;
+  border-radius: 28px;
+  height: auto;
+  transition: all 0.2s ease;
 }
-
 .search-bar:focus {
-    outline: unset;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
-    border: 1px solid #dedede;
-    background-color: #fff;
+  outline: unset;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid #dedede;
+  background-color: #fff;
 }
-
 .search-btn {
-    color: #555;
-    margin-left: 10px;
-    font-size: 30px;
-    transition: all .2s ease;
+  color: #555;
+  margin-left: 10px;
+  font-size: 30px;
+  transition: all 0.2s ease;
 }
-
 .search-btn:hover {
-    cursor: pointer;
-    font-size: 35px;
+  cursor: pointer;
+  font-size: 35px;
+}
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  position: absolute;
+  background-color: white;
+  left: 26.5%;
+  width: 38vw;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-radius: 28px;
+  height: auto;
+  overflow-x: hidden; /* 좌우 스크롤 비활성화 */
+  overflow-y: auto;   /* 상하 스크롤 활성화 */
+  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+}
+.suggestions-list li {
+  padding: 5px;
+  margin: 0px;
+  width: 37w;
+  border-radius: 28px;
+  cursor: pointer;
+  text-align: left;
+}
+.suggestions-list li:hover {
+  background-color: #eee;
 }
 
 .lecture-list {

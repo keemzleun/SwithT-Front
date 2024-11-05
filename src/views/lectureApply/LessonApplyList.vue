@@ -18,8 +18,9 @@
                                 <span style="font-size: 20px; margin:20px;">{{ apply.tuteeName }}</span>
                                 <span class="material-icons chat chat-btn" style="font-size: 30px;" @click="clickChatRoom(apply.chatRoomId, apply.memberId)">chat</span>
                             </div>
+                            <div>{{apply.startDate}}</div> <div>{{apply.location}}</div>
                             <div>
-                                <span class="ml-3 font-weight-class" style="color: blue; font-weight:bold; font-size: 18px;" v-if="apply.status === 'WAITING'">결제 대기중</span>
+                                <span class="ml-3 font-weight-class" style="color: blue; font-size: 18px;" v-if="apply.status === 'WAITING'">결제 대기중</span>
                                 
                                 <v-btn color="#6C97FD" class="ml-3 font-weight-class" v-else
                                     @click="clickApplyRejectBtn('apply', apply.applyId, apply.tuteeName)">수락</v-btn>

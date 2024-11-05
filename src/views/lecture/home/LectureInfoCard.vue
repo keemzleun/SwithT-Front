@@ -16,7 +16,7 @@
                     </div>
                 </v-row>
                 <v-row class="d-flex align-center justify-start mb-2">
-                    <div class="title mr-2">{{ infoData.title }} <v-icon v-if="isChat&&isTutor" @click="clickChatRoom()">mdi-chat</v-icon></div>
+                    <div class="title mr-2">{{ infoData.title }} <v-icon v-if="isChat&&isTutor" @click="clickChatRoom()">mdi-chat</v-icon><v-icon v-if="isTutor && !isTuteeExist" style="font-size:30px;" @click="this.$router.push(`/lecture-group/${this.lectureGroupId}`)">mdi-pencil</v-icon></div>
 
                     
                     <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
@@ -149,6 +149,7 @@ export default {
         isTutor: Boolean,
         infoData: Object,
         lectureSchedules: String,
+        isTuteeExist:Boolean
     },
     data() {
         return {

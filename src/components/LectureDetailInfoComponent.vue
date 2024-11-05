@@ -11,7 +11,7 @@
                     </span>
                 </div>
                 <div class="title">{{ lectureInfo?.title }}</div>
-                <div class="memberName"> {{ lectureInfo?.memberName }} 튜터</div>
+                <div class="d-flex align-center"><span class="memberName"> {{ lectureInfo?.memberName }} 튜터</span><v-icon class="ml-1" style="font-size:20px" @click="gotoEdit()">mdi-pencil</v-icon></div>
                 <div class="avgScore">
                     <span class="mdi mdi-star" style="font-size: 18px;"> </span>
                     <span style="font-size: 18px; margin-left: 3px;"> {{ lectureInfo?.avgScore }}점</span>
@@ -76,6 +76,10 @@ export default {
                 console.error('강의 정보를 가져오는 데 실패했습니다:', error);
             }
         },
+        gotoEdit(){
+            console.log()
+            this.$router.push(`/edit-lecture/${this.lectureId}`)
+        }
     },
 };
 </script>

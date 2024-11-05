@@ -140,7 +140,7 @@ export default {
         const reviewData = {
           tutorId: 5, // 실제 튜터 ID를 동적으로 설정해야 함 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           star: this.rating,
-          applyId: 1, // 실제 applyId 동적으로 를 설정해야 함
+          applyId: this.applyId, // 실제 applyId 동적으로 를 설정해야 함
           title: this.reviewTitle,
           contents: this.reviewContent,
         };
@@ -150,7 +150,7 @@ export default {
           `${process.env.VUE_APP_API_BASE_URL}/member-service/review/create`,
           reviewData
         );
-
+        console.log("리뷰"+JSON.stringify(reviewResponse))
         if (reviewResponse.status === 201) {
           // 리뷰 작성 성공 후, 리뷰 상태 업데이트 요청
           const applyId = reviewData.applyId; // applyId 가져오기
@@ -159,10 +159,11 @@ export default {
             null, // PUT 요청에서 body가 없으므로 null로 설정
             { params: { applyId } } // applyId를 쿼리 파라미터로 전달
           );
-
+          console.log("리뷰 status 변경",statusResponse)
           if (statusResponse.status === 200) {
             console.log("리뷰가 성공적으로 등록되었으며, 상태가 업데이트되었습니다.");
             this.close(); // 폼 초기화 및 다이얼로그 닫기
+
           }
         }
       } catch (error) {

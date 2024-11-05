@@ -648,11 +648,6 @@ export default {
             this.alertModal = true;
         }
 
-
-        else{
-            this.infoData.chatRoomId = data.chatRoomId;
-        }
-
     },
 
     methods: {

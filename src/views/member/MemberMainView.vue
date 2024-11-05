@@ -204,20 +204,20 @@ export default {
           } else {
             // 404 등 오류 응답일 경우 /member/main으로 이동
             console.error("Google 로그인 URL이 유효하지 않습니다.");
-            window.location.href = "/member/main";
+            // window.location.href = "/member/main";
           }
         })
         .catch((error) => {
           // 네트워크 오류 등 예외 발생 시 처리
           console.error("Google 로그인 요청 오류:", error);
-          window.location.href = "/member/main";
+          // window.location.href = "/member/main";
         });
     },
-    redirectToKakao(role) {
-      Cookies.set("role", role); // 쿠키에 role 저장
-      window.location.href = 
-        `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/kakao`;
-    },
+    // redirectToKakao(role) {
+    //   Cookies.set("role", role); // 쿠키에 role 저장
+    //   window.location.href = 
+    //     `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/kakao`;
+    // },
   },
 };
 </script>

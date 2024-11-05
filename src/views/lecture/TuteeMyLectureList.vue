@@ -32,7 +32,7 @@
                         <br>
                         {{ lecture.startDate }} ~ {{ lecture.endDate }}
 
-                        <v-btn v-if="lecture.status === 'TERMINATE'" @click="openReviewModal(lecture.id)"
+                        <v-btn v-if="lecture.status === 'TERMINATE' && lecture.reviewStatus ==='N'" @click="openReviewModal(lecture)"
                             class="review-button">
                             <v-icon left>mdi-pencil</v-icon>
                             <b>리뷰 작성</b>
@@ -71,9 +71,8 @@ export default {
     },
 
     methods: {
-        openReviewModal(applyId) {
-            console.log("dkdkdk")
-            this.selectedApplyId = applyId;
+        openReviewModal(lecture) {
+            this.selectedApplyId = lecture.applyId;
             this.dialog = true;
         },
         async showLectureList() {

@@ -643,6 +643,12 @@ export default {
             this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
             this.alertModal = true;
         }
+
+
+        else{
+            this.infoData.chatRoomId = data.chatRoomId;
+        }
+
     },
 
     methods: {

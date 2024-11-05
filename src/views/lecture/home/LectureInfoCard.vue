@@ -16,7 +16,7 @@
                     </div>
                 </v-row>
                 <v-row class="d-flex align-center justify-start mb-2">
-                    <div class="title mr-2">{{ infoData.title }} <v-icon v-if="isChat&&isTutor" @click="clickChatRoom()">mdi-chat</v-icon><v-icon v-if="isTutor && !isTuteeExist" style="font-size:30px;" @click="this.$router.push(`/lecture-group/${this.lectureGroupId}`)">mdi-pencil</v-icon></div>
+                    <div class="title mr-2">{{ infoData.title }} <v-icon style="font-size:30px;" v-if="isChat" @click="clickChatRoom()">mdi-chat</v-icon><v-icon v-if="isTutor && !isTuteeExist" style="font-size:30px;" @click="this.$router.push(`/lecture-group/${this.lectureGroupId}`)">mdi-pencil</v-icon></div>
 
                     
                     <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
@@ -115,6 +115,11 @@
             <v-divider class="mt-2 mb-10"></v-divider>
         </v-card>
     </v-dialog>
+    <ChatModal
+    v-model:dialog="chatModal"
+    :selectedChatRoomId="this.chatRoomId"
+    :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
+    />
     <!-- <v-card class="custom-card">
         <v-row>
             <v-col cols="3" class="thumbnail-container rounded-circle">
@@ -143,8 +148,12 @@
 /* global kakao */
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import ChatModal from '@/components/ChatModal.vue';
 
 export default {
+    components:{
+        ChatModal,
+    },
     props: {
         isTutor: Boolean,
         infoData: Object,
@@ -165,7 +174,6 @@ export default {
             address: "",
             detailAddress:"",
             lectureGroupId: 0,
-            chatRoomId:0,
             days: ['월', '화', '수', '목', '금', '토', '일'],
             hours: [
                 '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -173,6 +181,8 @@ export default {
                 '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
             ],
             groupTimes: [],
+            chatModal: false,
+            chatRoomId: '',
             isChat:false,
         };
     },
@@ -248,10 +258,8 @@ export default {
             this.$router.push(`/lecture-group/${this.lectureGroupId}`);
         },
          clickChatRoom() {
-            
-            if(this.infoData.chatRoomId =="" || this.infoData.chatRoomId == null) console.log("채팅방 입장 안됨" + this.infoData.chatRoomId);
-            else console.log("채팅방 입장" + this.infoData.chatRoomId);
-            // this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
+            console.log("채팅방 입장" + this.infoData.chatRoomId);
+            this.chatModal = true;
         },
         formattedCategory() {
             if (this.infoData?.category) {

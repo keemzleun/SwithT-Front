@@ -12,7 +12,10 @@
                             <v-row>
                                 <v-col>
                                     <div align="left" justify="center">
-                                        <span class="tag" style="text-align:center;" >
+                                        <span class="tag" v-if="getLectureGroupStatus(group)=='종료'" style="text-align:center; background-color:grey;" >
+                                            {{ getLectureGroupStatus(group) }}
+                                        </span>
+                                        <span class="tag" v-else style="text-align:center;" >
                                             {{ getLectureGroupStatus(group) }}
                                         </span>
                                         <span style="font-size: 20px; font-weight: 700;">그룹 {{index + 1}}</span>
@@ -424,15 +427,18 @@ export default {
             const now = new Date();
             const start = new Date(group.startDate);
             const end = group.endDate ? new Date(group.endDate) : null;
+            
 
             if (this.lectureType === 'LESSON') {
                 if (group.isAvailable === 'N') {
-                    return '진행중';
-                } else if (group.isAvailable === 'Y') {
+                    if(end<now){
+                        return "종료";
+                    }else{
+                        return "진행중";
+                    }
+                } if (group.isAvailable === 'Y') {
                     return '모집중';
-                } else if (end && now > end) {
-                    return '종료';
-                }
+                } 
             } else {
                 if (now < start) {
                     return '모집중';

@@ -86,6 +86,7 @@
         <ChatModal
         v-model:dialog="chatModal"
         :selectedChatRoomId="this.chatRoomId"
+        persistent
         :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
         />
 

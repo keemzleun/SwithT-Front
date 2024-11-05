@@ -42,7 +42,7 @@
             </v-row>
         </v-card-text>
         <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange"></v-pagination>
-        <ReviewCreate v-model:dialog="dialog" :applyId="selectedApplyId" />
+        <ReviewCreate v-model:dialog="dialog" :applyId="selectedApplyId" :tutorId="selectedTutorId" />
 
     </v-container>
 </template>
@@ -59,6 +59,7 @@ export default {
             lectures: [],
             dialog: false,
             selectedApplyId: null,
+            selectedTutorId:null,
             status: 'ADMIT',
             page: 0,
             size: 6,
@@ -73,6 +74,7 @@ export default {
     methods: {
         openReviewModal(lecture) {
             this.selectedApplyId = lecture.applyId;
+            this.selectedTutorId=lecture.tutorId;
             this.dialog = true;
         },
         async showLectureList() {

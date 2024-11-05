@@ -10,36 +10,33 @@
             <v-col>
                 <h2 style="font-size: 18px; font-weight: 700; margin-top: 20px;">결제 내역</h2>
                 <v-row class="header" style="font-weight: bold; margin-top: 10px;">
-                    <v-col cols="1"></v-col>
-                    <v-col cols="2"></v-col>
-                    <v-col cols="2">강의명</v-col>
-                    <v-col cols="1">결제일</v-col>
-                    <v-col cols="1">결제 금액</v-col>
-                    <v-col cols="1">결제 영수증</v-col>
-                    <v-col cols="3">상태</v-col>
+                    <v-col cols="1" class="d-flex align-center"></v-col>
+                    <v-col cols="3" class="d-flex align-center">강의명</v-col>
+                    <v-col cols="2" class="d-flex align-center">결제일</v-col>
+                    <v-col cols="2" class="d-flex align-center">결제 금액</v-col>
+                    <v-col cols="2" class="d-flex align-center">상태</v-col>
+                    <v-col cols="1" class="d-flex align-center">결제 영수증</v-col>
+                    <v-col cols="1" class="d-flex align-center justify-center">환불</v-col>
                 </v-row>
             </v-col>
         </v-row>
 
-        <v-row>
-            <v-col v-if="paymentList.length">
-                <v-row v-for="(payment, index) in paymentList" :key="payment.id" class="item" style="margin-top: 10px;">
-                    <v-col cols="1">{{ index + 1 }}</v-col>
-                    <v-col cols="2" v-if="payment.lectureGroupId !== null">
-                        <img v-if="thumbnailUrls[payment.id]" :src="thumbnailUrls[payment.id]" alt="썸네일" style="width: 100%; height: auto;">
+        <v-row class="mb-10 d-flex" align-content="center">
+            <v-col v-if="paymentList.length" align-content="center">
+                <v-row v-for="(payment, index) in paymentList" :key="payment.id" class="item" style="margin-top: 10px; cursor: pointer;"
+                    @click="gotoLectureGroup(payment.lectureGroupId)" cursor="pointer">
+                    <v-col cols="1" class="d-flex align-center">{{ index + 1 }}</v-col>
+                    <v-col cols="3" class="d-flex align-center">{{ payment.name }}</v-col>
+                    <v-col cols="2" class="d-flex align-center">{{ formatDate(payment.paidAt) }}</v-col>
+                    <v-col cols="2" class="d-flex align-center">{{ payment.amount }} 원</v-col>
+                    <v-col cols="2" class="d-flex align-center">{{ formatStatus(payment.status) }}</v-col>
+                    <v-col cols="1" @click.stop="gotoReceipt(payment.receiptUrl)">
+                        <v-btn @click.stop="gotoReceipt(payment.receiptUrl)" small variant="outlined">영수증</v-btn>
                     </v-col>
-                    <v-col cols="2" v-else></v-col>
-                    <v-col cols="2">{{ payment.name }}</v-col>
-                    <v-col cols="1">{{ formatDate(payment.paidAt) }}</v-col>
-                    <v-col cols="1">{{ payment.amount }} 원</v-col>
-                    <v-col cols="1">
-                        <a :href="payment.receiptUrl" target="_blank">영수증 보기</a>
-                    </v-col>
-                    <v-col v-if="formatStatus(payment.status) === '결제 완료'" cols="1">
-                        <v-btn @click="openRefundModal(payment)" small outlined color="primary">환불</v-btn>
+                    <v-col @click.stop="openRefundModal(payment)" v-if="formatStatus(payment.status) === '결제 완료'" cols="1">
+                        <v-btn @click.stop="openRefundModal(payment)" small variant="outlined" >환불</v-btn>
                     </v-col>
                     <v-col v-else cols="1"></v-col>
-                    <v-col cols="1">{{ formatStatus(payment.status) }}</v-col>
                 </v-row>
             </v-col>
             <v-col v-else>
@@ -47,20 +44,14 @@
             </v-col>
         </v-row>
 
-        <v-btn
-            :disabled="currentPage === 1"
-            @click="previousPage"
+        <v-btn :disabled="currentPage === 1" @click="previousPage"
             style="background-color:white; color:#7A6C5B; border: 1px solid #7A6C5B; font-size: 15px; margin-right: 3px;"
-            outlined
-        >
+            outlined>
             이전 페이지
         </v-btn>
-        <v-btn
-            :disabled="currentPage === totalPages"
-            @click="nextPage"
+        <v-btn :disabled="currentPage === totalPages" @click="nextPage"
             style="background-color:white; color:#7A6C5B; border: 1px solid #7A6C5B; font-size: 15px; margin-left: 3px;"
-            outlined
-        >
+            outlined>
             다음 페이지
         </v-btn>
 
@@ -93,11 +84,7 @@
                     </v-radio-group>
 
                     <!-- 직접 입력 필드 -->
-                    <v-text-field
-                        v-if="selectedReason === 'custom'"
-                        label="직접 입력"
-                        v-model="customReason"
-                    />
+                    <v-text-field v-if="selectedReason === 'custom'" label="직접 입력" v-model="customReason" />
                 </v-card-text>
 
                 <v-card-actions>
@@ -107,7 +94,7 @@
             </v-card>
         </v-dialog>
         <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
-        :title=this.alertModalTitle :contents=this.alertModalContents />
+            :title=this.alertModalTitle :contents=this.alertModalContents />
     </v-container>
 </template>
 
@@ -141,6 +128,12 @@ export default {
         this.getReceipts();
     },
     methods: {
+        gotoLectureGroup(id) {
+            this.$router.push(`/lecture-home/${id}`)
+        },
+        gotoReceipt(url) {
+            window.location.href = url;
+        },
         async getReceipts() {
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/payment-service/my-payments`, {
                 params: {
@@ -151,7 +144,7 @@ export default {
             this.paymentList = response.data.content;
             this.totalItems = response.data.totalItems;
             this.totalPages = response.data.totalPages;
-
+            console.log(this.paymentList)
             // 각 결제 항목에 대해 썸네일 이미지 URL을 비동기로 가져옴
             await Promise.all(this.paymentList.map(async (payment) => {
                 if (payment.lectureGroupId !== null) {
@@ -215,19 +208,19 @@ export default {
             axios.post(`${process.env.VUE_APP_API_BASE_URL}/payment-service/refund/${this.selectedPayment.id}`, {
                 cancelReason: reason
             })
-            .then(() => {
-                this.alertModalTtile = "환불 요청 완료";
-                this.alertModalContents = "환불 요청이 완료되었습니다.";
-                this.alertModal = true;
-                this.showRefundModal = false; // 모달 닫기
-                this.customReason = ''; // 환불 사유 초기화
-            })
-            .catch((error) => {
-                console.error("환불 요청 실패:", error);
-                this.alertModalTtile = "환불 요청 실패";
-                this.alertModalContents = "환불 요청에 실파였습니다.";
-                this.alertModal = true;
-            });
+                .then(() => {
+                    this.alertModalTtile = "환불 요청 완료";
+                    this.alertModalContents = "환불 요청이 완료되었습니다.";
+                    this.alertModal = true;
+                    this.showRefundModal = false; // 모달 닫기
+                    this.customReason = ''; // 환불 사유 초기화
+                })
+                .catch((error) => {
+                    console.error("환불 요청 실패:", error);
+                    this.alertModalTtile = "환불 요청 실패";
+                    this.alertModalContents = "환불 요청에 실파였습니다.";
+                    this.alertModal = true;
+                });
         }
     }
 };

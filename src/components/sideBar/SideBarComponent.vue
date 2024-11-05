@@ -12,7 +12,7 @@
       <v-overlay v-model="alertDialogSSE" width="400" content-class="custom-alert-position" absolute
         scrim="false" >
         <v-card 
-        :style="{ height: '100vh', top: '0', overflowY: 'auto', boxShadow: 'inset -4px 0 10px rgba(0, 0, 0, 0.1)', backgroundColor:'#f1f3f5' }"
+        :style="{ height: '100vh', top: '0', right:'10px',overflowY: 'auto', boxShadow: 'inset -4px 0 10px rgba(0, 0, 0, 0.1)', backgroundColor:'#f1f3f5' }"
         class="border border-t-sm border-b-sm border-l-sm pa-5">
           <v-card-title style="text-align: center; padding-bottom: 0;">
             <v-row>
@@ -180,13 +180,16 @@ export default {
   },
   methods: {
     async getMyInfo() {
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
-        this.profileUrl = response.data.profileImage;
-        this.userName = response.data.name;
-        this.userRole = response.data.role;
-      } catch (e) {
-        console.log(e);
+      const token = localStorage.getItem('token');
+        if(token){
+          try {
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
+          this.profileUrl = response.data.profileImage;
+          this.userName = response.data.name;
+          this.userRole = response.data.role;
+        } catch (e) {
+          console.log(e);
+        }
       }
     },
     setMenuItems() {

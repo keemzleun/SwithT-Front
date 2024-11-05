@@ -2,8 +2,7 @@
     <v-dialog  max-width="500px">
         <v-card>
             <v-card-title class="text-h5 text-center">
-                <v-icon color="red" large>{{icon}}</v-icon>
-                <br>
+
                 {{title}}
             </v-card-title>
             <v-card-text class="text-center">

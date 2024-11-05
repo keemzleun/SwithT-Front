@@ -122,20 +122,34 @@
       </v-tabs-window>
     </v-card>
   </v-container>
+
+  <AlertModal
+     v-model="alertModal" 
+     @update:dialog="alertModal = $event"
+     icon=mdi-alert-circle-outline
+     :title=this.alertModalTtile
+     :contents=this.alertModalContents
+     />
 </template>
 
 <script>
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
+import AlertModal from '@/components/AlertModal.vue';
 
 export default {
+  components: {
+      AlertModal
+  },
   data() {
     return {
       visible: false,
       activeTab: 0, // 기본 탭을 튜터 로그인으로 설정
       email: "",
-      password: ""
-      
+      password: "",
+      alertModal: false,
+      alertModalTtile: '',
+      alertModalContents: '',
     };
   },
   methods: {
@@ -151,7 +165,6 @@ export default {
 
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/doLogin`, loginData);
                 
-                console.log("로그인 성공");
                 
                 const token = response.data.result.token;
                 const refreshToken = response.data.result.refreshToken;
@@ -169,7 +182,10 @@ export default {
 
             } catch (e) {
                 const error_message = e.response.data.error_message
-                console.error(error_message);
+                this.alertModalTtile = "로그인 실패!!!";
+                this.alertModalContents = error_message;
+                this.alertModal = true;
+                // console.error(error_message);
             }
         },
   }

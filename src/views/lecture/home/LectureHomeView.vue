@@ -605,8 +605,6 @@ export default {
         }, '');
         const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`)
         this.tutees = tuteesResponse?.data?.result?.content;
-        console.log("튜티"+JSON.stringify(this.tutees))
-        // if(!this.isLecture) this.infoData.tuteeName = this.tutees[0]
         let params = {
             size: this.noticePageSize,
             page: this.page,
@@ -663,6 +661,7 @@ export default {
             console.log("튜티 채팅방"+JSON.stringify(response))
             this.infoData.chatRoomId=response.data.result.roomId;
         }
+
         else{
             this.infoData.chatRoomId = data.chatRoomId;
         }

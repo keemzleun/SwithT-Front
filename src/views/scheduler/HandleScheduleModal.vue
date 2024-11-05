@@ -26,14 +26,56 @@
 
         <!-- 알림 여부 및 시간 설정 -->
         <div class="alert-setting">
-          <label for="alertYn">
-            알림 여부:
-            <input type="checkbox" v-model="alertYn" disabled /> <!-- 체크박스 비활성화 -->
-            <button v-if="!isAlertEditable" type="button" @click="enableAlertEdit" class="alert-edit-btn">{{ alertInfo?.reserveDay ? '수정' : '생성' }}</button> <!-- 체크박스 옆에 생성/수정 버튼 -->
+          <label for="alertYn" class="alert-label">
+            <!-- 알림 여부 문구와 Y/N 표시 -->
+            <span>알림 여부:</span>
+            <span class="alert-status">{{ alertInfo?.reserveDay ? 'Y' : 'N' }}</span>
+            <!-- 알림 취소 버튼 (알림이 있을 때만 표시) -->
+            <button v-if="alertInfo?.reserveDay && !isAlertEditable" 
+              type="button" 
+              @click="cancelAlert" 
+              class="alert-remove-btn"
+            >
+            <span class="mdi mdi-clock-remove-outline"></span>
+            </button>
+            <!-- 생성 버튼 (알림이 없을 때만 표시, 오른쪽으로 이동) -->
+            <button
+              v-if="!alertInfo?.reserveDay && !isAlertEditable"
+              type="button"
+              @click="enableAlertEdit"
+              class="alert-create-btn"
+            >
+              <span class="mdi mdi-clock-plus-outline"></span>
+            </button>
           </label>
-          <p v-if="alertInfo?.reserveDay">알림 일자: {{ alertInfo.reserveDay || '설정되지 않음' }}</p>
-          <p v-if="alertInfo?.reserveTime">알림 시간: {{ alertInfo.reserveTime || '설정되지 않음' }}</p>
-
+        
+          <!-- 알림 일자 및 저장/수정 취소 버튼 -->
+          <p v-if="alertInfo?.reserveDay" class="alert-info">
+            알림 일자: {{ alertInfo.reserveDay || '설정되지 않음' }}
+        
+            <!-- 수정 버튼 -->
+            <button
+              type="button"
+              @click="isAlertEditable ? saveAlertSettings() : enableAlertEdit()"
+              :class="isAlertEditable ? 'alert-save-btn' : 'alert-edit-btn'"
+            >
+              <span v-if="!isAlertEditable" class="mdi mdi-clock-edit-outline"></span>
+              <span v-else class="mdi mdi-content-save-check-outline"></span>
+            </button>
+          </p>
+          <div class="alert-time-container">
+            <p v-if="alertInfo?.reserveTime">알림 시간: {{ alertInfo.reserveTime || '설정되지 않음' }}</p>
+            <button
+              v-if="isAlertEditable"
+              type="button"
+              @click="cancelAlertEdit"
+              class="alert-cancel-btn"
+            >
+              <span class="mdi mdi-arrow-left-bottom"></span>
+            </button>
+          </div>
+  
+          <!-- 알림 시간 설정 (수정 모드일 때만 표시) -->
           <div v-if="isAlertEditable" class="alert-time">
             <label><input type="radio" value="1시간 전" v-model="alertTime" /> 1시간 전</label>
             <label><input type="radio" value="10분 전" v-model="alertTime" /> 10분 전</label>
@@ -44,19 +86,15 @@
 
         <!-- 버튼들 -->
         <div class="modal-buttons">
-          <button v-if="selectedSchedule && isEditable" type="submit">완료</button>
-          <button v-if="selectedSchedule && !isEditable && canEdit" type="button" @click="enableEdit">수정하기</button>
+          <button v-if="selectedSchedule && isEditable" type="submit">수정 완료</button>
+          <button v-if="selectedSchedule && !isEditable && canEdit" type="button" @click="enableEdit">일정 수정하기</button>
           <button v-if="!selectedSchedule" type="submit">등록하기</button>
-          <button v-if="selectedSchedule && canEdit" type="button" @click="$emit('scheduleDeleted', selectedSchedule.id)" class="delete-button">삭제하기</button>
+          <button v-if="selectedSchedule && canEdit" type="button" @click="$emit('scheduleDeleted', selectedSchedule.id)" class="delete-button">일정 삭제하기</button>
         
           <!-- 알림 생성 버튼 (알림이 없을 때만 표시) -->
           <button v-if="isAlertEditable && !alertInfo?.reserveDay" type="button" @click="createAlert">알림 생성</button>
         
           <!-- 알림 수정 버튼 (알림이 있을 때만 표시) -->
-          <button v-if="alertInfo?.reserveDay && isAlertEditable && selectedSchedule" type="button" @click="saveAlertSettings">알림 수정</button>
-        
-          <!-- 알림 취소 버튼 (알림이 있을 때만 표시) -->
-          <button v-if="alertInfo?.reserveDay && !isAlertEditable" type="button" @click="cancelAlert">알림 취소</button>
         </div>
       </form>
     </div>
@@ -114,6 +152,9 @@ export default {
       this.isAlertEditable = true; // 알림 수정 또는 생성 모드 활성화
       this.alertYn = true;
     },
+    cancelAlertEdit() {
+      this.isAlertEditable = false; // 수정 모드 비활성화
+    },
     async handleSubmit() {
       const scheduleData = {
         title: this.title,
@@ -167,19 +208,25 @@ export default {
     // 알림 생성 메서드
     async createAlert() {
       const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
-      console.log('alertTimeInMinutes:', alertTimeInMinutes);  // 확인용 로그
-
       const alertTimeValue = dayjs(`${this.schedulerDate}T${this.schedulerTime}`, 'YYYY-MM-DDTHH:mm')
-      .subtract(alertTimeInMinutes, 'minute')
-      .format('HH:mm');
-      console.log('alertTimeValue:', alertTimeValue);  // 확인용 로그
+        .subtract(alertTimeInMinutes, 'minute')
+        .format('HH:mm');
 
       const reserveTime = alertTimeValue !== 'Invalid Date' ? alertTimeValue : this.schedulerTime;
 
+      // 현재 시간과 reserveTime의 차이를 계산하여 10분 이내인지 확인
+      const now = dayjs();
+      const reserveTimeDifference = dayjs(`${this.schedulerDate}T${reserveTime}`, 'YYYY-MM-DDTHH:mm').diff(now, 'minute');
+      
+      if (reserveTimeDifference < 10) {
+        // 예외 발생: 알림 시간이 현재 시간으로부터 10분 미만일 경우
+        throw new Error("알림 시간은 현재 시간으로부터 최소 10분 이상이어야 합니다.");
+      }
+
       const alertData = {
-        scheduleId: this.selectedSchedule?.id || null,
-        reserveDay: this.schedulerDate,
-        reserveTime: reserveTime,
+        scheduleId: this.selectedSchedule?.id || null, // 스케줄 ID
+        reserveDay: this.schedulerDate,                // 알림 날짜
+        reserveTime: reserveTime                       // 계산된 알림 시간
       };
 
       console.log("Alert Create Data:", alertData);
@@ -191,19 +238,30 @@ export default {
     async saveAlertSettings() {
       const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
       const alertTimeValue = dayjs(`${this.schedulerDate}T${this.schedulerTime}`, 'YYYY-MM-DDTHH:mm')
-      .subtract(alertTimeInMinutes, 'minute')
-      .format('HH:mm');
+        .subtract(alertTimeInMinutes, 'minute')
+        .format('HH:mm');
+
       const reserveTime = alertTimeValue !== 'Invalid Date' ? alertTimeValue : this.schedulerTime;
+      
+      // 현재 시간과 reserveTime의 차이를 계산하여 10분 이내인지 확인
+      const now = dayjs();
+      const reserveTimeDifference = dayjs(`${this.schedulerDate}T${reserveTime}`, 'YYYY-MM-DDTHH:mm').diff(now, 'minute');
+      
+      if (reserveTimeDifference < 10) {
+        // 예외 발생: 알림 시간이 현재 시간으로부터 10분 미만일 경우
+        throw new Error("알림 시간은 현재 시간으로부터 최소 10분 이상이어야 합니다.");
+      }
 
       const alertData = {
         scheduleId: this.selectedSchedule?.id || null,  // 스케줄 ID
-        newReserveDay: this.schedulerDate,            // 새로 선택된 알림 날짜
-        newReserveTime: reserveTime      
+        newReserveDay: this.schedulerDate,              // 새로 선택된 알림 날짜
+        newReserveTime: reserveTime                     // 계산된 알림 시간
       };
 
       console.log("Alert Update Data:", alertData);
 
       this.$emit('saveAlert', alertData); // 부모 컴포넌트로 알림 수정 데이터 전송
+      this.isAlertEditable = false; // 저장 후 수정 모드 비활성화
     },
     async cancelAlert() {
       const alertData = { alertId: this.alertInfo?.id };
@@ -296,6 +354,8 @@ textarea.content-textarea {
 }
 
 .alert-setting {
+  background: #ccc;
+  padding: 15px;
   margin-bottom: 20px;
 }
 
@@ -341,7 +401,56 @@ textarea.content-textarea {
   cursor: pointer;
 }
 
-.alert-edit-btn {
-  margin-left: 10px;
+.alert-label {
+  display: flex;
+  align-items: center;
 }
+
+.alert-status {
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.alert-create-btn {
+  margin-left: auto; 
+  font-size: 2.0em;
+}
+
+.alert-info {
+  display: flex;
+  align-items: center;
+}
+
+.alert-save-btn,
+.alert-edit-btn {
+  margin-left: auto;
+  font-size: 2.0em;
+}
+
+.alert-remove-btn{
+  margin-left: auto;
+  font-size: 2.0em;
+}
+
+.alert-time-container {
+  display: flex;
+  align-items: center; /* 텍스트와 버튼을 수직 중앙에 정렬 */
+  gap: 10px;
+}
+
+.alert-time-container p {
+  margin: 0; /* 여백을 제거하여 높이 조정 */
+  line-height: 1.5; /* 버튼 높이와 일치하도록 설정 */
+  font-size: 16px; /* 버튼 텍스트 크기와 동일하게 조정 */
+}
+
+.alert-cancel-btn {
+  padding: 5px 10px; /* 버튼 내부 여백 설정 */
+  font-size: 2.0em;
+  height: auto; /* 버튼 높이 자동 설정 */
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+}
+
 </style>

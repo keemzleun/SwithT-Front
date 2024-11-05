@@ -16,7 +16,7 @@
                     </div>
                 </v-row>
                 <v-row class="d-flex align-center justify-start mb-2">
-                    <span class="title mr-2">{{ infoData.title }}</span> <v-icon style="font-size:30px;" v-if="isChat" @click="clickChatRoom()">mdi-chat</v-icon>
+                    <div class="title mr-2">{{ infoData.title }} <v-icon style="font-size:30px;" v-if="isChat" @click="clickChatRoom()">mdi-chat</v-icon><v-icon v-if="isTutor && !isTuteeExist" style="font-size:30px;" @click="this.$router.push(`/lecture-group/${this.lectureGroupId}`)">mdi-pencil</v-icon></div>
 
                     
                     <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
@@ -158,6 +158,7 @@ export default {
         isTutor: Boolean,
         infoData: Object,
         lectureSchedules: String,
+        isTuteeExist:Boolean
     },
     data() {
         return {
@@ -415,6 +416,11 @@ export default {
 .title {
     font-size: 40px;
     font-weight: bold;
+    word-wrap: break-word;
+    word-break: break-all;
+    max-width: 80%; /* 제목의 최대 너비를 조절하기 위해 이 값을 설정 */
+    overflow-wrap: break-word;
+    white-space: normal; /* 제목 안에서 줄바꿈이 가능하도록 설정 */
 }
 
 .memberName {

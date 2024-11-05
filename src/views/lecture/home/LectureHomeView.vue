@@ -1,11 +1,12 @@
 <template>
     <!-- Lecture Info Card 컴포넌트 -->
-    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules"
+    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules" :isTuteeExist="isTuteeExist"
         :isShowMap="isShowMap" />
 
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
-            <v-icon style="font-size: 16px;">mdi-bullhorn-variant-outline</v-icon> <strong> [공지사항] </strong> {{ notice.title }}
+            <v-icon style="font-size: 16px;">mdi-bullhorn-variant-outline</v-icon> <strong> [공지사항] </strong> {{
+                notice.title }}
         </div>
     </div>
     <v-container>
@@ -33,7 +34,8 @@
                                         <v-col cols="6"><strong>기간</strong></v-col>
                                     </v-row>
                                     <hr>
-                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id" @click="viewAssignmentOpen(assignment.id)" class="mb-2 list-item">
+                                    <v-row v-for="assignment in urgentAssignment" :key="assignment.id"
+                                        @click="viewAssignmentOpen(assignment.id)" class="mb-2 list-item">
                                         <v-col cols="6">{{ assignment.title }}</v-col>
                                         <v-col cols="6">{{ assignment.startDate }}~{{ assignment.endDate }}</v-col>
                                     </v-row>
@@ -88,50 +90,53 @@
             <!-- 과제 탭 -->
             <v-tabs-window-item value="assignment">
                 <v-container style="width: 60vw; min-height: 500px;">
-                        <v-card-text>
-                            <v-row justify="end" >
-                                    <v-btn rounded color="#6C97FD" style="font-weight: bold;" @click="renewAssignment(); assignmentCreateModal = true;" v-if="this.istutor">
-                                        과제 생성
-                                    </v-btn>
-                            </v-row>
-                            
-                            <!-- 과제 목록 -->
-                            <div justify="center" v-if="assignments.length">
-                                <div cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
-                                    class="text-left">
-                                    <div class="box-style assignment-item" >
-                                            <v-row @click="viewAssignmentOpen(assignment.id)">
-                                                <v-col>
-                                                    <span v-if="daysRemaining(assignment.endDate) > 0 && daysRemaining(assignment.endDate) <= 3" 
-                                                        style="display: inline-block; background-color: #FD6C6C; color: #fff; font-weight: bold; padding: 5px 10px; border-radius: 15px;">
-                                                      마감 {{ daysRemaining(assignment.endDate) }}일 전
-                                                    </span>
-                                                    <span style="font-size: 20px; font-weight: 700; margin-left: 10px;">{{ assignment.title }}</span>
-                                                </v-col>
-                                                <v-col cols="3">
-                                                    <span style="font-size: 17px; right: 0;">
-                                                        기간: {{ assignment.startDate }}~{{ assignment.endDate }}
-                                                    </span>
-                                                </v-col>                                               
-                                            </v-row>
-                                    </div>
+                    <v-card-text>
+                        <v-row justify="end">
+                            <v-btn rounded color="#6C97FD" style="font-weight: bold;"
+                                @click="renewAssignment(); assignmentCreateModal = true;" v-if="this.istutor">
+                                과제 생성
+                            </v-btn>
+                        </v-row>
+
+                        <!-- 과제 목록 -->
+                        <div justify="center" v-if="assignments.length">
+                            <div cols="5" md="7" v-for="assignment in assignments" :key="assignment.id"
+                                class="text-left">
+                                <div class="box-style assignment-item">
+                                    <v-row @click="viewAssignmentOpen(assignment.id)">
+                                        <v-col>
+                                            <span
+                                                v-if="daysRemaining(assignment.endDate) > 0 && daysRemaining(assignment.endDate) <= 3"
+                                                style="display: inline-block; background-color: #FD6C6C; color: #fff; font-weight: bold; padding: 5px 10px; border-radius: 15px;">
+                                                마감 {{ daysRemaining(assignment.endDate) }}일 전
+                                            </span>
+                                            <span style="font-size: 20px; font-weight: 700; margin-left: 10px;">{{
+                                                assignment.title }}</span>
+                                        </v-col>
+                                        <v-col cols="3">
+                                            <span style="font-size: 17px; right: 0;">
+                                                기간: {{ assignment.startDate }}~{{ assignment.endDate }}
+                                            </span>
+                                        </v-col>
+                                    </v-row>
                                 </div>
                             </div>
-    
-                            <!-- 과제가 없을 경우 표시할 내용 -->
-                            <v-row justify="center" v-else>
-                                <v-col cols="12" class="text-center">
-                                    <div class="box-style" min-height="200px" width="80%">
-                                        <span style="font-size: 20pxl">등록된 과제가 없습니다</span>
-                                    </div>
-                                </v-col>
-                            </v-row>
-                            <v-pagination v-model="assignmentPage" :length="assignmentPages"
-                                @click="handleAssignmentPageChange()" style="margin-top:100px"></v-pagination>
-    
-                        </v-card-text>
+                        </div>
+
+                        <!-- 과제가 없을 경우 표시할 내용 -->
+                        <v-row justify="center" v-else>
+                            <v-col cols="12" class="text-center">
+                                <div class="box-style" min-height="200px" width="80%">
+                                    <span style="font-size: 20pxl">등록된 과제가 없습니다</span>
+                                </div>
+                            </v-col>
+                        </v-row>
+                        <v-pagination v-model="assignmentPage" :length="assignmentPages"
+                            @click="handleAssignmentPageChange()" style="margin-top:100px"></v-pagination>
+
+                    </v-card-text>
                 </v-container>
-                
+
             </v-tabs-window-item>
             <!-- 게시글 리스트 -->
             <v-tabs-window-item value="notice">
@@ -142,16 +147,15 @@
                                 {{ onlyNotice ? "전체" : "공지사항만" }}
                             </v-btn>
                         </v-col>
-                       
+
                         <v-col>
-                            <v-btn rounded color="#6C97FD" style="font-weight: bold"
-                            @click="noticeCreateModal = true">
-                            글 작성
-                            <!-- <v-icon>mdi-plus</v-icon> -->
+                            <v-btn rounded color="#6C97FD" style="font-weight: bold" @click="noticeCreateModal = true">
+                                글 작성
+                                <!-- <v-icon>mdi-plus</v-icon> -->
                             </v-btn>
                         </v-col>
-                        
-                    
+
+
                     </v-row>
                     <v-row justify="center">
                         <v-col cols="8">
@@ -163,69 +167,70 @@
                             </v-row>
                         </v-col>
                     </v-row>
-    
+
                     <!-- 공지사항 리스트 -->
                     <v-row justify="center">
                         <v-col cols="8" v-if="notices.length">
-                            <v-row v-for="(notice) in notices" :key="notice.id" @click="noticeView(notice)" class="list-item" style="margin: 2px 0">
+                            <v-row v-for="(notice) in notices" :key="notice.id" @click="noticeView(notice)"
+                                class="list-item" style="margin: 2px 0">
                                 <v-col cols="2">{{ notice.memberName }}</v-col>
                                 <v-col cols="2">{{ changePostType(notice.type) }}</v-col>
                                 <v-col cols="5">{{ notice.title }}</v-col>
                                 <v-col cols="3">{{ notice.postDate }}</v-col>
                             </v-row>
                         </v-col>
-    
+
                         <!-- 공지사항이 없을 때 표시 -->
                         <v-col cols="8" v-else class="text-center">
                             <span style="font-size: 20px; color: #666; padding: 50px;">등록된 공지사항이 없습니다</span>
                         </v-col>
                     </v-row>
-    
-                    <v-pagination v-model="noticePage" :length="noticePages"
-                        @click="handleNoticePageChange()" style="margin-top:100px"></v-pagination>
-                </v-container>               
+
+                    <v-pagination v-model="noticePage" :length="noticePages" @click="handleNoticePageChange()"
+                        style="margin-top:100px"></v-pagination>
+                </v-container>
             </v-tabs-window-item>
             <!-- 튜티 리스트 탭 -->
             <v-tabs-window-item value="tuteeList" v-if="this.isLecture && this.istutor">
                 <v-container style="width: 50vw; min-height: 500px;">
-                        <v-card-text>
-                            <!-- 튜티 리스트 -->
-                            <v-list class="mx-auto" style="overflow: hidden;">
-                                <!-- 튜티가 있을 경우 리스트 출력 -->
-                                <template v-if="tutees.length">
-                                    <v-list-item v-for="tutee in tutees" :key="tutee.id" justify="center"
-                                        class="box-style pa-1 mx-auto d-flex " rounded="lg"
-                                        style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
-                                        variant="outlined">
-    
-                                        <v-row>
-                                            <v-col>
-                                                <v-list-item-avatar>
-                                                    <v-avatar size="50">
-                                                        <v-img :src="tutee.tuteeProfile" :alt="tutee.name" />
-                                                    </v-avatar>
-                                                </v-list-item-avatar>
-                                            </v-col>
-                                            <v-col class="d-flex justify-center" style="align-items: center;">
-                                                <v-list-item-content>
-                                                    <v-list-item-title class="tutee-name"
-                                                        style="font-weight:400; text-align: center;">
-                                                        <h5>{{ tutee.tuteeName }}</h5>
-                                                    </v-list-item-title>
-                                                </v-list-item-content>
-                                            </v-col>
-                                        </v-row>
-                                    </v-list-item>
-                                </template>
-    
-                                <!-- 튜티가 없을 경우 메시지 출력 -->
-                                <v-row v-else justify="center">
-                                    <v-col cols="12" class="text-center">   
-                                            <h3>등록된 튜티가 없습니다</h3>
-                                    </v-col>
-                                </v-row>
-                            </v-list>
-                        </v-card-text>
+                    <v-card-text>
+                        <!-- 튜티 리스트 -->
+                        <v-list class="mx-auto" style="overflow: hidden;">
+                            <!-- 튜티가 있을 경우 리스트 출력 -->
+                            <template v-if="tutees.length">
+                                <v-list-item v-for="tutee in tutees" :key="tutee.id" justify="center"
+                                    class="box-style pa-1 mx-auto d-flex " rounded="lg"
+                                    style="align-items: center; justify-content: flex-start; padding: 12px; border-radius: 20px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex;"
+                                    variant="outlined">
+
+                                    <v-row>
+                                        <v-col>
+                                            <v-list-item-avatar>
+                                                <v-avatar size="50">
+                                                    <v-img :src="tutee.tuteeProfile" :alt="tutee.name" />
+                                                </v-avatar>
+                                            </v-list-item-avatar>
+                                        </v-col>
+                                        <v-col class="d-flex justify-center" style="align-items: center;">
+                                            <v-list-item-content>
+                                                <v-list-item-title class="tutee-name"
+                                                    style="font-weight:400; text-align: center;">
+                                                    <h5>{{ tutee.tuteeName }}</h5>
+                                                </v-list-item-title>
+                                            </v-list-item-content>
+                                        </v-col>
+                                    </v-row>
+                                </v-list-item>
+                            </template>
+
+                            <!-- 튜티가 없을 경우 메시지 출력 -->
+                            <v-row v-else justify="center">
+                                <v-col cols="12" class="text-center">
+                                    <h3>등록된 튜티가 없습니다</h3>
+                                </v-col>
+                            </v-row>
+                        </v-list>
+                    </v-card-text>
                 </v-container>
             </v-tabs-window-item>
         </v-tabs-window>
@@ -262,7 +267,8 @@
             <v-card style="border-radius: 20px; padding: 20px 30px;" min-height="600px">
                 <v-card-text style="padding: 30px 40px;">
                     <v-row class="justify-space-between mt-5 mb-5">
-                        <div class="mb-1 ml-8 mr-2" style="font-size: 24px; font-weight: 700;">{{ this.assignmentTitle }}</div>
+                        <div class="mb-1 ml-8 mr-2" style="font-size: 24px; font-weight: 700;">{{ this.assignmentTitle
+                            }}</div>
                         <v-icon v-if="this.istutor" class="mr-5" style="font-size: 30px;"
                             @click="drawer = !drawer">mdi-dots-horizontal-circle-outline
                         </v-icon>
@@ -279,15 +285,16 @@
                     </v-row>
 
                     <v-divider></v-divider>
-                   
+
                     <div class="mb-2 ml-8 mr-2" style="font-size: 20px;">{{ this.assignmentContent }}</div>
 
-                    <div class="mb-1 ml-8 mr-2" style="font-size: 20px; font-weight: 700; color: #6C97FD; margin-top: 30px;">
+                    <div class="mb-1 ml-8 mr-2"
+                        style="font-size: 20px; font-weight: 700; color: #6C97FD; margin-top: 30px;">
                         ~
                         {{ this.assignmentDate?.split('T')[0] }}
                         {{ this.assignmentDate?.split('T')[1] }} 까지
                     </div>
-                   
+
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -385,78 +392,69 @@
         <v-dialog v-model="noticeViewModal" max-width="70vw">
             <v-card style="border-radius: 20px;" min-height="800px">
                 <!-- <v-card-text class="pa-4 pt-0"> -->
-                    <v-row>
-                        <v-col cols="7">
-                            <v-row class="justify-space-between">
-                                <v-row style="font-size: 24px; font-weight: 700; margin: 40px 50px 0">
-                                    {{ this.noticeTitle }}
-                                </v-row>
-                                <v-icon v-if="isAuthor" style="margin: 40px 10px 0"
-                                    @click="noticeDrawer = !noticeDrawer">mdi-dots-horizontal-circle-outline
-                                </v-icon>
-                                <v-navigation-drawer location="right" v-if="noticeDrawer" v-model="noticeDrawer" temporary>
-                                    <v-list density="compact" nav>
-                                        <v-list-item prepend-icon="mdi-pencil" title="수정"
-                                            @click="noticeUpdateModal = true; noticeViewModal = false; noticeDrawer = !noticeDrawer;">
-                                        </v-list-item>
-                                        <v-list-item prepend-icon="mdi-delete" title="삭제" @click="deleteItem()"></v-list-item>
-                                    </v-list>
-                                </v-navigation-drawer>
+                <v-row>
+                    <v-col cols="7">
+                        <v-row class="justify-space-between">
+                            <v-row style="font-size: 24px; font-weight: 700; margin: 40px 50px 0">
+                                {{ this.noticeTitle }}
                             </v-row>
-                            <v-divider class="mt-10 mb-2"></v-divider>
-                            <v-row style="margin: 20px 40px; font-size: 20px;">
-                                {{ this.noticeContent }}
-                            </v-row>                        
-                        </v-col>
-                        <v-col>
-                            
-                            <!-- 댓글 리스트 -->
-                             <v-row>
-                                <h4 style="font-weight: 700; margin: 40px 0 30px; padding: 0 20px">댓글</h4>
-                             </v-row>
-                            <!-- 댓글 입력 폼 -->
-                            <v-row style="margin: 20px 10px 50px 0">
-                                <v-textarea
-                                    v-model="newComment"
-                                    placeholder="댓글을 입력하세요"
-                                    dense
-                                    rows="1"
-                                    auto-grow
-                                    hide-details
-                                    style="max-height: 36px; margin-right: 8px;"
-                                ></v-textarea>
-                                <v-btn
-                                    @click="submitComment"
-                                    color="primary"
-                                    height="40px"
-                                >
-                                    등록
-                                </v-btn>
-                            </v-row>
-                            <hr>
-                            <v-row v-if="comments.length===0" justify="center">
-                                <div style="font-size: 18px; color: #999; margin: 30px 0">
-                                    댓글이 없습니다
+                            <v-icon v-if="isAuthor" style="margin: 40px 10px 0"
+                                @click="noticeDrawer = !noticeDrawer">mdi-dots-horizontal-circle-outline
+                            </v-icon>
+                            <v-navigation-drawer location="right" v-if="noticeDrawer" v-model="noticeDrawer" temporary>
+                                <v-list density="compact" nav>
+                                    <v-list-item prepend-icon="mdi-pencil" title="수정"
+                                        @click="noticeUpdateModal = true; noticeViewModal = false; noticeDrawer = !noticeDrawer;">
+                                    </v-list-item>
+                                    <v-list-item prepend-icon="mdi-delete" title="삭제"
+                                        @click="deleteItem()"></v-list-item>
+                                </v-list>
+                            </v-navigation-drawer>
+                        </v-row>
+                        <v-divider class="mt-10 mb-2"></v-divider>
+                        <v-row style="margin: 20px 40px; font-size: 20px;">
+                            {{ this.noticeContent }}
+                        </v-row>
+                    </v-col>
+                    <v-col>
+
+                        <!-- 댓글 리스트 -->
+                        <v-row>
+                            <h4 style="font-weight: 700; margin: 40px 0 30px; padding: 0 20px">댓글</h4>
+                        </v-row>
+                        <!-- 댓글 입력 폼 -->
+                        <v-row style="margin: 20px 10px 50px 0">
+                            <v-textarea v-model="newComment" placeholder="댓글을 입력하세요" dense rows="1" auto-grow
+                                hide-details style="max-height: 36px; margin-right: 8px;"></v-textarea>
+                            <v-btn @click="submitComment" color="primary" height="40px">
+                                등록
+                            </v-btn>
+                        </v-row>
+                        <hr>
+                        <v-row v-if="comments.length === 0" justify="center">
+                            <div style="font-size: 18px; color: #999; margin: 30px 0">
+                                댓글이 없습니다
+                            </div>
+
+                        </v-row>
+                        <div v-else>
+                            <v-row v-for="comment in comments" :key="comment.id">
+                                <div
+                                    style="background-color: #F2F2F2; margin: 20px 20px 10px 10px; width: 75%; padding: 10px 20px; font-size: 18px; border-radius: 10px;">
+                                    <strong>{{ comment.memberName }}</strong><br>
+                                    <span>{{ comment.contents }}</span>
                                 </div>
-                                
+                                <div style="margin: 20px 20px 10px 10px; display: flex; align-items: center;">
+                                    <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
+                                    <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
+                                </div>
                             </v-row>
-                            <div v-else>
-                                <v-row v-for="comment in comments" :key="comment.id">
-                                    <div style="background-color: #F2F2F2; margin: 20px 20px 10px 10px; width: 75%; padding: 10px 20px; font-size: 18px; border-radius: 10px;">
-                                        <strong>{{ comment.memberName }}</strong><br>
-                                        <span>{{ comment.contents }}</span>
-                                    </div>
-                                    <div style="margin: 20px 20px 10px 10px; display: flex; align-items: center;">
-                                        <v-icon @click="editComment(comment)" class="mr-1">mdi-pencil</v-icon>
-                                        <v-icon @click="deleteComment(comment)">mdi-delete</v-icon>
-                                    </div>
-                                </v-row>
-                                <v-pagination v-model="commentPage" :length="commentPages"
-                                    @click="handleCommentPageChange()"></v-pagination>
-                            </div>    
-                        </v-col>
-                    </v-row>
- 
+                            <v-pagination v-model="commentPage" :length="commentPages"
+                                @click="handleCommentPageChange()"></v-pagination>
+                        </div>
+                    </v-col>
+                </v-row>
+
                 <!-- </v-card-text> -->
                 <v-card-actions class="pa-4">
                     <v-row justify="center">
@@ -466,7 +464,8 @@
 
             </v-card>
         </v-dialog>
-
+        <AlertModal v-model="alertModal" @update:dialog="alertModal = $event" icon=mdi-alert-circle-outline
+            :title=this.alertModalTitle :contents=this.alertModalContents />
     </v-container>
 </template>
 
@@ -477,10 +476,12 @@ import LectureInfoCard from './LectureInfoCard.vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 import DoughnutChart from './DoughnutChart.vue';
+import AlertModal from "@/components/AlertModal.vue";
+
 export default {
     components: {
         LectureInfoCard,
-        // LectureTabs,
+        AlertModal,
         DoughnutChart
     },
     data() {
@@ -515,9 +516,9 @@ export default {
                 lectureGroupTimes: [],
                 totalDayCount: 0,
                 pastDayCount: 0,
-                tuteeName:"",
+                tuteeName: "",
             },
-
+            isTuteeExist:false,
             notice: [],
             noticeTitle: "",
             noticeContent: "",
@@ -568,7 +569,9 @@ export default {
             onlyNotice: false,
             menu: false,
             selectOptions: ["전체 보기", "공지사항만 보기"],
-
+            alertModal: false,
+            alertModalTitle: "",
+            alertModalContents: "",
         };
     },
     mounted() {
@@ -577,94 +580,75 @@ export default {
     async created() {
         const route = useRoute();
         this.lectureGroupId = route.params.lectureGroupId;
-        const infoGetResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-home/${this.lectureGroupId}`)
-        const data = infoGetResponse?.data?.result;
-        console.log("ckxm", data)
-        this.infoData.category = this.changeCategory(data.category);
-        this.isLecture = data.lectureType === "LECTURE" ? true : false;
-        this.breadItems[0].title = this.isLecture ? "강의" : "과외"
-        
-        this.infoData.contents = data.contents;
-        this.infoData.image = data.image;
-        this.infoData.limitPeople = data.limitPeople;
-        this.infoData.price = data.price;
-        this.infoData.memberName = data.memberName;
-        this.infoData.startDate = data.startDate;
-        this.infoData.endDate = data.endDate;
-        this.infoData.title = data.title;
-        this.infoData.address = data.address;
-        this.infoData.detailAddress = data.detailAddress;
-        this.infoData.totalDayCount = data.totalDayCount;
-        this.infoData.pastDayCount = data.pastDayCount;
+        try {
+            const infoGetResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-group-home/${this.lectureGroupId}`)
+            const data = infoGetResponse?.data?.result;
+            this.infoData.category = this.changeCategory(data.category);
+            this.isLecture = data.lectureType === "LECTURE" ? true : false;
+            this.breadItems[0].title = this.isLecture ? "강의" : "과외";
+            this.infoData.contents = data.contents;
+            this.infoData.image = data.image;
+            this.infoData.limitPeople = data.limitPeople;
+            this.infoData.price = data.price;
+            this.infoData.memberName = data.memberName;
+            this.infoData.startDate = data.startDate;
+            this.infoData.endDate = data.endDate;
+            this.infoData.title = data.title;
+            this.infoData.address = data.address;
+            this.infoData.detailAddress = data.detailAddress;
+            this.infoData.totalDayCount = data.totalDayCount;
+            this.infoData.pastDayCount = data.pastDayCount;
+            this.isDataLoaded = true;
+            this.breadItems[1].title = this.infoData.title;
+            this.infoData.lectureGroupTimes = data.lectureGroupTimes;
+            this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
+                return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
+            }, '');
 
-        this.isDataLoaded = true;
-        this.breadItems[1].title = this.infoData.title;
-        this.infoData.lectureGroupTimes = data.lectureGroupTimes;
-        this.lectureSchedules = this.infoData.lectureGroupTimes.reduce((acc, cur) => {
-            return acc + `<div>• ${this.changeDay(cur.lectureDay)} ${cur.startTime} ~ ${cur.endTime}</div>`;
-        }, '');
-        const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`)
-        this.tutees = tuteesResponse?.data?.result?.content;
-        let params = {
-            size: this.noticePageSize,
-            page: this.page,
-        };
-        if (this.onlyNotice) {
-            params.type = 'notice';
-        }
-        const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
-        this.notices = noticeResponse?.data?.result?.content;
-        this.noticePages = noticeResponse?.data?.result?.totalPages;
+            const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`);
+            this.tutees = tuteesResponse?.data?.result?.content;
+            if(this.tutees.length >0) this.isTuteeExist = true;
 
-        const topNoticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list?page=0&type=notice`)
-        this.topNotice = topNoticeResponse?.data?.result?.content;
+            let params = { size: this.noticePageSize, page: this.page };
+            if (this.onlyNotice) params.type = 'notice';
 
-        const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
-        this.urgentAssignment = urgentAssignmentResponse?.data?.result?.content;
-        const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params })
-        this.assignments = assignmentResponse?.data?.result?.content;
-        this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
+            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
+            this.notices = noticeResponse?.data?.result?.content;
+            this.noticePages = noticeResponse?.data?.result?.totalPages;
 
-        const memberInfo = localStorage.getItem('memberInfo');
-        if (memberInfo && JSON.parse(memberInfo).name === this.infoData.memberName) {
-            this.istutor = true;
-        }
-        if (this.infoData.address != "") this.isShowMap = true;
-        // 과외의 경우 튜터 채팅방 생성
-        // if(!this.isLecture && this.istutor && this.tutees.length !==0){
-        //     const body = {
-        //         lectureGroupId : this.lectureGroupId,
-        //         tuteeId : this.tutees[0].memberId
-        //     }
-        //     const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`,body)
-        //     console.log("채팅방 response tutor"+JSON.stringify(response))
-        //     console.log(response.data.result.roomId)
-        //     this.infoData.chatRoomId=response.data.result.roomId;
-        // }
-        // else if(!this.isLecture && !this.istutor && this.tutees.length !==0){
-        //     const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-room-check-or-create?lectureGroupId=${this.lectureGroupId}`)
-        //     console.log("튜티 채팅방"+JSON.stringify(response))
-        //     this.infoData.chatRoomId=response.data.result.roomId;
-        // }
-        if(!this.isLecture && this.istutor){
-            const body = {
-                lectureGroupId : this.lectureGroupId,
-                tuteeId : this.tutees[0].memberId    // 에러남
+            const topNoticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list?page=0&type=notice`);
+            this.topNotice = topNoticeResponse?.data?.result?.content;
+
+            const urgentAssignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment?page=0&isDashBoard=Y&size=5`);
+            this.urgentAssignment = urgentAssignmentResponse?.data?.result?.content;
+
+            const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`, { params });
+            this.assignments = assignmentResponse?.data?.result?.content;
+            this.assignmentPages = assignmentResponse?.data?.result?.totalPages;
+
+            const memberInfo = localStorage.getItem('memberInfo');
+            if (memberInfo && JSON.parse(memberInfo).name === this.infoData.memberName) this.istutor = true;
+            if (this.infoData.address !== "") this.isShowMap = true;
+
+            if (!this.isLecture && this.istutor && this.tutees.length) {
+                const body = { lectureGroupId: this.lectureGroupId, tuteeId: this.tutees[0].memberId };
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`, body);
+                this.infoData.chatRoomId = response.data.result.roomId;
+            } else if (!this.isLecture && !this.istutor) {
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-room-check-or-create?lectureGroupId=${this.lectureGroupId}`);
+                this.infoData.chatRoomId = response.data.result.roomId;
             }
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutor-lesson-chat-check-or-create`,body)
-            console.log("채팅방 response tutor"+JSON.stringify(response))
-            console.log(response.data.result.roomId)
-            this.infoData.chatRoomId=response.data.result.roomId;
+            if (!this.isLecture && this.tutees.length >0) this.infoData.tuteeName = this.tutees[0].tuteeName;
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
         }
-        else if(!this.isLecture && !this.istutor){
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-room-check-or-create?lectureGroupId=${this.lectureGroupId}`)
-            console.log("튜티 채팅방"+JSON.stringify(response))
-            this.infoData.chatRoomId=response.data.result.roomId;
-        }
+
 
         else{
             this.infoData.chatRoomId = data.chatRoomId;
         }
+
     },
 
     methods: {
@@ -690,20 +674,18 @@ export default {
             this.onlyNoticeClick();  // 공지사항 또는 전체 데이터를 불러오는 로직
         },
         async onlyNoticeClick() {
-            if (this.onlyNotice == true) this.onlyNotice = false;
-            else this.onlyNotice = true;
-            let params = {
-                size: this.noticePageSize,
-                page: this.page,
-            };
-            if (this.onlyNotice) {
-                params.type = 'notice';
-            }
-            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+        try {
+            let params = { size: this.noticePageSize, page: this.page };
+            if (this.onlyNotice) params.type = 'notice';
+
+            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
             this.notices = noticeResponse?.data?.result?.content;
             this.noticePages = noticeResponse?.data?.result?.totalPages;
-
-        },
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
         loadKakaoMapScript() {
             const script = document.createElement('script');
             script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=03a055c21377bee26ab1559dedf4af6f&libraries=services&autoload=false`;
@@ -754,18 +736,18 @@ export default {
             this.commentPages = commentResponse?.data?.result?.totalPages;
         },
         async handleNoticePageChange() {
+        try {
             this.page = this.noticePage - 1;
-            let params = {
-                size: this.noticePageSize,
-                page: this.page,
-            };
-            if (this.onlyNotice) {
-                params.type = 'notice';
-            }
-            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+            let params = { size: this.noticePageSize, page: this.page };
+            if (this.onlyNotice) params.type = 'notice';
+            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
             this.notices = noticeResponse?.data?.result?.content;
             this.commentPages = noticeResponse?.data?.result?.totalPages;
-        },
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
         async handleAssignmentPageChange() {
             this.page = this.assignmentPage - 1;
             let params = {
@@ -791,39 +773,46 @@ export default {
 
         },
         async fetchComments(noticeId) {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list?page=0`)
+        try {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list?page=0`);
             this.commentPages = response?.data?.result?.totalPages;
             this.comments = response?.data?.result?.content || [];
-        },
-        async submitComment() {
-            const body = {
-                contents: this.newComment,
-            };
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
+    async submitComment() {
+        try {
+            const body = { contents: this.newComment };
             if (this.commentId) {
-                const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}`, body);
-                console.log(response)
+                await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}`, body);
+            } else {
+                await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/create`, body);
             }
-            else {
-                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/create`, body);
-                console.log(response)
-            }
-
             this.newComment = '';
             this.isCommentEdit = false;
-            await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
-        },
+            await this.fetchComments(this.noticeId);
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
         async editComment(comment) {
             this.isCommentEdit = true;
             this.commentId = comment.id;
             this.newComment = comment.contents;
         },
         async deleteComment(comment) {
+        try {
             this.commentId = comment.id;
-            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
-            console.log(response)
-            await this.fetchComments(this.noticeId); // 댓글 목록 새로고침
-
-        },
+            await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
+            await this.fetchComments(this.noticeId);
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
         async renewNotice() {
             this.isNotice = false;
             this.noticeTitle = "";
@@ -837,31 +826,24 @@ export default {
             this.topNotice = topNoticeResponse?.data?.result?.content;
 
         },
-        async noticeCreate() {
-            let type = null;
-            if (this.isNotice) type = "NOTICE";
-            else type = "POST"
-            const body = {
-                title: this.noticeTitle,
-                contents: this.noticeContent,
-                type
-            }
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body)
+async noticeCreate() {
+        try {
+            const type = this.isNotice ? "NOTICE" : "POST";
+            const body = { title: this.noticeTitle, contents: this.noticeContent, type };
+            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body);
             if (response) {
-                let params = {
-                    size: this.noticePageSize,
-                    page: this.page,
-                };
-                if (this.onlyNotice) {
-                    params.type = 'notice';
-                }
-                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params })
+                let params = { size: this.noticePageSize, page: this.page };
+                if (this.onlyNotice) params.type = 'notice';
+                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
                 this.notices = noticeResponse?.data?.result?.content;
                 this.noticeCreateModal = false;
                 this.renewNotice();
             }
-
-        },
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
         // 과제 CRUD 메서드
         async renewAssignment() {
             this.assignmentCreateModal = false;
@@ -879,33 +861,31 @@ export default {
 
         },
         async submitAssignmentCreate() {
-            this.assignmentCreateModal = false;
-            const endDate = this.assignmentDate.split('T')[0];
-            const endTime = this.assignmentDate.split('T')[1];
-            const body = {
-                title: this.assignmentTitle,
-                contents: this.assignmentContent,
-                endDate,
-                endTime
-            }
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body)
-            console.log(response);
-            const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
-            this.assignments = assignmentResponse?.data?.result?.content;
+        try {
+            const [endDate, endTime] = this.assignmentDate.split('T');
+            const body = { title: this.assignmentTitle, contents: this.assignmentContent, endDate, endTime };
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body);
             this.assignmentCreateModal = false;
             this.renewAssignment();
             this.handleAssignmentPageChange();
-
-        },
-        async viewAssignmentOpen(id) {
-            this.renewAssignment();
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
+    async viewAssignmentOpen(id) {
+        try {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentViewModal = true;
             this.assignmentTitle = getResponse?.data?.result?.title;
             this.assignmentContent = getResponse?.data?.result?.contents;
             this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
             this.assignmentId = getResponse?.data?.result?.id;
-        },
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
         async updateAssignmentOpen(id) {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentUpdateModal = true;
@@ -916,52 +896,38 @@ export default {
             this.assignmentId = getResponse?.data?.result?.id;
         },
         async updateAssignment() {
-            try {
-                // 날짜 및 시간 분리
-                const [endDate, endTime] = this.assignmentDate.split('T');
-
-                const body = {
-                    title: this.assignmentTitle,
-                    contents: this.assignmentContent,
-                    endDate,
-                    endTime
-                };
-
-                // axios 요청
-                const response = await axios.put(
-                    `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/update`,
-                    body
-                );
-                // 응답이 성공적이면 새로고침
-                if (response) {
-                    await this.fetchAssignments();  // 리스트 갱신
-                    this.renewAssignment();
-                    this.assignmentUpdateModal = false;
-
-                } else {
-                    console.error('Update failed:', response);
-                }
-            } catch (error) {
-                console.error('Error updating assignment:', error);
+        try {
+            const [endDate, endTime] = this.assignmentDate.split('T');
+            const body = { title: this.assignmentTitle, contents: this.assignmentContent, endDate, endTime };
+            const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/update`, body);
+            if (response) {
+                await this.fetchAssignments();
+                this.renewAssignment();
+                this.assignmentUpdateModal = false;
             }
-            this.renewAssignment();
-            this.handleAssignmentPageChange();
-        },
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
         // todo : update reload 잘 해보기
         async fetchAssignments() {
             const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
             this.assignments = assignmentResponse?.data?.result?.content;
         },
         async deleteAssignments() {
+        try {
             const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
             if (response) {
-                await this.fetchAssignments();  // 리스트 갱신
+                await this.fetchAssignments();
                 this.renewAssignment();
                 this.assignmentUpdateModal = false;
             }
-            this.renewAssignment();
-            this.handleAssignmentPageChange();
-        },
+        } catch (e) {
+            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+            this.alertModal = true;
+        }
+    },
 
         changeDay(day) {
             switch (day) {
@@ -1050,16 +1016,16 @@ export default {
             }
             this.renewNotice();
         },
-        changePostType(type){
+        changePostType(type) {
             switch (type) {
                 case 'POST':
                     return '게시글';
                 case 'NOTICE':
                     return '화요일';
-        }
+            }
 
-    },
-}
+        },
+    }
 
 };
 </script>
@@ -1156,16 +1122,19 @@ export default {
     border-radius: 10px;
     padding: 30px 5px;
     margin-top: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-.assignment-item{
+
+.assignment-item {
     padding: 30px;
     transition: all 0.3s ease;
 }
+
 .assignment-item:hover {
     transform: scale(1.03);
     cursor: pointer;
 }
+
 .list-item:hover {
     background-color: #e9e9e9;
     border-radius: 5px;

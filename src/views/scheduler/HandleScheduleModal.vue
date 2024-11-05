@@ -122,15 +122,31 @@ export default {
         content: this.content,
       };
 
+      const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
+
+      // `this.schedulerTime`을 `Date` 객체로 변환하고 `alertTimeInMinutes`을 빼는 계산
+      const [hours, minutes] = this.schedulerTime.split(':').map(Number);
+      const scheduleDateTime = new Date(this.schedulerDate);
+      scheduleDateTime.setHours(hours, minutes);
+
+      // alertTimeInMinutes를 빼기
+      scheduleDateTime.setMinutes(scheduleDateTime.getMinutes() - alertTimeInMinutes);
+
+      // 계산된 시간을 "HH:mm" 형식으로 변환
+      const calculatedReserveTime = scheduleDateTime
+        .toTimeString()
+        .slice(0, 5);
+
       const dataToSend = { 
         scheduleData,
         alertData: this.alertYn ? {
           scheduleId: this.selectedSchedule?.id || null,
           reserveDay: this.schedulerDate,
-          reserveTime: this.schedulerTime,
+          reserveTime: calculatedReserveTime, // 계산된 reserveTime을 설정
         } : null 
       };
-      console.log('scheduleSaved', dataToSend)
+
+      console.log('scheduleSaved', dataToSend);
       this.$emit('scheduleSaved', dataToSend); // 부모 컴포넌트에 저장된 일정 전송
     },
     calculateAlertTimeInMinutes() {

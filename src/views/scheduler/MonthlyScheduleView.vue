@@ -439,6 +439,7 @@ export default {
       } catch (error) {
         console.error('Error during schedule saving process:', error);
       }
+      this.scheduleData = null;
       this.refreshCalendarEvents(); // 일정 새로고침
 
     },
@@ -449,6 +450,7 @@ export default {
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member-service/scheduler/set-alert`, alertData);
         console.log("Alert created successfully:", response.data);
         this.isModalVisible = false;
+        this.alertData = null;
         this.showSnackbar(response.data.status_message)
         await this.refreshCalendarEvents(); // 일정 새로고침
       } catch (error) {

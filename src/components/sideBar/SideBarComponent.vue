@@ -170,13 +170,16 @@ export default {
   },
   methods: {
     async getMyInfo() {
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
-        this.profileUrl = response.data.profileImage;
-        this.userName = response.data.name;
-        this.userRole = response.data.role;
-      } catch (e) {
-        console.log(e);
+      const token = localStorage.getItem('token');
+        if(token){
+          try {
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
+          this.profileUrl = response.data.profileImage;
+          this.userName = response.data.name;
+          this.userRole = response.data.role;
+        } catch (e) {
+          console.log(e);
+        }
       }
     },
     setMenuItems() {

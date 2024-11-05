@@ -192,26 +192,40 @@ export default {
   },
   methods: {
     redirectToGoogle(role) {
-      Cookies.set("role", role); // 쿠키에 role 저장
+      // 쿠키에 role 저장
+      Cookies.set("role", role);
+      
+      // Google OAuth URL로 리다이렉트
       const googleAuthUrl = `${process.env.VUE_APP_API_BASE_URL}/member-service/oauth2/authorization/google`;
+      let retryCount = 0; // 재시도 횟수 초기화
+      const maxRetries = 3; // 최대 재시도 횟수 설정
 
-      // URL 상태 확인을 위한 HEAD 요청
-      fetch(googleAuthUrl, { method: "HEAD" })
-        .then((response) => {
-          if (response.ok) {
-            // URL이 유효하면 리다이렉트
-            window.location.href = googleAuthUrl;
-          } else {
-            // 404 등 오류 응답일 경우 /member/main으로 이동
-            console.error("Google 로그인 URL이 유효하지 않습니다.");
-            // window.location.href = "/member/main";
-          }
-        })
-        .catch((error) => {
-          // 네트워크 오류 등 예외 발생 시 처리
-          console.error("Google 로그인 요청 오류:", error);
-          // window.location.href = "/member/main";
-        });
+      function attemptRedirect() {
+        // 타임아웃 후 /member/main 페이지로 이동
+        const timeout = setTimeout(() => {
+          window.location.href = "/member/main";
+        }, 5000); // 5초 타임아웃 설정
+
+        // 실제 리다이렉트 시도
+        window.location.href = googleAuthUrl;
+
+        // beforeunload 이벤트로 리다이렉션 성공 시 타임아웃 취소
+        window.addEventListener("beforeunload", () => clearTimeout(timeout));
+      }
+
+      // 재시도 로직 설정
+      attemptRedirect();
+
+      window.addEventListener("error", () => {
+        if (retryCount < maxRetries) {
+          console.warn(`Google 로그인 재시도 중 (${retryCount + 1}/${maxRetries})`);
+          retryCount++;
+          setTimeout(attemptRedirect, 2000); // 2초 간격으로 재시도
+        } else {
+          console.error("Google 로그인 재시도 실패. /member/main으로 이동합니다.");
+          window.location.href = "/member/main";
+        }
+      });
     },
     // redirectToKakao(role) {
     //   Cookies.set("role", role); // 쿠키에 role 저장

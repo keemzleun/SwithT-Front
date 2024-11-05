@@ -637,6 +637,19 @@ export default {
   text-decoration: none;
 }
 
+::v-deep .fc-daygrid-day-events {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 말줄임표 표시 */
+}
+
+::v-deep .fc-daygrid-event {
+  max-width: 100%; /* 이벤트가 날짜 셀을 넘지 않도록 너비 제한 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 ::v-deep .fc-col-header-cell-cushion {
   color: #000;
   text-decoration: none;

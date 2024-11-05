@@ -103,6 +103,7 @@
 
 <script>
 import dayjs from 'dayjs';
+import { useToast } from "vue-toastification";
 
 export default {
   props: {
@@ -207,6 +208,8 @@ export default {
         
     // 알림 생성 메서드
     async createAlert() {
+      const toast = useToast(); // Toast 인스턴스 생성
+
       const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
       const alertTimeValue = dayjs(`${this.schedulerDate}T${this.schedulerTime}`, 'YYYY-MM-DDTHH:mm')
         .subtract(alertTimeInMinutes, 'minute')
@@ -220,7 +223,8 @@ export default {
       
       if (reserveTimeDifference < 10) {
         // 예외 발생: 알림 시간이 현재 시간으로부터 10분 미만일 경우
-        throw new Error("알림 시간은 현재 시간으로부터 최소 10분 이상이어야 합니다.");
+        toast.error("알림 시간은 현재 시간으로부터 최소 10분 이상이어야 합니다.");
+        return;
       }
 
       const alertData = {
@@ -236,6 +240,8 @@ export default {
 
     // 알림 수정 메서드
     async saveAlertSettings() {
+      const toast = useToast(); // Toast 인스턴스 생성
+
       const alertTimeInMinutes = this.calculateAlertTimeInMinutes();
       const alertTimeValue = dayjs(`${this.schedulerDate}T${this.schedulerTime}`, 'YYYY-MM-DDTHH:mm')
         .subtract(alertTimeInMinutes, 'minute')
@@ -249,7 +255,8 @@ export default {
       
       if (reserveTimeDifference < 10) {
         // 예외 발생: 알림 시간이 현재 시간으로부터 10분 미만일 경우
-        throw new Error("알림 시간은 현재 시간으로부터 최소 10분 이상이어야 합니다.");
+        toast.error("알림 시간은 현재 시간으로부터 최소 10분 이상이어야 합니다.");
+        return;
       }
 
       const alertData = {

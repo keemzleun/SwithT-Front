@@ -37,6 +37,7 @@
     "vue-router": "^4.4.5",
     "vue-simple-calendar": "^7.1.0",
     "vue-slick-carousel": "^1.0.6",
+    "vue-toastification": "^2.0.0-rc.5",
     "vue3-kakao-maps": "^2.3.9",
     "vuetify": "^3.7.3",
     "vuex": "^4.0.2"

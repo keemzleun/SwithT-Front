@@ -1,44 +1,29 @@
 <template>
   <!-- 자동 변경 배너 -->
-  <v-carousel
-    style="margin-top: 60px"
-    cycle
-    interval="4000"
-    hide-delimiters
-    :show-arrows="false"
-    height="400px"
-  >
+  <v-carousel style="margin-top: 60px" cycle interval="4000" hide-delimiters :show-arrows="false" height="400px">
     <v-carousel-item v-for="(image, index) in bannerImages" :key="index">
       <img :src="image" class="full-width-banner" />
     </v-carousel-item>
   </v-carousel>
 
   <v-container style="margin-top: 10px">
-   <div class="search-container" ref="searchBar" style="margin-top: 60px">
-      <input
-        
-        v-model="searchValue"
-        dense
-        hide-details="true"
-        class="search-bar"
-        placeholder="SwithT와 함께 배우고, 나누고, 성장하세요"
-        @input="fetchSuggestions"
-        @keyup.enter="performSearch"
-      />
+    <div class="search-container" ref="searchBar" style="margin-top: 60px">
+      <input v-model="searchValue" dense hide-details="true" class="search-bar" placeholder="SwithT와 함께 배우고, 나누고, 성장하세요"
+        @input="fetchSuggestions" @keyup.enter="performSearch" />
       <span @click="performSearch" class="search-btn mdi mdi-magnify"></span>
       <!-- 추천 검색어 표시 -->
       <ul v-if="suggestions.length > 0" class="suggestions-list" :style="{ top: suggestionsTop + 'px' }">
-        <li
-          v-for="(suggestion, index) in suggestions"
-          :key="index"
-          @click="selectSuggestion(suggestion)"
-        >
+        <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)">
           {{ suggestion }}
         </li>
       </ul>
     </div>
 
     <section class="menu mt-5">
+      <div class="menu-list" @click="performCategorySearch('CAREER')">
+        <img src="@/assets/manager_2704454.png" class="menu-icon" />
+        <div class="menu-title">취업/직무</div>
+      </div>
       <div class="menu-list" @click="performCategorySearch('DEVELOPMENT')">
         <img src="@/assets/target_2656366.png" class="menu-icon" />
         <div class="menu-title">자기계발</div>
@@ -50,10 +35,6 @@
       <div class="menu-list" @click="performCategorySearch('HOBBY')">
         <img src="@/assets/painting_2655642.png" class="menu-icon" />
         <div class="menu-title">취미</div>
-      </div>
-      <div class="menu-list" @click="performCategorySearch('CAREER')">
-        <img src="@/assets/manager_2704454.png" class="menu-icon" />
-        <div class="menu-title">취업/직무</div>
       </div>
       <div class="menu-list">
         <img src="@/assets/meeting-room_2645420.png" class="menu-icon" />
@@ -73,34 +54,19 @@
       <div v-if="freeLectures.length === 0" class="loading-message">
         데이터를 불러오는 중입니다...
       </div>
-    
+
       <!-- freeLectures가 로드된 후에만 v-carousel을 렌더링 -->
-      <v-carousel 
-      v-else :show-arrows="true" 
-      hide-delimiters 
-      height="450px"
-      style="padding: 0 55px;"
-      >
+      <v-carousel v-else :show-arrows="true" hide-delimiters height="450px" style="padding: 0 55px;">
         <v-carousel-item v-for="index in Math.ceil(freeLectures.length / 3)" :key="index">
           <div style="display: flex; justify-content: center; gap: 0px;">
             <!-- 세 개씩 보여주기 위해 배열을 slice -->
-            <v-card
-              v-for="lecture in freeLectures.slice((index - 1) * 3, index * 3)"
-              :key="lecture.id"
-              class="component"
-              @click="goToLecture(lecture.id)"
+            <v-card v-for="lecture in freeLectures.slice((index - 1) * 3, index * 3)" :key="lecture.id"
+              class="component" @click="goToLecture(lecture.id)"
               style="flex: 1; max-width: 33%; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-              elevation="1"
-            >
-              <v-img
-                :src="getlectureImage(lecture)"
-                alt="강의 썸네일"
-                height="300px"
-                class="white--text align-end"
-                style="border-radius: 0px;"
-                cover
-              ></v-img>
-    
+              elevation="1">
+              <v-img :src="getlectureImage(lecture)" alt="강의 썸네일" height="300px" class="white--text align-end"
+                style="border-radius: 0px;" cover></v-img>
+
               <v-card-text>
                 <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
                 <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
@@ -113,7 +79,7 @@
         </v-carousel-item>
       </v-carousel>
     </section>
-    
+
 
     <!-- <div class="ml-3">
       <v-card
@@ -142,25 +108,35 @@
     </div>
       새로운 v-card 추가 -->
 
+    <div class="title text-start ml-16" style="margin-top: 40px">🩷 많이 검색된 강의</div>
 
+    <div class="lecture-list mr-15" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-center;">
+      <div class="component" v-for="lecture in popularLectures" :key="lecture.id" @click="goToLecture(lecture.id)"
+        style="width: 375px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 8px;">
+        <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lecture-image"
+          style="border-radius: 15px 15px 0 0; width: 100%; height: 220px; object-fit: cover;" />
+        <div class="lecture-info">
+          <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
+          <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
+          <span class="lecture-category">{{ getCategoryText(lecture.category) }}</span>
+          <div class="lecture-title" style="font-size: 20px; font-weight: bold;">
+            {{ lecture.title }}
+          </div>
+          <div class="lecture-tutor" style="font-size: 16px;">
+            {{ lecture.memberName }} 튜터
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="title text-start ml-16" style="margin-top: 40px">👀 요즘 뜨는 강의</div>
 
     <div class="lecture-list mr-15" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-center;">
-      <div
-        class="component"
-        v-for="lecture in latestLectures"
-        :key="lecture.id"
-        @click="goToLecture(lecture.id)"
-        style="width: 375px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 8px;"
-      >
-        <img
-          :src="getlectureImage(lecture)"
-          alt="강의 썸네일"
-          class="lecture-image"
-          style="border-radius: 15px 15px 0 0; width: 100%; height: 220px; object-fit: cover;"
-        />
-        <div class="lecture-info" >
+      <div class="component" v-for="lecture in latestLectures" :key="lecture.id" @click="goToLecture(lecture.id)"
+        style="width: 375px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 8px;">
+        <img :src="getlectureImage(lecture)" alt="강의 썸네일" class="lecture-image"
+          style="border-radius: 15px 15px 0 0; width: 100%; height: 220px; object-fit: cover;" />
+        <div class="lecture-info">
           <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
           <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
           <span class="lecture-category">{{ getCategoryText(lecture.category) }}</span>
@@ -174,35 +150,7 @@
       </div>
     </div>
 
-    <div class="title text-start ml-16" style="margin-top: 40px">🩷 많이 검색된 강의</div>
 
-    <div class="lecture-list mr-15" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-center;">
-      <div
-        class="component"
-        v-for="lecture in popularLectures"
-        :key="lecture.id"
-        @click="goToLecture(lecture.id)"
-        style="width: 375px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 8px;"
-      >
-        <img
-          :src="getlectureImage(lecture)"
-          alt="강의 썸네일"
-          class="lecture-image"
-          style="border-radius: 15px 15px 0 0; width: 100%; height: 220px; object-fit: cover;"
-        />
-        <div class="lecture-info" >
-          <span v-if="lecture.lectureType === 'LECTURE'" class="tag lecture-tag">강의</span>
-          <span v-if="lecture.lectureType === 'LESSON'" class="tag lesson-tag">과외</span>
-          <span class="lecture-category">{{ getCategoryText(lecture.category) }}</span>
-          <div class="lecture-title" style="font-size: 20px; font-weight: bold;">
-            {{ lecture.title }}
-          </div>
-          <div class="lecture-tutor" style="font-size: 16px;">
-            {{ lecture.memberName }} 튜터
-          </div>
-        </div>
-      </div>
-    </div>
   </v-container>
 </template>
 
@@ -222,7 +170,7 @@ export default {
       searchValue: "",
       suggestions: [],
       latestLectures: [],
-      popularLectures:[],
+      popularLectures: [],
       freeLectures: [],
       suggestionsTop: 0,
     };
@@ -330,7 +278,7 @@ export default {
       this.suggestions = [];
     },
     updateSuggestionsPosition() {
-  // search-bar의 위치를 계산하여 suggestionsTop에 반영
+      // search-bar의 위치를 계산하여 suggestionsTop에 반영
       const searchBar = this.$refs.searchBar;
       if (searchBar) {
         const rect = searchBar.getBoundingClientRect();
@@ -363,52 +311,63 @@ export default {
   color: #333;
   padding: none;
 }
+
 .banner {
   background-color: rgb(220, 219, 219);
 }
+
 .temporary-banner {
   height: 250px;
   width: auto;
   background-color: #999;
 }
+
 .menu {
   margin: 20px 0;
 }
+
 .menu-list {
   width: 80px;
   height: 100px;
   margin: 0 10px;
   display: inline-block;
 }
+
 .menu-list:hover {
   background-color: #eee;
   border-radius: 10px;
   cursor: pointer;
 }
+
 .menu-icon {
   font-size: 60px;
   width: 60px;
   height: 60px;
   margin: 5px;
 }
+
 .menu-title {
   font-weight: 700;
 }
+
 .recommendation {
   margin-top: 20px;
 }
+
 .title {
   font-size: 32px;
   font-weight: 700;
   text-align: left;
   margin: 0 0 15px 10px;
 }
+
 .lecture-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
 }
+
 .component {
   cursor: pointer;
   margin: 20px;
@@ -417,18 +376,22 @@ export default {
   overflow: hidden;
   transition: transform 0.1s;
 }
+
 .component:hover {
   transform: scale(1.03);
 }
+
 .lecture-image {
   width: 250px;
   height: 200px;
   object-fit: cover;
 }
+
 .lecture-info {
   text-align: left;
   padding: 15px 20px 20px;
 }
+
 .tag {
   padding: 3px 8px;
   border-radius: 10px;
@@ -437,23 +400,29 @@ export default {
   font-weight: bold;
   margin-right: 5px;
 }
+
 .lecture-tag {
   background-color: #007bff;
 }
+
 .lesson-tag {
   background-color: #28a745;
 }
+
 .lecture-category {
   font-size: 15px;
 }
+
 .lecture-title {
   font-size: 18px;
   font-weight: 700;
   padding: 3px;
 }
+
 .lecture-tutor {
   padding: 0 3px 0;
 }
+
 .search-container {
   display: flex;
   justify-content: center;
@@ -461,6 +430,7 @@ export default {
   margin-top: 50px;
   position: relative;
 }
+
 .search-bar {
   width: 40vw;
   height: 50px;
@@ -473,22 +443,26 @@ export default {
   height: auto;
   transition: all 0.2s ease;
 }
+
 .search-bar:focus {
   outline: unset;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   border: 1px solid #dedede;
   background-color: #fff;
 }
+
 .search-btn {
   color: #555;
   margin-left: 10px;
   font-size: 30px;
   transition: all 0.2s ease;
 }
+
 .search-btn:hover {
   cursor: pointer;
   font-size: 35px;
 }
+
 .suggestions-list {
   list-style: none;
   padding: 0;
@@ -502,6 +476,7 @@ export default {
   left: 28%;
   overflow: auto;
 }
+
 .suggestions-list li {
   padding: 5px;
   margin: 0px;
@@ -510,9 +485,11 @@ export default {
   cursor: pointer;
   text-align: left;
 }
+
 .suggestions-list li:hover {
   background-color: #eee;
 }
+
 .full-width-banner {
   width: 100vw;
   height: 400px;

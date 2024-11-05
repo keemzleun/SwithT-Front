@@ -134,7 +134,8 @@ export default {
       alertYn: this.selectedSchedule ? this.selectedSchedule.alertYn === 'Y' : false, // 기본 알림 여부 설정
       alertTime: '',
       customAlertTime: '',
-      isAlertEditable: false // 알림 수정 모드 여부
+      isAlertEditable: false, // 알림 수정 모드 여부
+      dataToSend: null,
     };
   },
   computed: {
@@ -175,21 +176,23 @@ export default {
       scheduleDateTime.setMinutes(scheduleDateTime.getMinutes() - alertTimeInMinutes);
 
       // 계산된 시간을 "HH:mm" 형식으로 변환
-      const calculatedReserveTime = scheduleDateTime
-        .toTimeString()
-        .slice(0, 5);
+      const calculatedReserveTime = scheduleDateTime.toTimeString().slice(0, 5);
 
-      const dataToSend = { 
+      // dataToSend 설정
+      this.dataToSend = { 
         scheduleData,
         alertData: this.alertYn ? {
           scheduleId: this.selectedSchedule?.id || null,
           reserveDay: this.schedulerDate,
-          reserveTime: calculatedReserveTime, // 계산된 reserveTime을 설정
+          reserveTime: calculatedReserveTime,
         } : null 
       };
 
-      console.log('scheduleSaved', dataToSend);
-      this.$emit('scheduleSaved', dataToSend); // 부모 컴포넌트에 저장된 일정 전송
+      console.log('scheduleSaved', this.dataToSend);
+      this.$emit('scheduleSaved', this.dataToSend); // 부모 컴포넌트에 저장된 일정 전송
+
+      // dataToSend 초기화
+      this.dataToSend = null;
     },
     calculateAlertTimeInMinutes() {
       if (this.alertTime === '1시간 전') {

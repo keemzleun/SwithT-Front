@@ -19,7 +19,7 @@
             <v-row class="lessons-container">
                 <v-col v-for="lecture in lectures" :key="lecture.id" cols="4" class="mb-4">
                     <div @click="clickLectureImage(lecture.lectureGroupId)" class="lesson-card"
-                         :class="{ 'terminated-lecture': lecture.status === 'TERMINATE' }">
+                        :class="{ 'terminated-lecture': lecture.status === 'TERMINATE' }">
                         <div class="lecture-overlay" v-if="lecture.status === 'TERMINATE'"></div>
                         <img :src="lecture.lectureImage" alt="강의 썸네일" class="lecture-image" />
                         <br>
@@ -32,8 +32,8 @@
                         <br>
                         {{ lecture.startDate }} ~ {{ lecture.endDate }}
 
-                        <v-btn v-if="lecture.status === 'TERMINATE'" @click="showModal"
-                               class="review-button">
+                        <v-btn v-if="lecture.status === 'TERMINATE'" @click="openReviewModal(lecture.id)"
+                            class="review-button">
                             <v-icon left>mdi-pencil</v-icon>
                             <b>리뷰 작성</b>
                         </v-btn>
@@ -42,15 +42,23 @@
             </v-row>
         </v-card-text>
         <v-pagination v-model="frontendPage" :length="totalPages" @click="handlePageChange"></v-pagination>
+        <ReviewCreate v-model:dialog="dialog" :applyId="selectedApplyId" />
+
     </v-container>
 </template>
 
 <script>
 import axios from 'axios';
+import ReviewCreate from '@/components/ReviewCreate.vue';
 export default {
+    components: {
+        ReviewCreate,
+    },
     data() {
         return {
             lectures: [],
+            dialog: false,
+            selectedApplyId: null,
             status: 'ADMIT',
             page: 0,
             size: 6,
@@ -63,6 +71,11 @@ export default {
     },
 
     methods: {
+        openReviewModal(applyId) {
+            console.log("dkdkdk")
+            this.selectedApplyId = applyId;
+            this.dialog = true;
+        },
         async showLectureList() {
             try {
                 let params = {
@@ -115,6 +128,7 @@ export default {
     position: relative;
     overflow: hidden;
 }
+
 .lesson-card:hover {
     cursor: pointer;
 }

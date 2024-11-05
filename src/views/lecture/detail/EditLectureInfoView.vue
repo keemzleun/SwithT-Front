@@ -49,7 +49,7 @@
                     <label>강의명</label><br />
                 </v-col>
                 <v-col cols="8">
-                    <input v-model="title" class="form-control" placeholder="강의명을 입력해주세요" type="text" />
+                    <input v-model="title" class="form-control" placeholder="강의명을 입력해주세요(최대 50자)" type="text" maxlength="50"/>
                 </v-col>
             </v-row>
 

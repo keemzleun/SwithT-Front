@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container width="70vw" style="margin-top: 60px;">
         <v-row justify="center">
             <v-col class="main-title" cols="12" align="center" style="font-size: 28px; font-weight: 700">
                 <h1>신청 내역</h1>

@@ -1,7 +1,7 @@
 <template>
     <!-- Lecture Info Card 컴포넌트 -->
-    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules" :isTuteeExist="isTuteeExist"
-        :isShowMap="isShowMap" />
+    <LectureInfoCard :isTutor="istutor" :infoData="infoData" :lectureSchedules="lectureSchedules"
+        :isTuteeExist="isTuteeExist" :isShowMap="isShowMap" />
 
     <div class="notice-slider">
         <div v-for="(notice, index) in topNotice" :key="index" v-show="currentNotice === index">
@@ -518,7 +518,7 @@ export default {
                 pastDayCount: 0,
                 tuteeName: "",
             },
-            isTuteeExist:false,
+            isTuteeExist: false,
             notice: [],
             noticeTitle: "",
             noticeContent: "",
@@ -607,7 +607,7 @@ export default {
 
             const tuteesResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-tutee-list/${this.lectureGroupId}`);
             this.tutees = tuteesResponse?.data?.result?.content;
-            if(this.tutees.length >0) this.isTuteeExist = true;
+            if (this.tutees.length > 0) this.isTuteeExist = true;
 
             let params = { size: this.noticePageSize, page: this.page };
             if (this.onlyNotice) params.type = 'notice';
@@ -638,7 +638,11 @@ export default {
                 const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/tutee-room-check-or-create?lectureGroupId=${this.lectureGroupId}`);
                 this.infoData.chatRoomId = response.data.result.roomId;
             }
-            if (!this.isLecture && this.tutees.length >0) this.infoData.tuteeName = this.tutees[0].tuteeName;
+            else {
+                this.infoData.chatRoomId = data.chatRoomId;
+            }
+            
+            if (!this.isLecture && this.tutees.length > 0) this.infoData.tuteeName = this.tutees[0].tuteeName;
         } catch (e) {
             this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
             this.alertModal = true;
@@ -674,18 +678,18 @@ export default {
             this.onlyNoticeClick();  // 공지사항 또는 전체 데이터를 불러오는 로직
         },
         async onlyNoticeClick() {
-        try {
-            let params = { size: this.noticePageSize, page: this.page };
-            if (this.onlyNotice) params.type = 'notice';
+            try {
+                let params = { size: this.noticePageSize, page: this.page };
+                if (this.onlyNotice) params.type = 'notice';
 
-            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
-            this.notices = noticeResponse?.data?.result?.content;
-            this.noticePages = noticeResponse?.data?.result?.totalPages;
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
+                this.notices = noticeResponse?.data?.result?.content;
+                this.noticePages = noticeResponse?.data?.result?.totalPages;
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
+            }
+        },
         loadKakaoMapScript() {
             const script = document.createElement('script');
             script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=03a055c21377bee26ab1559dedf4af6f&libraries=services&autoload=false`;
@@ -736,18 +740,18 @@ export default {
             this.commentPages = commentResponse?.data?.result?.totalPages;
         },
         async handleNoticePageChange() {
-        try {
-            this.page = this.noticePage - 1;
-            let params = { size: this.noticePageSize, page: this.page };
-            if (this.onlyNotice) params.type = 'notice';
-            const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
-            this.notices = noticeResponse?.data?.result?.content;
-            this.commentPages = noticeResponse?.data?.result?.totalPages;
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+            try {
+                this.page = this.noticePage - 1;
+                let params = { size: this.noticePageSize, page: this.page };
+                if (this.onlyNotice) params.type = 'notice';
+                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
+                this.notices = noticeResponse?.data?.result?.content;
+                this.commentPages = noticeResponse?.data?.result?.totalPages;
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
+            }
+        },
         async handleAssignmentPageChange() {
             this.page = this.assignmentPage - 1;
             let params = {
@@ -773,46 +777,46 @@ export default {
 
         },
         async fetchComments(noticeId) {
-        try {
-            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list?page=0`);
-            this.commentPages = response?.data?.result?.totalPages;
-            this.comments = response?.data?.result?.content || [];
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
-    async submitComment() {
-        try {
-            const body = { contents: this.newComment };
-            if (this.commentId) {
-                await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}`, body);
-            } else {
-                await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/create`, body);
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${noticeId}/comment/list?page=0`);
+                this.commentPages = response?.data?.result?.totalPages;
+                this.comments = response?.data?.result?.content || [];
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
             }
-            this.newComment = '';
-            this.isCommentEdit = false;
-            await this.fetchComments(this.noticeId);
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+        },
+        async submitComment() {
+            try {
+                const body = { contents: this.newComment };
+                if (this.commentId) {
+                    await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}`, body);
+                } else {
+                    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/${this.noticeId}/comment/create`, body);
+                }
+                this.newComment = '';
+                this.isCommentEdit = false;
+                await this.fetchComments(this.noticeId);
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
+            }
+        },
         async editComment(comment) {
             this.isCommentEdit = true;
             this.commentId = comment.id;
             this.newComment = comment.contents;
         },
         async deleteComment(comment) {
-        try {
-            this.commentId = comment.id;
-            await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
-            await this.fetchComments(this.noticeId);
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+            try {
+                this.commentId = comment.id;
+                await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/board/comment/${this.commentId}/delete`);
+                await this.fetchComments(this.noticeId);
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
+            }
+        },
         async renewNotice() {
             this.isNotice = false;
             this.noticeTitle = "";
@@ -826,24 +830,24 @@ export default {
             this.topNotice = topNoticeResponse?.data?.result?.content;
 
         },
-async noticeCreate() {
-        try {
-            const type = this.isNotice ? "NOTICE" : "POST";
-            const body = { title: this.noticeTitle, contents: this.noticeContent, type };
-            const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body);
-            if (response) {
-                let params = { size: this.noticePageSize, page: this.page };
-                if (this.onlyNotice) params.type = 'notice';
-                const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
-                this.notices = noticeResponse?.data?.result?.content;
-                this.noticeCreateModal = false;
-                this.renewNotice();
+        async noticeCreate() {
+            try {
+                const type = this.isNotice ? "NOTICE" : "POST";
+                const body = { title: this.noticeTitle, contents: this.noticeContent, type };
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/create`, body);
+                if (response) {
+                    let params = { size: this.noticePageSize, page: this.page };
+                    if (this.onlyNotice) params.type = 'notice';
+                    const noticeResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/board/list`, { params });
+                    this.notices = noticeResponse?.data?.result?.content;
+                    this.noticeCreateModal = false;
+                    this.renewNotice();
+                }
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
             }
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+        },
         // 과제 CRUD 메서드
         async renewAssignment() {
             this.assignmentCreateModal = false;
@@ -861,31 +865,31 @@ async noticeCreate() {
 
         },
         async submitAssignmentCreate() {
-        try {
-            const [endDate, endTime] = this.assignmentDate.split('T');
-            const body = { title: this.assignmentTitle, contents: this.assignmentContent, endDate, endTime };
-            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body);
-            this.assignmentCreateModal = false;
-            this.renewAssignment();
-            this.handleAssignmentPageChange();
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
-    async viewAssignmentOpen(id) {
-        try {
-            const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
-            this.assignmentViewModal = true;
-            this.assignmentTitle = getResponse?.data?.result?.title;
-            this.assignmentContent = getResponse?.data?.result?.contents;
-            this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
-            this.assignmentId = getResponse?.data?.result?.id;
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+            try {
+                const [endDate, endTime] = this.assignmentDate.split('T');
+                const body = { title: this.assignmentTitle, contents: this.assignmentContent, endDate, endTime };
+                await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment/create`, body);
+                this.assignmentCreateModal = false;
+                this.renewAssignment();
+                this.handleAssignmentPageChange();
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
+            }
+        },
+        async viewAssignmentOpen(id) {
+            try {
+                const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
+                this.assignmentViewModal = true;
+                this.assignmentTitle = getResponse?.data?.result?.title;
+                this.assignmentContent = getResponse?.data?.result?.contents;
+                this.assignmentDate = getResponse?.data?.result?.endDate + 'T' + getResponse?.data?.result?.endTime;
+                this.assignmentId = getResponse?.data?.result?.id;
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
+            }
+        },
         async updateAssignmentOpen(id) {
             const getResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${id}`);
             this.assignmentUpdateModal = true;
@@ -896,38 +900,38 @@ async noticeCreate() {
             this.assignmentId = getResponse?.data?.result?.id;
         },
         async updateAssignment() {
-        try {
-            const [endDate, endTime] = this.assignmentDate.split('T');
-            const body = { title: this.assignmentTitle, contents: this.assignmentContent, endDate, endTime };
-            const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/update`, body);
-            if (response) {
-                await this.fetchAssignments();
-                this.renewAssignment();
-                this.assignmentUpdateModal = false;
+            try {
+                const [endDate, endTime] = this.assignmentDate.split('T');
+                const body = { title: this.assignmentTitle, contents: this.assignmentContent, endDate, endTime };
+                const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/update`, body);
+                if (response) {
+                    await this.fetchAssignments();
+                    this.renewAssignment();
+                    this.assignmentUpdateModal = false;
+                }
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
             }
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+        },
         // todo : update reload 잘 해보기
         async fetchAssignments() {
             const assignmentResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/${this.lectureGroupId}/assignment`)
             this.assignments = assignmentResponse?.data?.result?.content;
         },
         async deleteAssignments() {
-        try {
-            const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
-            if (response) {
-                await this.fetchAssignments();
-                this.renewAssignment();
-                this.assignmentUpdateModal = false;
+            try {
+                const response = await axios.patch(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/assignment/${this.assignmentId}/delete`);
+                if (response) {
+                    await this.fetchAssignments();
+                    this.renewAssignment();
+                    this.assignmentUpdateModal = false;
+                }
+            } catch (e) {
+                this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
+                this.alertModal = true;
             }
-        } catch (e) {
-            this.alertModalContents = e?.response?.data?.error_message || '오류가 발생했습니다.';
-            this.alertModal = true;
-        }
-    },
+        },
 
         changeDay(day) {
             switch (day) {

@@ -14,17 +14,32 @@
       </form>
       <div v-if="errorMessage">{{ errorMessage }}</div>
     </div>
+
+    <AlertModal
+     v-model="alertModal" 
+     @update:dialog="alertModal = $event"
+     icon=mdi-alert-circle-outline
+     :title=this.alertModalTtile
+     :contents=this.alertModalContents
+     />
   </template>
   
   <script>
   import axios from 'axios';
+  import AlertModal from '@/components/AlertModal.vue';
   
   export default {
+    components: {
+        AlertModal
+    },
     data() {
       return {
         email: '',
         password: '',
         errorMessage: '',
+        alertModal: false,
+        alertModalTtile: '',
+        alertModalContents: '',
       };
     },
     methods: {
@@ -37,10 +52,11 @@
           console.log(this.email)
   
           localStorage.setItem('token', response.data.result.token);
-          alert('로그인 성공!');
         } catch (error) {
           this.errorMessage = '로그인 실패: 잘못된 아이디 또는 비밀번호.';
-          console.error('로그인 오류:', error);
+          this.alertModalTtile = "로그인 실패!!!";
+          this.alertModalContents = error;
+          this.alertModal = true;
         }
       },
     },

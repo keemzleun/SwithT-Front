@@ -49,17 +49,21 @@
                     <label>강의명</label><br />
                 </v-col>
                 <v-col cols="8">
-                    <input v-model="title" class="form-control" placeholder="강의명을 입력해주세요" type="text" />
+                    <input v-model="title" class="form-control" placeholder="강의명을 입력해주세요(최대 50자)" type="text" maxlength="50"/>
                 </v-col>
             </v-row>
 
             <!-- 썸네일 -->
             <v-row class="form-group align-center">
-                <v-col cols="3" class="d-flex align-center justify-center">
+                <v-col cols="3" class="d-flex flex-column align-items-center">
                     <label>썸네일</label>
+                    <div class="edit-thumbnail" @click="updateThumbNail" v-if="!isThumbNailEdit">썸네일 수정</div>
                 </v-col>
-                <v-col cols="8">
-                    <input type="file" id="thumbnail" @change="onFileChange" accept="image/*" class="form-control" />
+                <v-col cols="8" class="d-flex flex-column align-start">
+                    <div class="thumbnail" v-if="!isThumbNailEdit" style="align-self: flex-start;">
+                        <img :src="thumbnail" alt="Lecture Thumbnail" />
+                    </div>
+                    <input type="file" id="thumbnail" @change="onFileChange" accept="image/*" class="form-control" v-else/>
                 </v-col>
             </v-row>
 
@@ -124,6 +128,8 @@ export default {
             alertModal: false,
             alertModalTitle: "",
             alertModalContents: "",
+
+            isThumbNailEdit:false,
         };
     },
     mounted() {
@@ -132,13 +138,16 @@ export default {
         this.loadKakaoMapScript();
     },
     methods: {
+        updateThumbNail(){
+            this.isThumbNailEdit=true;
+        },
         async fetchLectureDetail() {
             const route = useRoute();
             const lectureId = route.params.id;
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture-detail/${lectureId}`);
                 const data = response.data.result;
-
+                console.log("강의강의"+JSON.stringify(data))
                 // this를 사용하여 data에 직접 접근
                 this.teachingMethod = data.lectureType;
                 this.field = data.category;
@@ -166,13 +175,13 @@ export default {
             const formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(updateData)], { type: 'application/json' }));
 
-            if (this.thumbnail) {
+            if (this.thumbnail && this.isThumbNailEdit) {
                 formData.append('file', this.thumbnail); // 이미지 파일 추가
             }
 
             try {
                 const token = localStorage.getItem('token');
-                await axios.post(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/${lectureId}`,
+                await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/${lectureId}`,
                     formData,
                     {
                         headers: {
@@ -251,7 +260,13 @@ export default {
     flex-wrap: wrap;
     gap: 10px;
 }
-
+.thumbnail img {
+    border-radius: 8px;
+    height: 300px;
+    object-fit: contain;
+    margin-left: 0; /* 왼쪽 정렬을 위해 여백 제거 */
+    align-self: flex-start; /* 부모 기준으로 왼쪽 정렬 */
+}
 .custom-option {
     padding: 10px;
     border: 1px solid #ccc;
@@ -293,7 +308,25 @@ export default {
     margin-top: 120px;
     transition: all 0.3s ease;
 }
+.edit-thumbnail {
+    background-color: #0d6efd;
+    color: #f5f5f5;
+    font-size: 16px;
+    font-weight: bold;
+    height: 30px;
+    width: 80px;
+    border-radius: 10px;
+    display: flex; /* Flexbox 설정 추가 */
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    margin-top: 10px; /* 라벨과의 간격 조정 */
+    transition: all 0.3s ease;
+}
 
+.edit-thumbnail:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}
 .edit-lecture:hover {
     cursor: pointer;
     transform: scale(1.05);

@@ -16,19 +16,23 @@
                     </div>
                 </v-row>
                 <v-row class="d-flex align-center justify-start mb-2">
-                    <div class="title mr-2">{{ infoData.title }}</div>
+                    <div class="title mr-2">{{ infoData.title }} <v-icon style="font-size:30px;" v-if="isChat" @click="clickChatRoom()">mdi-chat</v-icon><v-icon v-if="isTutor && !isTuteeExist" style="font-size:30px;" @click="this.$router.push(`/lecture-group/${this.lectureGroupId}`)">mdi-pencil</v-icon></div>
 
-                    <v-icon v-if="isTutor" @click="clickChatRoom()">mdi-chat</v-icon>
+                    
                     <!-- <v-btn v-if="isTutor" variant="outlined" class="ml-2">연장하기</v-btn> -->
                 </v-row>
 
-                <div class="memberName"> {{ infoData.memberName }} 튜터 <v-icon @click="clickChatRoom()" v-if="!isTutor">mdi-chat</v-icon>
+                <div class="memberName" v-if="lectureType=='강의'"> <strong>{{ infoData.memberName }} 튜터</strong>
+                </div>
+                <div class="memberName" v-else> <strong>{{ infoData.tuteeName ?? "신청 및 승인된 튜티가 없습니다" }} 튜티</strong>
                 </div>
                 <div class="detailInfo">시작 일자 : {{ infoData.startDate ?? "아직 입력되지 않았습니다." }}</div>
                 <div class="detailInfo">강의 일정 : </div>
                 <div v-html="lectureSchedules" class="detailInfo"></div>
                 <div class="detailInfo">위치 : {{ infoData.address }} {{infoData.detailAddress=="" ? "아직 입력되지 않았습니다.":infoData.detailAddress}}<v-icon @click="showMap()" v-if="infoData.address">mdi-google-maps</v-icon>
                 </div>
+                <!-- <div class="detailInfo" v-if="lectureType=='과외'"> 튜티 : {{ infoData.tuteeName ?? "신청 및 승인된 튜티가 없습니다" }}</div> -->
+
 
             </v-col>
             <v-col cols="5" class="d-flex align-center justify-center">
@@ -111,6 +115,11 @@
             <v-divider class="mt-2 mb-10"></v-divider>
         </v-card>
     </v-dialog>
+    <ChatModal
+    v-model:dialog="chatModal"
+    :selectedChatRoomId="this.chatRoomId"
+    :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
+    />
     <!-- <v-card class="custom-card">
         <v-row>
             <v-col cols="3" class="thumbnail-container rounded-circle">
@@ -139,12 +148,17 @@
 /* global kakao */
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import ChatModal from '@/components/ChatModal.vue';
 
 export default {
+    components:{
+        ChatModal,
+    },
     props: {
         isTutor: Boolean,
         infoData: Object,
         lectureSchedules: String,
+        isTuteeExist:Boolean
     },
     data() {
         return {
@@ -160,14 +174,16 @@ export default {
             address: "",
             detailAddress:"",
             lectureGroupId: 0,
-            chatRoomId:0,
             days: ['월', '화', '수', '목', '금', '토', '일'],
             hours: [
                 '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
                 '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
                 '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
             ],
-            groupTimes: []
+            groupTimes: [],
+            chatModal: false,
+            chatRoomId: '',
+            isChat:false,
         };
     },
     mounted() {
@@ -203,6 +219,8 @@ export default {
                 this.limitPeople = this.infoData.limitPeople
                 this.groupTimes = this.infoData.lectureGroupTimes
                 this.chatRoomId=this.infoData.chatRoomId
+                if(this.infoData.chatRoomId === null) this.isChat = false;
+                else this.isChat = true;
             },
             immediate: true,
             deep: true
@@ -241,7 +259,7 @@ export default {
         },
          clickChatRoom() {
             console.log("채팅방 입장" + this.infoData.chatRoomId);
-            this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
+            this.chatModal = true;
         },
         formattedCategory() {
             if (this.infoData?.category) {
@@ -398,6 +416,11 @@ export default {
 .title {
     font-size: 40px;
     font-weight: bold;
+    word-wrap: break-word;
+    word-break: break-all;
+    max-width: 80%; /* 제목의 최대 너비를 조절하기 위해 이 값을 설정 */
+    overflow-wrap: break-word;
+    white-space: normal; /* 제목 안에서 줄바꿈이 가능하도록 설정 */
 }
 
 .memberName {

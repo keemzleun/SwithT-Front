@@ -558,20 +558,25 @@ export default {
         this.$router.push(`/tutor-lecture-list`);
       }
       catch (e) {
-        alert(e?.response?.data?.error_message)
+        this.alertModalContents = e?.response?.data?.error_message;
+        this.alertModal = true;
+
+        // alert(e?.response?.data?.error_message)
       }
     },
     async submitLectureGroup() {
       //모집 인원이 0인지 확인
       if (this.currentLecture.capacity <= 0) {
-        alert('모집인원은 0명이 될 수 없습니다.');
+        this.alertModalContents = '모집인원은 0명이 될 수 없습니다.';
+        this.alertModal = true;
         return; // 조건에 맞지 않으면 함수 종료
       }
       // 강의 시간이 올바르게 입력되었는지 확인
       for (const timeSlot of this.currentLecture.timeSlots) {
         console.log("timeslot", timeSlot)
         if (!timeSlot.lectureDay || !timeSlot.startTime || !timeSlot.endTime) {
-          alert('강의 시간, 요일, 시작 시간 및 종료 시간을 모두 입력해야 합니다.');
+          this.alertModalContents = '강의 시간, 요일, 시작 시간 및 종료 시간을 모두 입력해야 합니다.';
+          this.alertModal = true;
           return; // 조건에 맞지 않으면 함수 종료
         }
       }
@@ -580,11 +585,9 @@ export default {
       let hasOverlap = false; // 겹치는 강의 체크
 
       for (const timeSlot of this.currentLecture.timeSlots) {
-        console.log("타임스랏", timeSlot)
         const startHour = this.hours.indexOf(timeSlot.startTime);
         const endHour = this.hours.indexOf(timeSlot.endTime);
         const day = timeSlot.lectureDay;
-        console.log("스케쥴 왜 안 들어오지" + startHour, endHour, day)
 
         // 겹치는 시간 확인
         if (this.isOverlapping(day, startHour, endHour)) {
@@ -594,7 +597,8 @@ export default {
       }
 
       if (hasOverlap) {
-        alert('겹치는 강의 시간이 존재합니다. 다른 시간을 선택해주세요.');
+        this.alertModalContents = '겹치는 강의 시간이 존재합니다. 다른 시간을 선택해주세요.';
+        this.alertModal = true;
         return; // 겹치는 경우 강의 추가 중단
       }
 
@@ -627,15 +631,29 @@ export default {
 
       try {
         const response = await axios.put(`${process.env.VUE_APP_API_BASE_URL}/lecture-service/update/lecture-group/${this.lectureGroupId}`, body)
-        if (response) this.showSnackbar('강의 그룹이 성공적으로 수정되었습니다!', 'success')
+        if (response) {
+          console.log(response)
+          this.alertModalContents = '강의 그룹이 성공적으로 수정되었습니다! 다시 정보 화면으로 돌아갑니다.';
+          this.alertModal = true;
+          setTimeout(() => {
+            this.$router.push(`/lecture-home/${this.lectureGroupId}`);
+          }, 5000);
+
+        }
       }
       catch (e) {
         const errorMessage = e.response.data.error_message;
-        if (errorMessage) this.showSnackbar(errorMessage, 'error');
-        else this.showSnackbar('강의 생성에 실패했습니다. 다시 시도해주세요.', 'error');
+        this.alertModalContents = errorMessage ?? '강의 생성에 실패했습니다. 다시 정보 화면으로 돌아갑니다.';
+        this.alertModal = true;
+        setTimeout(() => {
+          this.$router.push(`/lecture-home/${this.lectureGroupId}`);
+        }, 3000);
+
+        // if (errorMessage) this.showSnackbar(errorMessage, 'error');
+        // else this.showSnackbar('강의 생성에 실패했습니다. 다시 시도해주세요.', 'error');
       }
 
-      this.$router.push(`/lecture-home/${this.lectureGroupId}`);
+      // this.$router.push(`/lecture-home/${this.lectureGroupId}`);
 
       // this.lectureGroups.push({ ...this.currentLecture }); // 강의 목록에 추가
       // this.showForm = false; // 폼 닫기

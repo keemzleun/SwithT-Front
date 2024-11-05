@@ -12,7 +12,7 @@
       <v-overlay v-model="alertDialogSSE" width="400" content-class="custom-alert-position" absolute
         scrim="false" >
         <v-card 
-        :style="{ height: '100vh', top: '0', overflowY: 'auto', boxShadow: 'inset -4px 0 10px rgba(0, 0, 0, 0.1)', backgroundColor:'#f1f3f5' }"
+        :style="{ height: '100vh', top: '0', right:'10px',overflowY: 'auto', boxShadow: 'inset -4px 0 10px rgba(0, 0, 0, 0.1)', backgroundColor:'#f1f3f5' }"
         class="border border-t-sm border-b-sm border-l-sm pa-5">
           <v-card-title style="text-align: center; padding-bottom: 0;">
             <v-row>
@@ -59,13 +59,22 @@
     </div>
     <div class="logout" @click="logout">로그아웃</div>
   </section>
+
+  <ChatModal
+    v-model:dialog="chatModal"
+    selectedChatRoomId=""
+    :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
+  />
 </template>
 
 <script>
 import axios from "axios";
 import { EventSourcePolyfill } from 'event-source-polyfill'
-
+import ChatModal from "../ChatModal.vue";
 export default {
+  components:{
+    ChatModal
+    },
   data() {
     return {
       isLogin: false,
@@ -80,6 +89,7 @@ export default {
       generalEvents: [], // 일반 알림을 저장할 배열
       count: 0,
       eventId: "",
+      chatModal : false,
     };
   },
   watch: {
@@ -170,13 +180,16 @@ export default {
   },
   methods: {
     async getMyInfo() {
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
-        this.profileUrl = response.data.profileImage;
-        this.userName = response.data.name;
-        this.userRole = response.data.role;
-      } catch (e) {
-        console.log(e);
+      const token = localStorage.getItem('token');
+        if(token){
+          try {
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member-service/infoGet`);
+          this.profileUrl = response.data.profileImage;
+          this.userName = response.data.name;
+          this.userRole = response.data.role;
+        } catch (e) {
+          console.log(e);
+        }
       }
     },
     setMenuItems() {
@@ -205,10 +218,15 @@ export default {
       }
     },
     navigateTo(title) {
-      const menuItem = this.menuItems.find(item => item.title === title);
-      if (menuItem && menuItem.route) {
-        this.$router.push(menuItem.route); // Vue Router를 통해 이동
+      if(title ==='채팅'){
+        this.chatModal = true;
+      }else{
+        const menuItem = this.menuItems.find(item => item.title === title);
+        if (menuItem && menuItem.route) {
+          this.$router.push(menuItem.route); // Vue Router를 통해 이동
+        }
       }
+      
     },
     openAlertListModal() {
       this.alertDialogSSE = true;
@@ -433,4 +451,6 @@ export default {
 .v-overlay__scrim {
   background-color: transparent !important;
 }
+
+
 </style>

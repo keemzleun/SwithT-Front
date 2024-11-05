@@ -70,6 +70,10 @@ export default {
     applyId: {
       type: Number,
       required: true
+    },
+    tutorId: {
+      type: Number,
+      required: true
     }
   },
   watch: {
@@ -138,19 +142,17 @@ export default {
       try {
         // 리뷰 작성 데이터 준비
         const reviewData = {
-          tutorId: 5, // 실제 튜터 ID를 동적으로 설정해야 함 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          tutorId: this.tutorId, // 실제 튜터 ID를 동적으로 설정해야 함 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           star: this.rating,
           applyId: this.applyId, // 실제 applyId 동적으로 를 설정해야 함
           title: this.reviewTitle,
           contents: this.reviewContent,
         };
-
         // 리뷰 작성 요청 보내기
         const reviewResponse = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/member-service/review/create`,
           reviewData
         );
-        console.log("리뷰"+JSON.stringify(reviewResponse))
         if (reviewResponse.status === 201) {
           // 리뷰 작성 성공 후, 리뷰 상태 업데이트 요청
           const applyId = reviewData.applyId; // applyId 가져오기

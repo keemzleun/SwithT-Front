@@ -407,6 +407,11 @@ export default {
 .title {
     font-size: 40px;
     font-weight: bold;
+    word-wrap: break-word;
+    word-break: break-all;
+    max-width: 80%; /* 제목의 최대 너비를 조절하기 위해 이 값을 설정 */
+    overflow-wrap: break-word;
+    white-space: normal; /* 제목 안에서 줄바꿈이 가능하도록 설정 */
 }
 
 .memberName {

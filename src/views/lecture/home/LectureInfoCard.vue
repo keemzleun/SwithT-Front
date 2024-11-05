@@ -113,6 +113,12 @@
             <v-divider class="mt-2 mb-10"></v-divider>
         </v-card>
     </v-dialog>
+    <ChatModal
+    v-model:dialog="chatModal"
+    :selectedChatRoomId="this.chatRoomId"
+    persistent
+    :style="{ position: 'fixed', right: '-9%', top: '10%', width: '0px' }"
+    />
     <!-- <v-card class="custom-card">
         <v-row>
             <v-col cols="3" class="thumbnail-container rounded-circle">
@@ -141,8 +147,12 @@
 /* global kakao */
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import ChatModal from '@/components/ChatModal.vue';
 
 export default {
+    components:{
+        ChatModal,
+    },
     props: {
         isTutor: Boolean,
         infoData: Object,
@@ -162,7 +172,6 @@ export default {
             address: "",
             detailAddress:"",
             lectureGroupId: 0,
-            chatRoomId:0,
             days: ['월', '화', '수', '목', '금', '토', '일'],
             hours: [
                 '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -170,7 +179,8 @@ export default {
                 '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00'
             ],
             groupTimes: [],
-            isChat:false,
+            chatModal: false,
+            chatRoomId: '',
         };
     },
     mounted() {
@@ -245,10 +255,8 @@ export default {
             this.$router.push(`/lecture-group/${this.lectureGroupId}`);
         },
          clickChatRoom() {
-            
-            if(this.infoData.chatRoomId =="" || this.infoData.chatRoomId == null) console.log("채팅방 입장 안됨" + this.infoData.chatRoomId);
-            else console.log("채팅방 입장" + this.infoData.chatRoomId);
-            // this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
+            console.log("채팅방 입장" + this.infoData.chatRoomId);
+            this.$router.push(`/chat-room?chatRoomId=${this.infoData.chatRoomId}`);
         },
         formattedCategory() {
             if (this.infoData?.category) {

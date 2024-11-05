@@ -74,12 +74,12 @@
         </v-card>
         <v-card v-else
             style="height:400px; width: 750px;  overflow: hidden;box-shadow: none; border: 2px solid #D9D9D9; border-radius: 8px;">
-
+            <div style="display: flex; justify-content: flex-end;">
+                <v-icon @click="closeModal"
+                    style="cursor: pointer; margin-top:10px; margin-right:10px;">mdi-window-close</v-icon>
+            </div>
             <div class="chatRoomListEmpty" style="height:700px;">
-                <div style="display: flex; justify-content: flex-end;">
-                    <v-icon @click="closeModal"
-                        style="cursor: pointer; margin-top:10px; margin-right:10px;">mdi-window-close</v-icon>
-                </div>
+                
                 <v-icon style="font-size: 40px; margin-bottom:20px;"
                     color="#11b69a">mdi-message-settings-outline</v-icon>
                 <h5>채팅방이 없어요</h5>
@@ -428,6 +428,7 @@ export default {
             }
         },
         clickHomeBtn() {
+            this.closeModal();
             this.$router.push("/home");
         },
 

@@ -219,9 +219,10 @@ import {
   Title,
   Tooltip,
   Legend,
+  BarController
 } from "chart.js";
 
-Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend , BarController);
 
 export default {
   components: {
@@ -516,11 +517,6 @@ export default {
       ],
       withdrawalData: [],
       incomeData: [
-        { date: "24/09/11", description: "최고의 고등 수학 과외", amount: "500,000" },
-        { date: "24/09/09", description: "영어 과외 수익", amount: "300,000" },
-        { date: "24/09/06", description: "영어 과외 수익", amount: "600,000" },
-        { date: "24/09/04", description: "과학 과외 수익", amount: "400,000" },
-        { date: "24/09/01", description: "수학 과외 수익", amount: "200,000" },
       ],
 
 

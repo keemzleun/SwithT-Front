@@ -36,11 +36,11 @@
         <img src="@/assets/painting_2655642.png" class="menu-icon" />
         <div class="menu-title">취미</div>
       </div>
-      <div class="menu-list">
+      <div class="menu-list" @click="performTypeSearch('LECTURE')">
         <img src="@/assets/meeting-room_2645420.png" class="menu-icon" />
         <div class="menu-title">강의</div>
       </div>
-      <div class="menu-list">
+      <div class="menu-list" @click="performTypeSearch('LESSON')">
         <img src="@/assets/conversation_2821731.png" class="menu-icon" />
         <div class="menu-title">과외</div>
       </div>
@@ -271,6 +271,40 @@ export default {
         name: "SearchResult",
         query: requestData,
       });
+    },
+    // 검색 결과 가져오기
+    async fetchSearchResults() {
+      this.searchResult = []; // 이전 검색 결과 초기화
+      const requestData = this.$route.query;
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/lecture-service/lecture/search`,
+          requestData
+        );
+        this.searchResult = response.data.result.content;
+        if (requestData.category) {
+          this.selectedCategory = requestData.category;
+        } else if (requestData.lectureType) {
+          this.selectedCategory = requestData.lectureType;
+        } else {
+          this.selectedCategory = "";
+        }
+      } catch (error) {
+        console.error("Failed to fetch search results:", error);
+      }
+    },
+    performTypeSearch(type) {
+        this.selectedCategory = type;  // 선택된 강의 유형 설정
+        const requestData = {
+            searchTitle: "",
+            category: "",  
+            status: "ADMIT",
+            lectureType: type
+        };
+        this.searchValue = "";
+        this.$router.push({ name: 'SearchResult', query: requestData }).then(() => {
+            this.fetchSearchResults();  // 라우터 변경 후 검색 결과 갱신
+        });
     },
     selectSuggestion(suggestion) {
       this.searchValue = suggestion;

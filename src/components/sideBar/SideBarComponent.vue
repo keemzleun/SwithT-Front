@@ -160,6 +160,14 @@ export default {
             this.generalEvents.push(newEvent);
             localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents)); // 저장
           }
+          else if (newEvent.messageType === '수강 신청' && !isDuplicateGeneral){
+            this.generalEvents.push(newEvent);
+            localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents));
+          }
+          else if (newEvent.messageType === '수강 취소' && !isDuplicateGeneral){
+            this.generalEvents.push(newEvent);
+            localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents));
+          }
 
           // 전체 알림 개수 업데이트
           this.count = this.paymentEvents.length + this.generalEvents.length;
@@ -278,6 +286,24 @@ export default {
           this.generalEvents = this.generalEvents.filter(e => e.id !== this.eventId);
           localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents));
         } catch (error) {
+          console.error('강의 승인 알림 처리 중 오류 발생:', error);
+        }
+      }
+      else if(messageType === '수강 신청'){
+        try{
+          this.$router.push('/tutor-lecture-list');
+          this.generalEvents = this.generalEvents.filter(e => e.id !== this.eventId);
+          localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents));
+        } catch(error){
+          console.error('강의 승인 알림 처리 중 오류 발생:', error);
+        }
+      }
+      else if(messageType === '수강 취소'){
+        try{
+          this.$router.push('/tutor-lecture-list');
+          this.generalEvents = this.generalEvents.filter(e => e.id !== this.eventId);
+          localStorage.setItem('generalEvents', JSON.stringify(this.generalEvents));
+        } catch(error){
           console.error('강의 승인 알림 처리 중 오류 발생:', error);
         }
       }

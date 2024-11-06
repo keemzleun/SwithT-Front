@@ -218,6 +218,7 @@ export default {
                 .catch((error) => {
                     console.error("환불 요청 실패:", error);
                     this.alertModalTtile = "환불 요청 실패";
+                    console.log(error)
                     this.alertModalContents = `환불 요청에 실패했습니다.\n사유: ${error.error_message}`;
                     this.alertModal = true;
                 });

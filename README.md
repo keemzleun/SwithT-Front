@@ -96,11 +96,11 @@ SwithT Project의 목표는 일정 관리, 다양한 학습 컨텐츠, 강사의
 <br/>
 
 ## 🗓️ Work Breakdown Structure
-- [WBS 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=811390028#gid=811390028)
+- [WBS 상세보기](https://docs.google.com/spreadsheets/d/1OA47JMEtXIm2h_V5Rkiz_FwDhR6v4kyEyD7PB1P0k7I/edit?usp=sharing)
 <br/>
 
 ## 📝 요구사항정의서 
-- [요구사항 정의서 상세보기](https://docs.google.com/spreadsheets/d/1GH_rCJKcHojk6-SSolw8yv9uBQK2eujsTFvQqh4fSvo/edit?gid=348186960#gid=348186960)
+- [요구사항 정의서 상세보기](https://docs.google.com/spreadsheets/d/1OA47JMEtXIm2h_V5Rkiz_FwDhR6v4kyEyD7PB1P0k7I/edit?usp=sharing)
 <br/>
 
 ## 📋 ERD
